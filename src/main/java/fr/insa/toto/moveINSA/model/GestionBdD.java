@@ -18,6 +18,8 @@ along with CoursBeuvron.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.insa.toto.moveINSA.model;
 
+import fr.insa.toto.moveINSA.model.Partenaire;
+import fr.insa.toto.moveINSA.model.Specialite;
 import fr.insa.beuvron.utils.ConsoleFdB;
 import fr.insa.beuvron.utils.exceptions.ExceptionsUtils;
 import fr.insa.beuvron.utils.list.ListUtils;
@@ -57,15 +59,56 @@ public class GestionBdD {
             st.executeUpdate(
                     "create table partenaire ( \n"
                     + ConnectionSimpleSGBD.sqlForGeneratedKeys(con, "id") + ",\n"
-                    + " refPartenaire varchar(50) not null unique\n"
+                    + " refPartenaire varchar(50) not null unique,\n"
+                    + " ville varchar(50), \n"
+                    + " pays varchar(50) \n"
                     + ")");
             st.executeUpdate(
                     "create table offremobilite ( \n"
                     + ConnectionSimpleSGBD.sqlForGeneratedKeys(con, "id") + ",\n"
                     + " nbrplaces int not null,\n"
-                    + " proposepar int not null\n"
+                    + " proposePar int not null,\n"
+                    + " semestre int not null,\n"
+                    + " niveauScolaire int not null,\n"
+                    + " dispositif varchar(2) not null,\n"
+                    + " nomOffre varchar(100) not null,\n"
+                    + " specialiteAssocie varchar(50) not null\n"
                     + ")");
+            st.executeUpdate(
+                    "create table etudiant ( \n"
+                    + " INE INT PRIMARY KEY, \n"
+                    + " nomEtudiant VARCHAR(50) NOT NULL, \n"
+                    + " prenom VARCHAR(50) NOT NULL, \n"
+                    + " classe VARCHAR(50) NOT NULL, \n"
+                    + " annee INT NOT NULL, \n"
+                    + " classement INT NOT NULL, \n"
+                    + " mdp VARCHAR(50) NOT NULL \n"
+                    + ")");
+            
+            st.executeUpdate(
+                    "create table classe ( \n"
+                    + ConnectionSimpleSGBD.sqlForGeneratedKeys(con, "idClasse") + ",\n"
+                    + " nom varchar(50) not null,\n"
+                    + " effectif int not null,\n"
+                    + " specialite varchar(50) not null, \n"
+                    + " annee int not null \n"
+                    + ")");
+
+            /*st.executeUpdate(
+                    "create table specialite ( \n"
+                    + ConnectionSimpleSGBD.sqlForGeneratedKeys(con, "idSpecialite") + ",\n"
+                    + " nomSpecialite varchar(50) not null,\n"
+                    + " effectifSpecialite int not null\n"
+                    + ")");
+             st.executeUpdate(
+                    "create table departement ( \n"
+                    + ConnectionSimpleSGBD.sqlForGeneratedKeys(con, "idDepartement") + ",\n"
+                    + " idDepartement int not null unique,\n"
+                    + " nomDepartement varchar(50) not null\n"
+                
+                    + ")");*/
             // création des liens
+            //hcvzaidvzcv   bkjbzkcbkabkj
             st.executeUpdate(
                     """
                     alter table offremobilite
@@ -90,23 +133,39 @@ public class GestionBdD {
      */
     public static void deleteSchema(Connection con) throws SQLException {
         try (Statement st = con.createStatement()) {
-            // je supprime d'abord les liens
+            
             try {
                 st.executeUpdate(
                         "alter table offremobilite drop constraint fk_offremobilite_proposepar");
             } catch (SQLException ex) {
-                // nothing to do : maybe the constraint was not created
+                
             }
-            // je peux maintenant supprimer les tables
+          
             try {
                 st.executeUpdate("drop table offremobilite");
             } catch (SQLException ex) {
-                // nothing to do : maybe the table was not created
+                
             }
             try {
                 st.executeUpdate("drop table partenaire");
             } catch (SQLException ex) {
             }
+            try {
+                st.executeUpdate("drop table etudiant");
+            } catch (SQLException ex) {
+            }
+             try {
+                st.executeUpdate("drop table classe");
+            } catch (SQLException ex) {
+            }
+            /*  try {
+                st.executeUpdate("drop table specialite");
+            } catch (SQLException ex) {
+            }
+              try {
+                st.executeUpdate("drop table departement");
+            } catch (SQLException ex) {
+            }*/
         }
     }
 
@@ -115,25 +174,47 @@ public class GestionBdD {
      *
      * @param con
      * @throws SQLException
-     */
+     **/
     public static void initBdDTest(Connection con) throws SQLException {
-        List<Partenaire> partenaires = List.of(
-                new Partenaire("MIT"),
-                new Partenaire("Oxford")
-        );
-        for (var p : partenaires) {
-            p.saveInDB(con);
-        }
-        List<OffreMobilite> offres = List.of(
-                new OffreMobilite(1, partenaires.get(0).getId()),
-                new OffreMobilite(2, partenaires.get(0).getId()),
-                new OffreMobilite(5, partenaires.get(1).getId())
-        );
-        for (var o : offres) {
-            o.saveInDB(con);
-        }
-
+    // Initialisation des partenaires
+    List<Partenaire> partenaires = List.of(
+        new Partenaire("MIT", "Cambridge", "USA"),
+        new Partenaire("Oxford", "Oxford", "UK"),
+        new Partenaire ("Laval University","Laval", "Canada")
+    );
+    for (var partenaire : partenaires) {
+        partenaire.saveInDB(con);
     }
+
+    // Initialisation des offres de mobilité
+    List<OffreMobilite> offres = List.of(
+        new OffreMobilite(1, partenaires.get(0).getIdPartenaire(), 5, 3, "HE", "bravejoe", "GT2E"),
+        new OffreMobilite(2, partenaires.get(0).getIdPartenaire(), 8, 4, "HE", "hgkiuzgeiuzgu", "MIQ"),
+        new OffreMobilite(5, partenaires.get(1).getIdPartenaire(), 9, 5, "ER", "fhoiefoihzi", "GM")
+    );
+    for (var offre : offres) {
+        offre.saveInDB(con);
+    }
+
+    // Initialisation des etudiants
+    List<Etudiant> etudiants = List.of(
+        new Etudiant("362356701RE", "Emilie", "Matieu", "GT2E", 3, 5, "zeiurgozfgiz"),
+        new Etudiant("362356701TT", "Emma", "Martin", "GT2E", 3, 7, "dvhiyavyvyif")
+    );
+    for (var etudiant : etudiants) {
+        etudiant.saveInDB(con);
+    }
+    
+    // Initialisation des classes
+    List<Classe> classes = List.of(
+        new Classe(1, "GT2E2", 21 , "GT2E", 2),
+        new Classe(2, "MIQ2", 16 , "MIQ", 2),
+        new Classe(3, "GE5", 32 , "GE", 5)
+    );
+    for (var classe : classes) {
+        classe.saveInDB(con);
+    }
+}
 
     public static void razBDD(Connection con) throws SQLException {
         deleteSchema(con);
@@ -154,7 +235,7 @@ public class GestionBdD {
             try {
                 int j = 1;
                 if (rep == j++) {
-                    List<Partenaire> users = Partenaire.tousLesPartaires(con);
+                    List<Partenaire> users = Partenaire.tousLesPartenaires(con);
                     System.out.println(users.size() + " utilisateurs : ");
                     System.out.println(ListUtils.enumerateList(users, (elem) -> elem.toString()));
                 } else if (rep == j++) {
@@ -190,14 +271,111 @@ public class GestionBdD {
             }
         }
     }
-
+     public static void menuEtudiant(Connection con) {
+        int rep = -1;
+        while (rep != 0) {
+            int i = 1;
+            System.out.println("Menu etudiants");
+            System.out.println("==================");
+            System.out.println((i++) + ") liste de tous les etudiants");
+            System.out.println((i++) + ") créer un nouvel etudiant");
+            System.out.println("0) Retour");
+            rep = ConsoleFdB.entreeEntier("Votre choix : ");
+            try {
+                int j = 1;
+                if (rep == j++) {
+                    List<Etudiant> etudiants = Etudiant.tousLesEtudiants(con);
+                    System.out.println(etudiants.size() + " etudiants : ");
+                    System.out.println(ListUtils.enumerateList(etudiants, (elem) -> elem.toString()));
+                } else if (rep == j++) {
+                   Etudiant.creeConsole(con);
+                }
+            } catch (Exception ex) {
+                System.out.println(ExceptionsUtils.messageEtPremiersAppelsDansPackage(ex, "fr.insa", 3));
+            }
+        }
+    }
+    
+     public static void menuClasse(Connection con) {
+        int rep = -1;
+        while (rep != 0) {
+            int i = 1;
+            System.out.println("Menu classes");
+            System.out.println("==================");
+            System.out.println((i++) + ") liste de toutes les classes");
+            System.out.println((i++) + ") créer une nouvelle classe");
+            System.out.println("0) Retour");
+            rep = ConsoleFdB.entreeEntier("Votre choix : ");
+            try {
+                int j = 1;
+                if (rep == j++) {
+                    List<Classe> classes = Classe.toutesLesClasses(con);
+                    System.out.println(classes.size() + " classes : ");
+                    System.out.println(ListUtils.enumerateList(classes, (elem) -> elem.toString()));
+                } else if (rep == j++) {
+                    Classe.creeConsole(con);
+                }
+            } catch (Exception ex) {
+                System.out.println(ExceptionsUtils.messageEtPremiersAppelsDansPackage(ex, "fr.insa", 3));
+            }
+        }
+    }
+    
+    public static void menuSpecialite(Connection con) {
+        int rep = -1;
+        while (rep != 0) {
+            int i = 1;
+            System.out.println("Menu specialite");
+            System.out.println("==================");
+            System.out.println((i++) + ") liste de toutes les specialite");
+            System.out.println((i++) + ") créer une nouvelle specialite");
+            System.out.println("0) Retour");
+            rep = ConsoleFdB.entreeEntier("Votre choix : ");
+            try {
+                int j = 1;
+                if (rep == j++) {
+                    List<Specialite> users = Specialite.toutesLesSpecialites(con);
+                    System.out.println(users.size() + " utilisateurs : ");
+                    System.out.println(ListUtils.enumerateList(users, (elem) -> elem.toString()));
+                } else if (rep == j++) {
+                    Classe.creeConsole(con);
+                }
+            } catch (Exception ex) {
+                System.out.println(ExceptionsUtils.messageEtPremiersAppelsDansPackage(ex, "fr.insa", 3));
+            }
+        }
+    }
+    public static void menuDepartement(Connection con) {
+        int rep = -1;
+        while (rep != 0) {
+            int i = 1;
+            System.out.println("Menu departement");
+            System.out.println("==================");
+            System.out.println((i++) + ") liste de tous les departements");
+            System.out.println((i++) + ") créer un nouveau departement");
+            System.out.println("0) Retour");
+            rep = ConsoleFdB.entreeEntier("Votre choix : ");
+            try {
+                int j = 1;
+                if (rep == j++) {
+                    List<Departement> users = Departement.tousLesDepartements(con);
+                    System.out.println(users.size() + " utilisateurs : ");
+                    System.out.println(ListUtils.enumerateList(users, (elem) -> elem.toString()));
+                } else if (rep == j++) {
+                    Departement.creeConsole(con);
+                }
+            } catch (Exception ex) {
+                System.out.println(ExceptionsUtils.messageEtPremiersAppelsDansPackage(ex, "fr.insa", 3));
+            }
+        }
+    }
     public static void menuBdD(Connection con) {
         int rep = -1;
         while (rep != 0) {
             int i = 1;
             System.out.println("Menu gestion base de données");
             System.out.println("============================");
-            System.out.println((i++) + ") RAZ BdD = delete + create + init");
+            System.out.println((i++) + ") RAZ BdD = delete + create + initialize");
             System.out.println((i++) + ") donner un ordre SQL update quelconque");
             System.out.println((i++) + ") donner un ordre SQL query quelconque");
             System.out.println("0) Retour");
@@ -243,6 +421,10 @@ public class GestionBdD {
             System.out.println((i++) + ") menu gestion BdD");
             System.out.println((i++) + ") menu partenaires");
             System.out.println((i++) + ") menu offres");
+            System.out.println((i++) + ") menu etudiant");
+            System.out.println((i++) + ") menu classe");
+            System.out.println((i++) + ") menu specialite");
+            System.out.println((i++) + ") menu departement");
             System.out.println("0) Fin");
             rep = ConsoleFdB.entreeEntier("Votre choix : ");
             try {
