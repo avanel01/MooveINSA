@@ -41,7 +41,7 @@ public class PartenairesPanel extends VerticalLayout {
     public PartenairesPanel() {
         try (Connection con = ConnectionPool.getConnection()) {
             this.add(new H3("Liste de tous les partenaires"));
-            this.add(new PartenaireGrid(Partenaire.tousLesPartaires(con)));
+            this.add(new PartenaireGrid(Partenaire.tousLesPartenaires(con)));
         } catch (SQLException ex) {
             System.out.println("Probleme : " + ex.getLocalizedMessage());
             Notification.show("Probleme : " + ex.getLocalizedMessage());

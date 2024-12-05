@@ -1,73 +1,122 @@
-/*
-Copyright 2000- Francois de Bertrand de Beuvron
-
-This file is part of CoursBeuvron.
-
-CoursBeuvron is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-CoursBeuvron is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with CoursBeuvron.  If not, see <http://www.gnu.org/licenses/>.
- */
 package fr.insa.toto.moveINSA.gui.vues;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.IntegerField;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
 import fr.insa.beuvron.vaadin.utils.ConnectionPool;
 import fr.insa.toto.moveINSA.gui.MainLayout;
-import fr.insa.toto.moveINSA.model.OffreMobilite;
 import fr.insa.toto.moveINSA.model.Partenaire;
+import fr.insa.toto.moveINSA.model.OffreMobilite;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-/**
- *
- * @author francois
- */
-@Route(value = "offres/nouveau",layout= MainLayout.class)
+@Route(value = "offres/nouveau", layout = MainLayout.class)
 public class NouvelleOffrePanel extends VerticalLayout {
 
     private ChoixPartenaireCombo cbPartenaire;
     private IntegerField ifPlaces;
+    private TextField ifPar;
+    private IntegerField ifSemestre;
+    private IntegerField ifNiv;
+    private TextField ifDispo;
+    private TextField ifNomO;
+    private TextField ifSpe;
     private Button bSave;
 
     public NouvelleOffrePanel() {
-        this.cbPartenaire = new ChoixPartenaireCombo();
-        this.ifPlaces = new IntegerField("nombre de places");
-        this.bSave = new Button("Save");
-        this.bSave.addClickListener((t) -> {
-            Partenaire selected = this.cbPartenaire.getValue();
+        // Initialisation des champs
+        cbPartenaire = new ChoixPartenaireCombo();
+        ifPlaces = new IntegerField("Nombre de places");
+        ifPar = new TextField("Proposé par");
+        ifSemestre = new IntegerField("Semestre");
+        ifNiv = new IntegerField("Niveau scolaire");
+        ifDispo = new TextField("Dispositif");
+        ifNomO = new TextField("Nom de l'offre");
+        ifSpe = new TextField("Spécialité");
+        bSave = new Button("Sauvegarder");
+
+        // Action au clic sur le bouton "Sauvegarder"
+        bSave.addClickListener(e -> {
+            // Récupérer le partenaire sélectionné
+            Partenaire selected = cbPartenaire.getValue();
             if (selected == null) {
-                Notification.show("Vous devez selectionner un partenaire");
-            } else {
-                Integer places = this.ifPlaces.getValue();
-                if (places == null || places <= 0) {
-                    Notification.show("vous devez préciser un nombre de places valide");
-                } else {
-                    int partId = selected.getId();
-                    OffreMobilite nouvelle = new OffreMobilite(places, partId);
-                    try (Connection con = ConnectionPool.getConnection()) {
-                        nouvelle.saveInDB(con);
-                        Notification.show("Nouvelle offre enregistrée");
-                    } catch (SQLException ex) {
-                        Notification.show("Probleme interne : " + ex.getLocalizedMessage());
-                    }
+                Notification.show("Vous devez sélectionner un partenaire");
+                return;
+            }
+
+            // Vérification du nombre de places
+            Integer places = ifPlaces.getValue();
+            if (places == null || places <= 0) {
+                Notification.show("Vous devez préciser un nombre de places valide");
+                return;
+            }
+
+            // Vérification du partenaire
+            String par = ifPar.getValue();
+            if (par == null || par.isEmpty()) {
+                Notification.show("Vous devez préciser un partenaire valide");
+                return;
+            }
+            
+            try (Connection con = ConnectionPool.getConnection()) {
+                Partenaire p = Partenaire.getPartenaireByRef(con, par).orElse(null);
+                if (p == null) {
+                    Notification.show("Le partenaire avec la référence " + par + " n'a pas été trouvé.");
+                    return;
                 }
+
+            // Vérification du semestre
+            Integer sem = ifSemestre.getValue();
+            if (sem == null || sem <= 4 || sem >= 10) {
+                Notification.show("Vous devez préciser un semestre valide");
+                return;
+            }
+
+            // Vérification du niveau scolaire
+            Integer niv = ifNiv.getValue();
+            if (niv == null || niv <= 2 || niv >= 6) {
+                Notification.show("Vous devez préciser un niveau scolaire valide");
+                return;
+            }
+
+            // Vérification du dispositif
+            String dispo = ifDispo.getValue();
+            if (dispo == null || dispo.isEmpty()) {
+                Notification.show("Vous devez préciser un dispositif valide");
+                return;
+            }
+
+            // Vérification du nom de l'offre
+            String nom = ifNomO.getValue();
+            if (nom == null || nom.isEmpty()) {
+                Notification.show("Vous devez préciser un nom pour l'offre valide");
+                return;
+            }
+
+            // Vérification de la spécialité
+            String spe = ifSpe.getValue();
+            if (spe == null || spe.isEmpty()) {
+                Notification.show("Vous devez préciser une spécialité valide");
+                return;
+            }
+
+
+                // Créer l'offre de mobilité avec les données saisies
+                int partId = p.getIdPartenaire();
+                OffreMobilite nouvelleOffre = new OffreMobilite(places, partId, sem, niv, dispo, nom, spe);
+
+                // Sauvegarder l'offre dans la base de données
+                nouvelleOffre.saveInDB(con);
+                Notification.show("Nouvelle offre enregistrée avec succès !");
+            } catch (SQLException ex) {
+                Notification.show("Erreur lors de l'enregistrement de l'offre : " + ex.getMessage());
             }
         });
-        this.add(this.cbPartenaire, this.ifPlaces, this.bSave);
-    }
 
+        // Ajout des composants à l'interface
+        this.add(cbPartenaire, ifPlaces, ifPar, ifSemestre, ifNiv, ifDispo, ifNomO, ifSpe, bSave);
+    }
 }

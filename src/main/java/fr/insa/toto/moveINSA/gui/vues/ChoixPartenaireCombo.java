@@ -36,7 +36,7 @@ public class ChoixPartenaireCombo extends ComboBox<Partenaire> {
     public ChoixPartenaireCombo() {
         super("Partenaire");
         try (Connection con = ConnectionPool.getConnection()) {
-            List<Partenaire> tous = Partenaire.tousLesPartaires(con);
+            List<Partenaire> tous = Partenaire.tousLesPartenaires(con);
             this.setItems(tous);
             this.setItemLabelGenerator(Partenaire::getRefPartenaire);
             if (!tous.isEmpty()) {
