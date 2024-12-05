@@ -26,6 +26,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Classe "miroir" de la table partenaire.
@@ -165,6 +166,27 @@ public Partenaire(String refPartenaire, String ville, String pays) {
         return pays;
     }
 }
+    
+    public static Optional<Partenaire> RechercherPartenaireParRef(Connection con, String ref) throws SQLException {
+    try (PreparedStatement pst = con.prepareStatement(
+            "SELECT idPartenaire, refPartenaire, ville, pays FROM partenaire WHERE refPartenaire = ?")) {
+        pst.setString(1, ref); // Définit la valeur pour le paramètre refPartenaire
+        ResultSet rs = pst.executeQuery();
+        if (rs.next()) {
+            // Crée un objet Partenaire si un résultat est trouvé
+            return Optional.of(new Partenaire(
+                    rs.getInt("idPartenaire"),
+                    rs.getString("refPartenaire"),
+                    rs.getString("ville"),
+                    rs.getString("pays")));
+        } else {
+            // Retourne un Optional vide si aucun partenaire ne correspond
+            return Optional.empty();
+        }
+    }
+}
+
+
 
     public static int creeConsole(Connection con) throws SQLException {
     // Demander à l'utilisateur de saisir la référence du partenaire
@@ -191,6 +213,28 @@ public Partenaire(String refPartenaire, String ville, String pays) {
     return ListUtils.selectOne("Choisissez un pays :", 
                 tousLesPartenaires(con), (elem) -> elem.getPays());
     }
+    
+    public static Optional<Partenaire> getPartenaireByRef(Connection con, String refPartenaire) throws SQLException {
+    try (PreparedStatement pst = con.prepareStatement(
+            "SELECT idPartenaire, refPartenaire, ville, pays FROM partenaire WHERE refPartenaire = ?")) {
+        pst.setString(1, refPartenaire);  // Définir la valeur de la référence du partenaire
+
+        ResultSet rs = pst.executeQuery();
+        if (rs.next()) {
+            // Si un partenaire avec cette référence est trouvé, créer et retourner un objet Partenaire
+            return Optional.of(new Partenaire(
+                rs.getInt("idPartenaire"),
+                rs.getString("refPartenaire"),
+                rs.getString("ville"),
+                rs.getString("pays")
+            ));
+        } else {
+            // Retourne un Optional vide si aucun partenaire n'est trouvé
+            return Optional.empty();
+        }
+    }
+}
+
     /**
      * @return the refPartenaire
      */
