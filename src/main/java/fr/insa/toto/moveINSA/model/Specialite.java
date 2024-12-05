@@ -69,7 +69,7 @@ public class Specialite {
      */
     public int saveInDB(Connection con) throws SQLException {
         if (this.getIdSpecialite() != -1) {
-            throw new fr.insa.toto.moveINSA.gui.model.EntiteDejaSauvegardee();
+            throw new EntiteDejaSauvegardee();
         }
 
         try (PreparedStatement insert = con.prepareStatement(

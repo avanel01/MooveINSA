@@ -1,4 +1,4 @@
-package fr.insa.toto.moveINSA.gui.model;
+
 
 import fr.insa.beuvron.utils.ConsoleFdB;
 import java.sql.Connection;
@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import fr.insa.toto.moveINSA.model.EntiteDejaSauvegardee;
 
 /**
  * Classe "miroir" de la table offremobilite.
@@ -92,7 +93,7 @@ public class OffreMobilite {
      */
     public int saveInDB(Connection con) throws SQLException {
         if (this.getId() != -1) {
-            throw new fr.insa.toto.moveINSA.gui.model.EntiteDejaSauvegardee();
+            throw new EntiteDejaSauvegardee();
         }
         try (PreparedStatement insert = con.prepareStatement(
                 "INSERT INTO offremobilite (nbrplaces, proposepar, semestre, niveauScolaire, dispositif, nomOffre, specialiteAssocie) VALUES (?,?,?,?,?,?,?)",
