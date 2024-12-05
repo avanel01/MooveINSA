@@ -50,7 +50,7 @@ public class EnteteInitiale extends HorizontalLayout {
         this.bLogin.addClickListener((t) -> {
             try (Connection con = ConnectionPool.getConnection()) {
                 String ref = this.tfNom.getValue();
-                Optional<Partenaire> p = Partenaire.trouvePartaire(con, ref);
+                Optional<Partenaire> p = Partenaire.RechercherPartenaireParRef(con, ref);
                 if (p.isEmpty()) {
                     Notification.show(ref + " n'est pas un partenaire");
                 } else {
