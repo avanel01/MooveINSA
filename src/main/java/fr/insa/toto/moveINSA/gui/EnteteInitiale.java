@@ -26,7 +26,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import fr.insa.beuvron.vaadin.utils.ConnectionPool;
 import fr.insa.toto.moveINSA.gui.session.SessionInfo;
-import fr.insa.toto.moveINSA.model.Partenaire;
+import fr.insa.toto.moveINSA.model.Etudiant;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Optional;
@@ -45,16 +45,16 @@ public class EnteteInitiale extends HorizontalLayout {
         this.setWidthFull();
         this.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
         this.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
-        this.tfNom = new TextField("ref partenaire");
+        this.tfNom = new TextField("votre INE:");
         this.bLogin = new Button("login");
         this.bLogin.addClickListener((t) -> {
             try (Connection con = ConnectionPool.getConnection()) {
                 String ref = this.tfNom.getValue();
-                Optional<Partenaire> p = Partenaire.RechercherPartenaireParRef(con, ref);
-                if (p.isEmpty()) {
-                    Notification.show(ref + " n'est pas un partenaire");
+                Optional<Etudiant> e = Etudiant.getEtudiantByINE(con, ref);
+                if (e.isEmpty()) {
+                    Notification.show(ref + " faux");
                 } else {
-                    SessionInfo.doLogin(p.get());
+                    SessionInfo.doLogin(e.get());
                 }
             } catch (SQLException ex) {
                 Notification.show("Problem : " + ex.getLocalizedMessage());
