@@ -23,9 +23,9 @@ import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import fr.insa.beuvron.vaadin.utils.ConnectionPool;
-import fr.insa.toto.moveINSA.gui.session.SessionInfo;
 import fr.insa.toto.moveINSA.model.Etudiant;
 
 import java.sql.Connection;
@@ -34,22 +34,30 @@ import java.util.Optional;
 
 /**
  * Barre d'en-tête initiale pour l'application.
- *
+ * Fournit les fonctionnalités de connexion et déconnexion.
+ * 
  * @author francois
  */
 public class EnteteInitiale extends HorizontalLayout {
 
     private final TextField tfNom;
+    private final PasswordField pfMdp;
     private final Button bLogin;
     private final Button bLogout;
+    private boolean isConnected = false;
+
 
     public EnteteInitiale() {
+        // Configuration de la mise en page
         this.setWidthFull();
         this.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
         this.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
 
         // Champ texte pour l'INE
         this.tfNom = new TextField("Votre INE :");
+
+        // Champ mot de passe
+        this.pfMdp = new PasswordField("Votre mot de passe :");
 
         // Bouton de login
         this.bLogin = new Button("Login");
@@ -59,16 +67,27 @@ public class EnteteInitiale extends HorizontalLayout {
         this.bLogout = new Button("Logout");
         this.bLogout.addClickListener(event -> handleLogout());
 
+        // Ajout des composants à la mise en page
+        this.add(tfNom, pfMdp, bLogin, bLogout);
+
         // Rafraîchir l'affichage initial
         this.refresh();
     }
 
+    /**
+     * Gère la connexion de l'utilisateur.
+     */
     private void handleLogin() {
         String ref = this.tfNom.getValue().trim();
+        String mdpSaisi = this.pfMdp.getValue().trim();
 
-        // Vérifie si l'utilisateur a saisi une valeur
+        // Vérifie si les champs sont remplis
         if (ref.isEmpty()) {
             Notification.show("Veuillez entrer un INE.");
+            return;
+        }
+        if (mdpSaisi.isEmpty()) {
+            Notification.show("Veuillez entrer votre mot de passe.");
             return;
         }
 
@@ -78,8 +97,16 @@ public class EnteteInitiale extends HorizontalLayout {
             if (etudiantOpt.isEmpty()) {
                 Notification.show("INE invalide : " + ref);
             } else {
-                SessionInfo.doLogin(etudiantOpt.get());
-                Notification.show("Bienvenue, " + etudiantOpt.get().getNomEtudiant() + " !");
+                Etudiant etudiant = etudiantOpt.get();
+
+                // Vérifie le mot de passe
+                if (etudiant.getMdp().equals(mdpSaisi)) {
+                    isConnected = true;
+                    Notification.show("Bienvenue, " + etudiant.getNomEtudiant() + " !");
+                    // Effectuer d'autres actions de connexion ici (stockage de session, etc.)
+                } else {
+                    Notification.show("Mot de passe incorrect.");
+                }
             }
         } catch (SQLException ex) {
             Notification.show("Problème lors de la connexion : " + ex.getLocalizedMessage());
@@ -88,25 +115,31 @@ public class EnteteInitiale extends HorizontalLayout {
         this.refresh();
     }
 
+    /**
+     * Gère la déconnexion de l'utilisateur.
+     */
     private void handleLogout() {
-        SessionInfo.doLogout();
+        isConnected = false;  // Réinitialiser l'état de connexion
         Notification.show("Déconnexion réussie.");
-        this.refresh();
+        refresh();
     }
 
+    /**
+     * Rafraîchit l'interface en fonction de l'état actuel.
+     */
     private void refresh() {
-        this.removeAll();
-
-        if (SessionInfo.connected()) {
-            String nomUtilisateur = SessionInfo.getLoggedPartRef();
-            if (nomUtilisateur == null || nomUtilisateur.isEmpty()) {
-                nomUtilisateur = "Utilisateur inconnu";
-            }
-
-            this.add(new H3("Bonjour " + nomUtilisateur));
-            this.add(this.bLogout);
-        } else {
-            this.add(this.tfNom, this.bLogin);
-        }
+        if (isConnected) {
+        // Si l'utilisateur est connecté
+        tfNom.setVisible(false);       // Cacher le champ INE
+        pfMdp.setVisible(false);       // Cacher le champ mot de passe
+        bLogin.setVisible(false);      // Cacher le bouton "Login"
+        bLogout.setVisible(true);      // Montrer le bouton "Logout"
+    } else {
+        // Si l'utilisateur n'est pas connecté
+        tfNom.setVisible(true);        // Montrer le champ INE
+        pfMdp.setVisible(true);        // Montrer le champ mot de passe
+        bLogin.setVisible(true);       // Montrer le bouton "Login"
+        bLogout.setVisible(false);     // Cacher le bouton "Logout"
+    }
     }
 }
