@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Classe "miroir" de la table Etudiant.
@@ -48,6 +49,39 @@ public class Etudiant {
         this.mdp = mdp;
     }
 
+   /**
+ * Récupère un étudiant à partir de son INE.
+ *
+ * @param con Connexion à la base de données
+ * @param INE Identifiant unique de l'étudiant
+ * @return Un Optional contenant l'étudiant s'il existe, ou un Optional vide sinon
+ * @throws SQLException En cas de problème avec la base de données
+ */
+public static Optional<Etudiant> getEtudiantByINE(Connection con, String INE) throws SQLException {
+    String sql = "SELECT INE, nom, prenom, classe, annee, classement, mdp FROM etudiant WHERE INE = ?";
+    
+    try (PreparedStatement pst = con.prepareStatement(sql)) {
+        pst.setString(1, INE); // Remplace le paramètre INE dans la requête SQL
+        
+        try (ResultSet rs = pst.executeQuery()) {
+            if (rs.next()) {
+                // Crée un objet Etudiant avec les données trouvées
+                Etudiant etudiant = new Etudiant(
+                    rs.getString("INE"),
+                    rs.getString("nom"),
+                    rs.getString("prenom"),
+                    rs.getString("classe"),
+                    rs.getInt("annee"),
+                    rs.getInt("classement"),
+                    rs.getString("mdp")
+                );
+                return Optional.of(etudiant);
+            } else {
+                return Optional.empty(); // Aucun étudiant trouvé pour cet INE
+            }
+        }
+    }
+}
     // Getters et setters
     public String getINE() {
         return INE;
