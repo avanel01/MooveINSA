@@ -33,40 +33,38 @@ import java.util.List;
 public class VuePrincipale extends VerticalLayout {
     
     public VuePrincipale() {
-    // Titre principal centré et en gras
-    H1 titrePrincipal = new H1("MOVEINSA");
-    titrePrincipal.getStyle()
-                  .set("text-align", "center")
-                  .set("font-weight", "bold")
-                  .set("font-size", "2.5em");
+        // Titre principal centré et en gras
+        H1 titrePrincipal = new H1("MOVEINSA");
+        titrePrincipal.getStyle()
+                      .set("text-align", "center")
+                      .set("font-weight", "bold")
+                      .set("font-size", "2.5em");
 
-    // Sous-titre centré
-    H2 sousTitre = new H2("Bienvenue sur votre plateforme de mobilité internationale dans le cadre de votre cursus d'ingénierie à l'INSA Strasbourg");
-    sousTitre.getStyle()
-             .set("text-align", "center")
-             .set("font-size", "1.5em");
+        // Sous-titre centré avec la phrase modifiée
+        H2 sousTitre = new H2("Bienvenue dans l'univers de la mobilité internationale de l'INSA Strasbourg");
+        sousTitre.getStyle()
+                 .set("text-align", "center")
+                 .set("font-size", "1.5em");
 
-    // Message d'introduction
-    Div introduction = new Div();
-    introduction.add(
-        new H3("Bienvenue dans l'univers de la mobilité internationale de l'INSA Strasbourg"),
-        new Paragraph("Explorez le monde, élargissez vos horizons, construisez votre avenir."),
-        new Paragraph("Dans le cadre de votre parcours d’ingénierie, la mobilité internationale est une opportunité unique de vivre une expérience humaine et professionnelle enrichissante. "
-                + "Grâce à des partenariats avec des universités prestigieuses à travers le monde, l’INSA Strasbourg vous accompagne dans votre projet de découvrir de nouvelles cultures, "
-                + "de relever des défis académiques stimulants et de préparer une carrière à dimension internationale.")
-    );
+        // Message d'introduction
+        Div introduction = new Div();
+        introduction.add(
+            new Paragraph("Explorez le monde, élargissez vos horizons, construisez votre avenir."),
+            new Paragraph("Dans le cadre de votre parcours d’ingénierie, la mobilité internationale est une opportunité unique de vivre une expérience humaine et professionnelle enrichissante. "
+                        + "Grâce à des partenariats avec des universités prestigieuses à travers le monde, l’INSA Strasbourg vous accompagne dans votre projet de découvrir de nouvelles cultures, "
+                        + "de relever des défis académiques stimulants et de préparer une carrière à dimension internationale.")
+        );
 
-    // Styles pour l'introduction
-    introduction.getStyle()
-                .set("text-align", "center")
-                .set("margin-top", "20px")
-                .set("line-height", "1.5")
-                .set("font-size", "1.2em");
+        // Styles pour l'introduction
+        introduction.getStyle()
+                    .set("text-align", "center")
+                    .set("margin-top", "20px")
+                    .set("line-height", "1.5")
+                    .set("font-size", "1.2em");
 
-    // Ajout des éléments dans la vue
-    this.add(titrePrincipal, sousTitre, introduction);
-}
-
+        // Ajout des éléments dans la vue
+        this.add(titrePrincipal, sousTitre, introduction);
+    }
 }
 
 /* public VuePrincipale() {
