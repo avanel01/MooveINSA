@@ -1,4 +1,5 @@
 
+package fr.insa.toto.moveINSA.model;
 
 import fr.insa.beuvron.utils.ConsoleFdB;
 import java.sql.Connection;
@@ -7,7 +8,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import fr.insa.toto.moveINSA.model.EntiteDejaSauvegardee;
 
 /**
  * Classe "miroir" de la table offremobilite.
