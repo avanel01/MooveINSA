@@ -112,7 +112,7 @@ import java.util.List;
 import java.util.Set;
 
 @PageTitle("MoveINSA")
-@Route(value = "offres/liste", layout = MainLayout.class)
+@Route(value = "partenaires/liste", layout = MainLayout.class)
 public class PartenairesPanel extends VerticalLayout {
 
     public static class IntAsIcon extends HorizontalLayout {
