@@ -132,7 +132,7 @@ public class PartenairesPanel extends VerticalLayout {
 
             // Requête pour afficher les partenaires
             PreparedStatement offresAvecPart = con.prepareStatement(
-                    "SELECT partenaire.idPartenaire AS id, partenaire.refPartenaire, partenaire.ville, partenaire.pays " +
+                    "SELECT partenaire.id AS id, partenaire.refPartenaire, partenaire.ville, partenaire.pays " +
                     "FROM partenaire"
             );
 
@@ -161,7 +161,7 @@ public class PartenairesPanel extends VerticalLayout {
             // Requête pour partenaires groupés par pays
             this.add(new H3("Partenaires groupés par pays"));
             PreparedStatement PartenaireParPays = con.prepareStatement(
-                    "SELECT pays.idPays, pays.nomPays, COUNT(partenaire.idPartenaire) AS nbrPartenaires, " +
+                    "SELECT pays.idPays, pays.nomPays, COUNT(partenaire.id) AS nbrPartenaires, " +
                     "       (SELECT COUNT(*) FROM partenaire) AS totalPartenaires " +
                     "FROM partenaire " +
                     "JOIN pays ON partenaire.pays = pays.idPays " +
