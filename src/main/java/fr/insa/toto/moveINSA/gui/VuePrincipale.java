@@ -5,9 +5,12 @@ import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.dom.Element;
+import com.vaadin.flow.dom.Style;
 
 @PageTitle("MoveINSA")
 @Route(value = "", layout = MainLayout.class)
@@ -22,13 +25,19 @@ public class VuePrincipale extends VerticalLayout {
                       .set("font-size", "2.5em");
 
         // Sous-titre centré avec la phrase modifiée
-        H2 sousTitre = new H2("Bienvenue dans l'univers de la mobilité internationale de l'INSA Strasbourg");
+        /* H2 sousTitre = new H2("Bienvenue dans l'univers de la mobilité internationale de l'INSA Strasbourg");
         sousTitre.getStyle()
                  .set("text-align", "center")
                  .set("font-size", "1.5em");
-
+*/
+        H2 sousTitre = new H2();
+        Span texteRouge = new Span("Bienvenue dans l'univers de la mobilité internationale de l'INSA Strasbourg");
+        texteRouge.getStyle().set("color", "red"); // Appliquer la couleur rouge
+        sousTitre.add(texteRouge);
+        sousTitre.getStyle().set("text-align", "center").set("font-size", "1.5em");
         // Message d'introduction
         Div introduction = new Div();
+        
         introduction.add(
             new Paragraph("Explorez le monde, élargissez vos horizons, construisez votre avenir."),
             new Paragraph("Dans le cadre de votre parcours d’ingénierie, la mobilité internationale est une opportunité unique de vivre une expérience humaine et professionnelle enrichissante. "
