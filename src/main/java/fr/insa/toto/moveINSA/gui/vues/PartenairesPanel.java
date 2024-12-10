@@ -132,7 +132,7 @@ public class PartenairesPanel extends VerticalLayout {
 
             // Requête pour afficher les partenaires
             PreparedStatement offresAvecPart = con.prepareStatement(
-                    "SELECT partenaire.id AS id, partenaire.refPartenaire, partenaire.ville, partenaire.pays " +
+                    "SELECT partenaire.id AS id, partenaire.refPartenaire, partenaire.pays, partenaire.ville" +
                     "FROM partenaire"
             );
 
@@ -140,8 +140,8 @@ public class PartenairesPanel extends VerticalLayout {
             this.gPartenaire = new ResultSetGrid(offresAvecPart, new GridDescription(List.of(
                     new ColumnDescription().colData(0).visible(false),
                     new ColumnDescription().colData(1).headerString("Partenaire"),
-                    new ColumnDescription().colData(2).headerString("Ville"),
-                    new ColumnDescription().colData(3).headerString("Pays")
+                    new ColumnDescription().colData(2).headerString("Pays"),
+                    new ColumnDescription().colData(3).headerString("Ville")
             )));
             this.add(this.gPartenaire);
 
