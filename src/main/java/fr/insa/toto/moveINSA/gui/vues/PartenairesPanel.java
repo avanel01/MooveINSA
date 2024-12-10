@@ -107,6 +107,7 @@ import fr.insa.beuvron.vaadin.utils.dataGrid.ResultSetGrid;
 import fr.insa.toto.moveINSA.gui.MainLayout;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
@@ -132,7 +133,7 @@ public class PartenairesPanel extends VerticalLayout {
 
             // Requête pour afficher les partenaires
             PreparedStatement offresAvecPart = con.prepareStatement(
-                    "SELECT partenaire.id AS id, partenaire.refPartenaire, partenaire.pays, partenaire.ville" +
+                    "SELECT partenaire.id AS id, partenaire.refPartenaire, partenaire.ville, partenaire.pays " +
                     "FROM partenaire"
             );
 
@@ -140,11 +141,15 @@ public class PartenairesPanel extends VerticalLayout {
             this.gPartenaire = new ResultSetGrid(offresAvecPart, new GridDescription(List.of(
                     new ColumnDescription().colData(0).visible(false),
                     new ColumnDescription().colData(1).headerString("Partenaire"),
-                    new ColumnDescription().colData(2).headerString("Pays"),
-                    new ColumnDescription().colData(3).headerString("Ville")
+                    new ColumnDescription().colData(2).headerString("Ville"),
+                    new ColumnDescription().colData(3).headerString("Pays")
             )));
             this.add(this.gPartenaire);
 
+            ResultSet rs = offresAvecPart.executeQuery();
+while (rs.next()) {
+    System.out.println(rs.getString("refPartenaire") + ", " + rs.getString("ville") + ", " + rs.getString("pays"));
+}
             // Bouton pour postuler
             this.bOffre = new Button("Postuler");
             this.bOffre.addClickListener((t) -> {
