@@ -1,41 +1,26 @@
-/*
-Copyright 2000- Francois de Bertrand de Beuvron
-
-This file is part of CoursBeuvron.
-
-CoursBeuvron is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-CoursBeuvron is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with CoursBeuvron.  If not, see <http://www.gnu.org/licenses/>.
- */
 package fr.insa.toto.moveINSA.gui.vues;
 
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.html.Paragraph;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.data.renderer.ComponentRenderer;
 import fr.insa.toto.moveINSA.model.Partenaire;
 import java.util.List;
 
 /**
- *
- * @author francois
+ * Grille pour afficher les partenaires.
  */
 public class PartenaireGrid extends Grid<Partenaire> {
 
     public PartenaireGrid(List<Partenaire> partenaires) {
+        super(Partenaire.class, false);
         this.setColumnReorderingAllowed(true);
-        this.addColumn(Partenaire::getRefPartenaire).setHeader("refPartenaire").setSortable(true).setResizable(true);
+
+        // Ajout des colonnes nécessaires
+        this.addColumn(Partenaire::getIdPartenaire).setHeader("ID").setSortable(true);
+        this.addColumn(Partenaire::getRefPartenaire).setHeader("Référence Partenaire").setSortable(true);
+        this.addColumn(Partenaire::getVille).setHeader("Ville").setSortable(true);
+        this.addColumn(Partenaire::getPays).setHeader("Pays").setSortable(true);
+
+        // Ajout des partenaires à la grille
         this.setItems(partenaires);
     }
-    
 }
+
