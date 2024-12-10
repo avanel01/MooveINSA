@@ -58,7 +58,7 @@ public class GestionBdD {
             // creation des tables
             st.executeUpdate(
                     "create table partenaire ( \n"
-                    + ConnectionSimpleSGBD.sqlForGeneratedKeys(con, "idpartenaire") + ",\n"
+                    + ConnectionSimpleSGBD.sqlForGeneratedKeys(con, "id") + ",\n"
                     + " refPartenaire varchar(50) not null unique,\n"
                     + " ville varchar(50), \n"
                     + " pays varchar(50) \n"
