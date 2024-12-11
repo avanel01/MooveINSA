@@ -114,7 +114,7 @@ public Partenaire(String refPartenaire, String ville, String pays) {
      */
     
    public int saveInDB(Connection con) throws SQLException {
-       System.out.println("Avant appel de saveInDB");
+       
     // Si l'entité a déjà un ID, on lève une exception
     if (this.getIdPartenaire() != -1) {
         throw new EntiteDejaSauvegardee();
