@@ -112,7 +112,9 @@ public Partenaire(String refPartenaire, String ville, String pays) {
      * @throws EntiteDejaSauvegardee si l'id de l'entité est différent de -1
      * @throws SQLException si autre problème avec la BdD
      */
+    
    public int saveInDB(Connection con) throws SQLException {
+       System.out.println("Avant appel de saveInDB");
     // Si l'entité a déjà un ID, on lève une exception
     if (this.getIdPartenaire() != -1) {
         throw new EntiteDejaSauvegardee();
