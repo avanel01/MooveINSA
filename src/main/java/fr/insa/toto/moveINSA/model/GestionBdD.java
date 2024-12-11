@@ -183,6 +183,7 @@ public class GestionBdD {
         new Partenaire ("Laval University","Laval", "Canada")
     );
     for (var partenaire : partenaires) {
+        System.out.println("Avant appel de saveInDB");
         partenaire.saveInDB(con);
     }
 
