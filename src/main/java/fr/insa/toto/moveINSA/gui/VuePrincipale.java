@@ -3,41 +3,57 @@ package fr.insa.toto.moveINSA.gui;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.dom.Element;
-import com.vaadin.flow.dom.Style;
 
 @PageTitle("MoveINSA")
 @Route(value = "", layout = MainLayout.class)
 public class VuePrincipale extends VerticalLayout {
-    
+
     public VuePrincipale() {
+        // Configuration du style global
+        this.getStyle()
+            .set("background-image", "url('https://moodle.insa-strasbourg.fr/login/index.php')")
+            .set("background-size", "cover")
+            .set("background-position", "center")
+            .set("height", "100vh")
+            .set("display", "flex")
+            .set("align-items", "center")
+            .set("justify-content", "center");
+
+        // Conteneur principal pour le texte
+        Div container = new Div();
+        container.getStyle()
+                 .set("background", "rgba(255, 255, 255, 0.8)") // Blanc avec transparence
+                 .set("padding", "20px")
+                 .set("border-radius", "10px")
+                 .set("box-shadow", "0px 4px 10px rgba(0, 0, 0, 0.3)")
+                 .set("max-width", "600px")
+                 .set("text-align", "center");
+
         // Titre principal centré et en gras
         H1 titrePrincipal = new H1("MOVEINSA");
         titrePrincipal.getStyle()
                       .set("text-align", "center")
                       .set("font-weight", "bold")
-                      .set("font-size", "2.5em");
+                      .set("font-size", "2.5em")
+                      .set("margin", "0");
 
-        // Sous-titre centré avec la phrase modifiée
-        /* H2 sousTitre = new H2("Bienvenue dans l'univers de la mobilité internationale de l'INSA Strasbourg");
-        sousTitre.getStyle()
-                 .set("text-align", "center")
-                 .set("font-size", "1.5em");
-*/
+        // Sous-titre centré avec une partie rouge
         H2 sousTitre = new H2();
         Span texteRouge = new Span("Bienvenue dans l'univers de la mobilité internationale de l'INSA Strasbourg");
         texteRouge.getStyle().set("color", "red"); // Appliquer la couleur rouge
         sousTitre.add(texteRouge);
-        sousTitre.getStyle().set("text-align", "center").set("font-size", "1.5em");
+        sousTitre.getStyle()
+                 .set("text-align", "center")
+                 .set("font-size", "1.5em")
+                 .set("margin", "10px 0");
+
         // Message d'introduction
         Div introduction = new Div();
-        
         introduction.add(
             new Paragraph("Explorez le monde, élargissez vos horizons, construisez votre avenir."),
             new Paragraph("Dans le cadre de votre parcours d’ingénierie, la mobilité internationale est une opportunité unique de vivre une expérience humaine et professionnelle enrichissante. "
@@ -48,14 +64,18 @@ public class VuePrincipale extends VerticalLayout {
         // Styles pour l'introduction
         introduction.getStyle()
                     .set("text-align", "center")
-                    .set("margin-top", "20px")
                     .set("line-height", "1.5")
-                    .set("font-size", "1.2em");
+                    .set("font-size", "1.2em")
+                    .set("margin", "10px 0");
 
-        // Ajout des éléments dans la vue
-        this.add(titrePrincipal, sousTitre, introduction);
+        // Ajout des éléments au conteneur principal
+        container.add(titrePrincipal, sousTitre, introduction);
+
+        // Ajout du conteneur à la vue
+        this.add(container);
     }
 }
+
 /* public VuePrincipale() {
         this.add(new H3("Petit programme pour démarrer le projet M3 2024"));
         List<Paragraph> attention = List.of(
