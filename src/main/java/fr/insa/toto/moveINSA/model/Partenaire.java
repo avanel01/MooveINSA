@@ -112,26 +112,32 @@ public Partenaire(String refPartenaire, String ville, String pays) {
      * @throws EntiteDejaSauvegardee si l'id de l'entité est différent de -1
      * @throws SQLException si autre problème avec la BdD
      */
-    public int saveInDB(Connection con) throws SQLException {
-        if (this.getIdPartenaire() != -1) {
-            throw new EntiteDejaSauvegardee();
-        }
-        try (PreparedStatement insert = con.prepareStatement(
-                "insert into partenaire (refPartenaire, ville, pays) values (?,?,?)",
-                PreparedStatement.RETURN_GENERATED_KEYS)) {
-            // Assigner les valeurs des attributs refPartenaire, ville et pays
-            insert.setString(1, this.getRefPartenaire());
-            insert.setString(2, this.getVille()!= null ? this.getVille() : null);
-            insert.setString(3, this.getPays()!= null ? this.getPays() : null);
-            insert.executeUpdate();
-            // récupérer la clé générée (ID)
-            try (ResultSet rid = insert.getGeneratedKeys()) {
-                rid.next();
-                this.idPartenaire = rid.getInt(1); // récupération de l'ID généré
-                return this.getIdPartenaire();
+   public int saveInDB(Connection con) throws SQLException {
+    // Si l'entité a déjà un ID, on lève une exception
+    if (this.getIdPartenaire() != -1) {
+        throw new EntiteDejaSauvegardee();
+    }
+
+    String sql = "INSERT INTO partenaire (refPartenaire, ville, pays) VALUES (?, ?, ?)";
+    try (PreparedStatement insert = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+        // Assigner les valeurs des attributs refPartenaire, ville et pays
+        insert.setString(1, this.getRefPartenaire());
+        insert.setString(2, this.getVille() != null ? this.getVille() : null); // Gestion des valeurs nulles
+        insert.setString(3, this.getPays() != null ? this.getPays() : null); // Idem pour pays
+        insert.executeUpdate();
+
+        // Récupérer la clé générée (ID)
+        try (ResultSet rid = insert.getGeneratedKeys()) {
+            if (rid.next()) {
+                this.idPartenaire = rid.getInt(1); // Assignation de l'ID généré
+                return this.getIdPartenaire(); // Retour de l'ID
+            } else {
+                throw new SQLException("La génération de l'ID a échoué.");
             }
         }
     }
+}
+
 
     public static List<Partenaire> tousLesPartenaires(Connection con) throws SQLException {
         try (PreparedStatement pst = con.prepareStatement(
