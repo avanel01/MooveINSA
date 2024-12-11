@@ -117,6 +117,11 @@ public Partenaire(String refPartenaire, String ville, String pays) {
     if (this.getIdPartenaire() != -1) {
         throw new EntiteDejaSauvegardee();
     }
+    
+    System.out.println("RefPartenaire: " + this.getRefPartenaire());
+    System.out.println("Ville: " + this.getVille());
+    System.out.println("Pays: " + this.getPays());
+
 
     String sql = "INSERT INTO partenaire (refPartenaire, ville, pays) VALUES (?, ?, ?)";
     try (PreparedStatement insert = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
