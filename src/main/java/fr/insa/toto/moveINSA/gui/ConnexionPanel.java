@@ -93,7 +93,7 @@ public class ConnexionPanel extends VerticalLayout {
             if (etudiant.getMdp().equals(mdpSaisi)) {
                 // Stocker l'étudiant dans la session
                 VaadinSession.getCurrent().setAttribute(Etudiant.class, etudiant);
-                Notification.show("Bienvenue, " + etudiant.getNomEtudiant() + " !");
+                Notification.show("Bienvenue, " + etudiant.getNomEtudiant() + " " + etudiant.getPrenom() + " !");
                 // Naviguer vers la vue principale
                 UI.getCurrent().navigate(VuePrincipale.class);
             } else {
@@ -104,5 +104,6 @@ public class ConnexionPanel extends VerticalLayout {
         Notification.show("Problème lors de la connexion : " + ex.getLocalizedMessage());
     }
 }
+
 }
 

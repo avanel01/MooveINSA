@@ -92,7 +92,7 @@ public static Optional<Etudiant> getEtudiantByINE(Connection con, String INE) th
     }
 
     public String getNomEtudiant() {
-        return nomEtudiant;
+        return nomEtudiant;  // Récupère la valeur de la colonne 'nometudiant'
     }
 
     
