@@ -42,7 +42,7 @@ import java.util.Optional;
 @PageTitle("Connexion")
 public class ConnexionPanel extends VerticalLayout {
 
-    private final TextField tfNom;
+    private final TextField tfINE;
     private final PasswordField pfMdp;
     private final Button bLogin;
 
@@ -53,7 +53,7 @@ public class ConnexionPanel extends VerticalLayout {
         this.setJustifyContentMode(JustifyContentMode.CENTER);
 
         // Champ texte pour l'identifiant
-        this.tfNom = new TextField("Votre INE :");
+        this.tfINE = new TextField("Votre INE :");
 
         // Champ mot de passe
         this.pfMdp = new PasswordField("Votre mot de passe :");
@@ -64,11 +64,11 @@ public class ConnexionPanel extends VerticalLayout {
 
         // Ajout des composants à la mise en page
         this.add(new H3("Connexion à MoveINSA"));
-        this.add(tfNom, pfMdp, bLogin);
+        this.add(tfINE, pfMdp, bLogin);
     }
 
     private void handleLogin() {
-    String ref = this.tfNom.getValue().trim();
+    String ref = this.tfINE.getValue().trim();
     String mdpSaisi = this.pfMdp.getValue().trim();
 
     // Vérifie si les champs sont remplis
