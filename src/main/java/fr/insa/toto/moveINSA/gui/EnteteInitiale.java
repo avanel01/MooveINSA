@@ -3,8 +3,6 @@ package fr.insa.toto.moveINSA.gui;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.server.VaadinSession;
-import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
-import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
 import fr.insa.toto.moveINSA.model.Etudiant;
 
 public class EnteteInitiale extends HorizontalLayout {
@@ -23,7 +21,6 @@ public class EnteteInitiale extends HorizontalLayout {
 
         // Vérifier si un étudiant est connecté
         if (etudiant != null) {
-            // Vérifiez que getPrenom() correspond bien à la méthode dans votre classe Etudiant
             lNomPrenom.setText("Connecté : " + etudiant.getNomEtudiant() + " " + etudiant.getPrenom());
         } else {
             lNomPrenom.setText("Aucun étudiant connecté.");
