@@ -32,7 +32,6 @@ import fr.insa.toto.moveINSA.gui.vues.OffresPanel;
 import fr.insa.toto.moveINSA.gui.vues.PartenairesPanel;
 import fr.insa.toto.moveINSA.gui.vues.RAZBdDPanel;
 import fr.insa.toto.moveINSA.gui.vues.TestDriverPanel;
-import fr.insa.toto.moveINSA.gui.vues.TodoPanel;
 
 /**
  *
