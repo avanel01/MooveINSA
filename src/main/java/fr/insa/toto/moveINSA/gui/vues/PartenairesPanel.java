@@ -169,7 +169,7 @@ while (rs.next()) {
                     "SELECT pays.idPays, pays.nomPays, COUNT(partenaire.id) AS nbrPartenaires, " +
                     "       (SELECT COUNT(*) FROM partenaire) AS totalPartenaires " +
                     "FROM partenaire " +
-                    "JOIN pays ON partenaire.pays = pays.idPays " +
+                    "JOIN Pays ON partenaire.pays = pays.idPays " +
                     "GROUP BY pays.idPays"
             );
 
