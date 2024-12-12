@@ -58,7 +58,8 @@ public class Etudiant {
  * @throws SQLException En cas de problème avec la base de données
  */
 public static Optional<Etudiant> getEtudiantByINE(Connection con, String INE) throws SQLException {
-    String sql = "SELECT INE, nom, prenom, classe, annee, classement, mdp FROM etudiant WHERE INE = ?";
+    // Mise à jour de la requête SQL pour utiliser nometudiant au lieu de nom
+    String sql = "SELECT INE, nometudiant, prenom, classe, annee, classement, mdp FROM etudiant WHERE INE = ?";
     
     try (PreparedStatement pst = con.prepareStatement(sql)) {
         pst.setString(1, INE); // Remplace le paramètre INE dans la requête SQL
@@ -68,7 +69,7 @@ public static Optional<Etudiant> getEtudiantByINE(Connection con, String INE) th
                 // Crée un objet Etudiant avec les données trouvées
                 Etudiant etudiant = new Etudiant(
                     rs.getString("INE"),
-                    rs.getString("nom"),
+                    rs.getString("nometudiant"),  // Correspondance avec la colonne nometudiant
                     rs.getString("prenom"),
                     rs.getString("classe"),
                     rs.getInt("annee"),
@@ -82,6 +83,7 @@ public static Optional<Etudiant> getEtudiantByINE(Connection con, String INE) th
         }
     }
 }
+
     // Getters et setters
     public String getINE() {
         return INE;
