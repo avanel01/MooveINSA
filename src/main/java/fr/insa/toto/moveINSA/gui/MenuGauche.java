@@ -19,7 +19,6 @@ along with CoursBeuvron.  If not, see <http://www.gnu.org/licenses/>.
 
 package fr.insa.toto.moveINSA.gui;
 
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import fr.insa.toto.moveINSA.gui.jeu.BoiteACoucou;
