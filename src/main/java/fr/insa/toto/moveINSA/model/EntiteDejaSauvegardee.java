@@ -29,5 +29,9 @@ public class EntiteDejaSauvegardee extends SQLException {
     public EntiteDejaSauvegardee() {
         super("L'entité à déjà été sauvegardée (id != -1");
     }
-
+    
+    // Constructeur avec message personnalisé
+    public EntiteDejaSauvegardee(String message) {
+        super(message);
+    }
 }

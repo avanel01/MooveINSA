@@ -33,6 +33,9 @@ public class Etudiant {
      * @param INE Identifiant de l'étudiant
      */
     public Etudiant(String INE) {
+        if (!INE.matches("^[0-9]{9}[A-Z]{2}$")) {
+        throw new IllegalArgumentException("INE invalide : " + INE);
+    }
         this.INE = INE;
     }
 
@@ -40,14 +43,17 @@ public class Etudiant {
      * Constructeur complet.
      */
     public Etudiant(String INE, String nomEtudiant, String prenom, String classe, int annee, int classement, String mdp) {
-        this.INE = INE;
-        this.nomEtudiant = nomEtudiant;
-        this.prenom = prenom;
-        this.classe = classe;
-        this.annee = annee;
-        this.classement = classement;
-        this.mdp = mdp;
+    if (!INE.matches("^[0-9]{9}[A-Z]{2}$")) {
+        throw new IllegalArgumentException("INE invalide : " + INE);
     }
+    this.INE = INE;
+    this.nomEtudiant = nomEtudiant;
+    this.prenom = prenom;
+    this.classe = classe;
+    this.annee = annee;
+    this.classement = classement;
+    this.mdp = mdp;
+}
 
    /**
  * Récupère un étudiant à partir de son INE.
@@ -170,42 +176,71 @@ public static Optional<Etudiant> getEtudiantByINE(Connection con, String INE) th
                 '}';
     }
 
-    /**
-     * Sauvegarde une nouvelle entité dans la base de données.
-     *
-     * @param con Connexion à la base de données
-     * @return L'identifiant (INE) généré
-     * @throws EntiteDejaSauvegardee Si l'entité est déjà sauvegardée
-     * @throws SQLException En cas de problème avec la base de données
-     */
-    public String saveInDB(Connection con) throws SQLException, EntiteDejaSauvegardee {
-        if (this.INE != null) {
-            throw new EntiteDejaSauvegardee();
-        }
-
-        try (PreparedStatement insert = con.prepareStatement(
-                "INSERT INTO etudiant (nom, prenom, classe, annee, classement, mdp) VALUES (?, ?, ?, ?, ?, ?)",
-                PreparedStatement.RETURN_GENERATED_KEYS)) {
-
-            insert.setString(1, this.nomEtudiant);
-            insert.setString(2, this.prenom);
-            insert.setString(3, this.classe);
-            insert.setInt(4, this.annee);
-            insert.setInt(5, this.classement);
-            insert.setString(6, this.mdp);
-
-            insert.executeUpdate();
-
-            try (ResultSet rid = insert.getGeneratedKeys()) {
-                if (rid.next()) {
-                    this.INE = rid.getString(1);
-                    return this.INE;
-                } else {
-                    throw new SQLException("Aucune clé générée pour l'insertion.");
+   /**
+ * Sauvegarde un étudiant dans la base de données. Si un étudiant avec le même
+ * INE existe déjà, une exception est levée.
+ *
+ * @param con Connexion à la base de données
+ * @return L'INE de l'étudiant après insertion
+ * @throws EntiteDejaSauvegardee Si un étudiant avec cet INE existe déjà
+ * @throws SQLException En cas de problème avec la base de données
+ */
+public String saveInDB(Connection con) throws SQLException, EntiteDejaSauvegardee {
+    // Vérifie si l'INE est déjà défini
+    if (this.INE != null) {
+        // Vérifie dans la base de données si un étudiant avec le même INE existe
+        String sqlCheck = "SELECT INE FROM etudiant WHERE INE = ?";
+        try (PreparedStatement checkStmt = con.prepareStatement(sqlCheck)) {
+            checkStmt.setString(1, this.INE);
+            try (ResultSet rs = checkStmt.executeQuery()) {
+                if (rs.next()) {
+                    throw new EntiteDejaSauvegardee("Un étudiant avec cet INE existe déjà : " + this.INE);
                 }
             }
         }
     }
+
+    // Insère un nouvel étudiant dans la base de données
+    String sqlInsert = "INSERT INTO etudiant (INE, nometudiant, prenom, classe, annee, classement, mdp) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    try (PreparedStatement insertStmt = con.prepareStatement(sqlInsert)) {
+        insertStmt.setString(1, this.INE);
+        insertStmt.setString(2, this.nomEtudiant);
+        insertStmt.setString(3, this.prenom);
+        insertStmt.setString(4, this.classe);
+        insertStmt.setInt(5, this.annee);
+        insertStmt.setInt(6, this.classement);
+        insertStmt.setString(7, this.mdp);
+
+        int rowsAffected = insertStmt.executeUpdate();
+        if (rowsAffected > 0) {
+            return this.INE;
+        } else {
+            throw new SQLException("Erreur lors de l'insertion de l'étudiant.");
+        }
+    }
+}
+
+
+/**
+ * Vérifie si un INE existe déjà dans la base de données.
+ *
+ * @param con Connexion à la base de données
+ * @param ine L'INE à vérifier
+ * @return true si l'INE existe déjà, false sinon
+ * @throws SQLException En cas de problème avec la base de données
+ */
+private static boolean ineExisteDeja(Connection con, String ine) throws SQLException {
+    String sql = "SELECT COUNT(*) FROM etudiant WHERE INE = ?";
+    try (PreparedStatement check = con.prepareStatement(sql)) {
+        check.setString(1, ine);
+        try (ResultSet rs = check.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1) > 0; // Retourne vrai si au moins une correspondance
+            }
+        }
+    }
+    return false;
+}
 
     /**
      * Retourne tous les étudiants de la base de données.
