@@ -27,7 +27,7 @@ public class VuePrincipale extends VerticalLayout {
             .set("justify-content", "center");
 
         // Ajout du logo dans le coin supérieur gauche
-        Image logo = new Image("https://th.bing.com/th/id/R.f285f84a2330ff493b7f5d7c6813e38a?rik=4jLzIHr5J2BpqQ&riu=http%3a%2f%2fwww.alsacetech.org%2fwp-content%2fuploads%2f2017%2f08%2fLogo_INSAStrasbourgDeveloppe-quadri_marge.jpg&ehk=5hF6%2b0HEor54t6NVgihM127qIINO%2fSGHq7Z6pZu7Zs8%3d&risl=&pid=ImgRaw&r=0", "Logo INSA Strasbourg");
+        Image logo = new Image("https://apps.insa-strasbourg.fr/WebObjects/logos/logo_insa_strasbourg_234px.png", "Logo INSA Strasbourg");
         logo.getStyle()
             .set("position", "absolute")
             .set("top", "20px")
