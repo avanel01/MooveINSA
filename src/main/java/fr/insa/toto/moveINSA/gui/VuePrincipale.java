@@ -3,6 +3,7 @@ package fr.insa.toto.moveINSA.gui;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -23,6 +24,16 @@ public class VuePrincipale extends VerticalLayout {
             .set("display", "flex")
             .set("align-items", "center")
             .set("justify-content", "center");
+
+        // Ajout du logo dans le coin supérieur gauche
+        Image logo = new Image("https://th.bing.com/th/id/R.f285f84a2330ff493b7f5d7c6813e38a?rik=4jLzIHr5J2BpqQ&riu=http%3a%2f%2fwww.alsacetech.org%2fwp-content%2fuploads%2f2017%2f08%2fLogo_INSAStrasbourgDeveloppe-quadri_marge.jpg&ehk=5hF6%2b0HEor54t6NVgihM127qIINO%2fSGHq7Z6pZu7Zs8%3d&risl=&pid=ImgRaw&r=0", "Logo INSA Strasbourg");
+        logo.getStyle()
+            .set("position", "absolute")
+            .set("top", "20px")
+            .set("left", "20px")
+            .set("width", "150px")
+            .set("height", "auto");
+        this.getElement().appendChild(logo.getElement());
 
         // Conteneur principal pour le texte
         Div container = new Div();
@@ -75,6 +86,7 @@ public class VuePrincipale extends VerticalLayout {
         this.add(container);
     }
 }
+
 
 
 
