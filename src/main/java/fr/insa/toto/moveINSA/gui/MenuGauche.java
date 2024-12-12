@@ -42,7 +42,7 @@ public class MenuGauche extends SideNav {
 
     public MenuGauche() {
         SideNavItem main = new SideNavItem("main",VuePrincipale.class);
-        SideNavItem connexion = new SideNavItem("main",ConnexionPanel.class);
+        SideNavItem connexion = new SideNavItem("Connexion",ConnexionPanel.class);
         SideNavItem partenaires = new SideNavItem("partenaires");
         partenaires.addItem(new SideNavItem("liste", PartenairesPanel.class));
         partenaires.addItem(new SideNavItem("nouveau", NouveauPartenairePanel.class));
@@ -58,6 +58,6 @@ public class MenuGauche extends SideNav {
         SideNavItem jeux = new SideNavItem("jeux");
         jeux.addItem(new SideNavItem("boite à coucou", BoiteACoucou.class));
         jeux.addItem(new SideNavItem("trouve", TrouveEntier.class));
-       this.addItem(main,connexion,partenaires,offres,jeux,debug);
+       this.addItem(main,connexion,partenaires,offres,debug);
     }
 }
