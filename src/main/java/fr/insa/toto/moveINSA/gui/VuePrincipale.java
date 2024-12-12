@@ -16,7 +16,7 @@ public class VuePrincipale extends VerticalLayout {
     public VuePrincipale() {
         // Configuration du style global
         this.getStyle()
-            .set("background-image", "url('https://moodle.insa-strasbourg.fr/login/index.php')")
+            .set("background-image", "url('https://www.insa-strasbourg.fr/wp-content/uploads/28070823_1895678403840285_8548131256382231960_o.jpg')")
             .set("background-size", "cover")
             .set("background-position", "center")
             .set("height", "100vh")
@@ -75,6 +75,8 @@ public class VuePrincipale extends VerticalLayout {
         this.add(container);
     }
 }
+
+
 
 /* public VuePrincipale() {
         this.add(new H3("Petit programme pour démarrer le projet M3 2024"));
