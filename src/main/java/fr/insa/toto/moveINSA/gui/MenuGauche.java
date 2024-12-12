@@ -19,6 +19,7 @@ along with CoursBeuvron.  If not, see <http://www.gnu.org/licenses/>.
 
 package fr.insa.toto.moveINSA.gui;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import fr.insa.toto.moveINSA.gui.jeu.BoiteACoucou;
@@ -41,23 +42,54 @@ import fr.insa.toto.moveINSA.gui.vues.TodoPanel;
 public class MenuGauche extends SideNav {
 
     public MenuGauche() {
-        SideNavItem main = new SideNavItem("main",VuePrincipale.class);
-        SideNavItem connexion = new SideNavItem("Connexion",ConnexionPanel.class);
+        // Styliser le conteneur principal
+        this.getStyle()
+            .set("display", "flex")
+            .set("flex-direction", "column")
+            .set("padding", "10px");
+
+        // Crée les items principaux et applique les styles immédiatement
+        SideNavItem main = new SideNavItem("main", VuePrincipale.class);
+        styleItem(main);
+
+        SideNavItem connexion = new SideNavItem("Connexion", ConnexionPanel.class);
+        styleItem(connexion);
+
         SideNavItem partenaires = new SideNavItem("partenaires");
+        styleItem(partenaires);
         partenaires.addItem(new SideNavItem("liste", PartenairesPanel.class));
         partenaires.addItem(new SideNavItem("nouveau", NouveauPartenairePanel.class));
+
         SideNavItem offres = new SideNavItem("offres");
+        styleItem(offres);
         offres.addItem(new SideNavItem("liste", OffresPanel.class));
         offres.addItem(new SideNavItem("nouvelle", NouvelleOffrePanel.class));
+
         SideNavItem debug = new SideNavItem("debug");
+        styleItem(debug);
         debug.addItem(new SideNavItem("test driver", TestDriverPanel.class));
         debug.addItem(new SideNavItem("raz BdD", RAZBdDPanel.class));
         debug.addItem(new SideNavItem("test ResultSetGrid", TestResultSetGrid.class));
         debug.addItem(new SideNavItem("test DataGrid", TestDataGrid.class));
         debug.addItem(new SideNavItem("test Grid direct", TestGridDirect.class));
+
         SideNavItem jeux = new SideNavItem("jeux");
+        styleItem(jeux);
         jeux.addItem(new SideNavItem("boite à coucou", BoiteACoucou.class));
         jeux.addItem(new SideNavItem("trouve", TrouveEntier.class));
-       this.addItem(main,connexion,partenaires,offres,debug);
+
+        // Ajoute tous les éléments au SideNav
+        this.addItem(main, connexion, partenaires, offres, debug, jeux);
+    }
+
+    // Méthode pour appliquer les styles directement à un SideNavItem
+    private void styleItem(SideNavItem item) {
+        item.getStyle()
+            .set("text-align", "center")  // Centrer le texte
+            .set("text-transform", "uppercase")  // Majuscules
+            .set("font-weight", "bold")  // Texte en gras
+            .set("font-size", "12px")  // Réduire la taille de l'écriture
+            .set("padding", "10px")  // Espacement
+            .set("border-bottom", "1px solid #ddd");  // Ligne de séparation
     }
 }
