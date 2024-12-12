@@ -76,7 +76,7 @@ public class GestionBdD {
                     + ")");
             st.executeUpdate(
                     "create table etudiant ( \n"
-                    + " INE INT PRIMARY KEY, \n"
+                    + " INE VARCHAR (11)  PRIMARY KEY, \n"
                     + " nomEtudiant VARCHAR(50) NOT NULL, \n"
                     + " prenom VARCHAR(50) NOT NULL, \n"
                     + " classe VARCHAR(50) NOT NULL, \n"
