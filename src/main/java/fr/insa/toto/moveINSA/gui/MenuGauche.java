@@ -42,6 +42,7 @@ public class MenuGauche extends SideNav {
 
     public MenuGauche() {
         SideNavItem main = new SideNavItem("main",VuePrincipale.class);
+        SideNavItem connexion = new SideNavItem("main",ConnexionPanel.class);
         SideNavItem partenaires = new SideNavItem("partenaires");
         partenaires.addItem(new SideNavItem("liste", PartenairesPanel.class));
         partenaires.addItem(new SideNavItem("nouveau", NouveauPartenairePanel.class));
