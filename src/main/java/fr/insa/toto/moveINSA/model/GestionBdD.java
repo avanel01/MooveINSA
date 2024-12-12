@@ -199,7 +199,7 @@ public class GestionBdD {
 
     // Initialisation des etudiants
     List<Etudiant> etudiants = List.of(
-        new Etudiant("362356701RE", "Emilie", "Matieu", "GT2E", 3, 5, "zeiurgozfgiz"),
+        new Etudiant("362356701RE", "Emilie", "Matieu", "GT2E", 3, 5, "A12B3C4D"),
         new Etudiant("362356701TT", "Emma", "Martin", "GT2E", 3, 7, "dvhiyavyvyif")
     );
     for (var etudiant : etudiants) {
