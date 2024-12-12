@@ -21,6 +21,7 @@ public class VuePrincipale extends VerticalLayout {
             .set("background-size", "cover")
             .set("background-position", "center")
             .set("height", "100vh")
+            .set("position", "relative") // Position relative pour permettre le positionnement absolu des éléments enfants
             .set("display", "flex")
             .set("align-items", "center")
             .set("justify-content", "center");
@@ -33,7 +34,7 @@ public class VuePrincipale extends VerticalLayout {
             .set("left", "20px")
             .set("width", "150px")
             .set("height", "auto");
-        this.getElement().appendChild(logo.getElement());
+        this.add(logo); // Ajout direct du logo à la vue
 
         // Conteneur principal pour le texte
         Div container = new Div();
