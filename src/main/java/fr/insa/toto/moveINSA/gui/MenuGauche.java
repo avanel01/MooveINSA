@@ -58,6 +58,6 @@ public class MenuGauche extends SideNav {
         SideNavItem jeux = new SideNavItem("jeux");
         jeux.addItem(new SideNavItem("boite à coucou", BoiteACoucou.class));
         jeux.addItem(new SideNavItem("trouve", TrouveEntier.class));
-       this.addItem(main,partenaires,offres,jeux,debug);
+       this.addItem(main,connexion,partenaires,offres,jeux,debug);
     }
 }
