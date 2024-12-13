@@ -5,6 +5,7 @@ import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteParameters;
@@ -20,7 +21,7 @@ import java.util.Optional;
 public class CandidaturePanel extends VerticalLayout {
 
     private Candidature nouveau;
-    private TextField idOField;  // Champ pour la référence de l'offre
+    private Label idOField;  // Label pour la référence de l'offre
     private TextField idEField;  // Champ pour l'INE
     private TextField OrdreField;  // Champ pour l'ordre de demande
     private TextField ClassField;  // Champ pour le classement
@@ -33,20 +34,17 @@ public class CandidaturePanel extends VerticalLayout {
         this.nouveau = new Candidature(-1, -1, null, -1, -1, null);
 
         // Champs de formulaire pour saisir les données
-        this.idOField = new TextField("Référence de l'offre");
+        this.idOField = new Label("Référence de l'offre");
         this.idEField = new TextField("INE");
         this.OrdreField = new TextField("Ordre de demande");
         this.ClassField = new TextField("Classement");
         this.DateField = new TextField("Date de séjour");
 
-        // Rendre le champ idOField en lecture seule pour empêcher la modification
-        this.idOField.setReadOnly(true);  // Le champ est maintenant en lecture seule
-
         // Bouton pour sauvegarder la candidature
         this.bSave = new Button("Sauvegarder", (t) -> {
             try (Connection con = ConnectionPool.getConnection()) {
                 // Mise à jour des valeurs du modèle Candidature à partir des champs
-                this.nouveau.setIdOffre(Integer.parseInt(this.idOField.getValue())); // Récupérer l'ID de l'offre
+                this.nouveau.setIdOffre(Integer.parseInt(this.idOField.getText())); // Récupérer l'ID de l'offre
                 this.nouveau.setIdEtudiant(this.idEField.getValue());
 
                 // Validation et conversion de l'Ordre et du Classement
@@ -97,13 +95,13 @@ public class CandidaturePanel extends VerticalLayout {
     }
 
     // Récupérer le paramètre 'idOffre' dans la méthode beforeEnter()
-    
+   
     public void beforeEnter(BeforeEnterEvent event) {
         // Récupérer les paramètres de la route
         RouteParameters parameters = event.getRouteParameters();
 
-        // Récupérer et pré-remplir le champ 'idOField' avec l'idOffre
+        // Récupérer et pré-remplir le label 'idOField' avec l'idOffre
         Optional<Integer> idOffre = getidO(parameters);
-        idOffre.ifPresent(id -> this.idOField.setValue(id.toString())); // Si un idOffre est présent, le pré-remplir dans le champ
+        idOffre.ifPresent(id -> this.idOField.setText("Référence de l'offre : " + id.toString())); // Afficher l'idOffre dans le label
     }
 }
