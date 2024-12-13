@@ -54,7 +54,7 @@ public class GestionBdD {
         con.setAutoCommit(false);
         try (Statement st = con.createStatement()) {
             // creation des tables
-            st.executeUpdate(
+            /*st.executeUpdate(
                     "create table partenaire ( \n"
                     + ConnectionSimpleSGBD.sqlForGeneratedKeys(con, "id") + ",\n"
                     + " refPartenaire varchar(50) not null unique,\n"
@@ -92,7 +92,7 @@ public class GestionBdD {
                     + " annee int not null \n"
                     + ")");
 
-            /*st.executeUpdate(
+            st.executeUpdate(
                     "create table specialite ( \n"
                     + ConnectionSimpleSGBD.sqlForGeneratedKeys(con, "idSpecialite") + ",\n"
                     + " nomSpecialite varchar(50) not null,\n"

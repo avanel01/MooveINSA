@@ -199,8 +199,8 @@ while (rs.next()) {
         try (Connection con = ConnectionPool.getConnection()) {
             this.add(new H2("Affichage de tables (ResultSet) quelconques à l'aide de ResultSetGrid"));
             PreparedStatement part = con.prepareStatement(
-                    "select partenaire.id as idPartenaire, partenaire.refPartenaire ,partenaire.ville ,partenaire.pays \n"
-                    + "  from partenaire");
+                    "select Partenaire.idPartenaire as idPartenaire, Partenaire.refPartenaire ,Partenaire.ville ,Partenaire.pays \n"
+                    + "  from Partenaire");
             this.add(new H3("affichage direct (sans mise en forme) du ResultSet"));
             this.add(new ResultSetGrid(part));
             this.gPartenaire = new ResultSetGrid(part, new GridDescription(List.of(
