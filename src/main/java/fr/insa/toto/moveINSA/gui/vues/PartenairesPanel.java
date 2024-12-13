@@ -127,7 +127,7 @@ public class PartenairesPanel extends VerticalLayout {
     private ResultSetGrid gPartenaire;
     private Button bOffre;
 
-    public PartenairesPanel() {
+    /*public PartenairesPanel() {
         try (Connection con = ConnectionPool.getConnection()) {
             this.add(new H2("Affichage de tables (ResultSet) à l'aide de ResultSetGrid"));
 
@@ -190,5 +190,46 @@ while (rs.next()) {
             System.out.println("Problème : " + ex.getLocalizedMessage());
             Notification.show("Problème : " + ex.getLocalizedMessage());
         }
+    }*/
+    
+    public PartenairesPanel() throws SQLException {
+        try (Connection con = ConnectionPool.getConnection()) {
+            this.add(new H2("Affichage de tables (ResultSet) quelconques à l'aide de ResultSetGrid"));
+            PreparedStatement offresAvecPart = con.prepareStatement(
+                    "select partenaire.id as idPartenaire, partenaire.refPartenaire ,partenaire.ville ,partenaire.pays \n"
+                    + "  from partenaire \n"
+                    + "    join partenaire on offremobilite.proposepar = partenaire.id");
+            this.add(new H3("affichage direct (sans mise en forme) du ResultSet"));
+            this.add(new ResultSetGrid(offresAvecPart));
+            this.gPartenaire = new ResultSetGrid(offresAvecPart, new GridDescription(List.of(
+                    new ColumnDescription().colData(0).visible(false), // on veut pouvoir accéder à l'id de l'offre mais non l'afficher
+                    new ColumnDescription().colData(1).headerString("nom"),
+                    new ColumnDescription().colData(2).headerString("ville"),
+                    // pour montrer l'utilisation d'un composant dans une colonne
+                    new ColumnDescription().colData(3).headerString("pays") )));
+            
+            this.add(new H3("la même table mais mise en forme"));
+            this.add(new Paragraph("le petit bouton \"Postuler\" n'est pas vraiment opérationel : "
+                    + "je n'ai même pas la notion d'étudiant dans ma base de donnée. Il est là pour que vous puissiez voir dans "
+                    + "le code qu'il est facile d'interagir avec une Grid pour par exemple récupérer la ligne sélectionnée. "
+                    + "Cela montre aussi l'utilité des colonnes non affichées"));
+            this.add(this.gPartenaire);
+            this.bOffre = new Button("Postuler");
+            this.bOffre.addClickListener((t) -> {
+                // comme la grille est générique, chaque ligne contient une List<Object> : un Object par colonne
+                // par défaut une grille est en mono-selection
+                // mais comme on peut fixer en multi-selection, on a potentiellement un ensemble d'item selectionnés
+                Set<List<Object>> lignesSelected = this.gPartenaire.getSelectedItems();
+                // dans notre cas 0 ou 1 item selectionné
+                if (lignesSelected.isEmpty()) {
+                    Notification.show("selectionnez un partenaire");
+                } else {
+                    List<Object> ligne = lignesSelected.iterator().next();
+                    // normalement, on ne montre pas les ID à l'utilisateur
+                    // ici c'est pour montrer que l'on a bien accès à la colonne 0 même si elle n'est pas visible
+                    Notification.show("vous rechercher les offre pour ce partenaire : "+ligne.get(1) );
+                }
+            });
+}
     }
 }
