@@ -195,7 +195,7 @@ while (rs.next()) {
         }
     }*/
     
-    /*public PartenairesPanel() throws SQLException {
+    public PartenairesPanel() throws SQLException {
         try (Connection con = ConnectionPool.getConnection()) {
             this.add(new H2("Affichage de tables (ResultSet) quelconques à l'aide de ResultSetGrid"));
             PreparedStatement part = con.prepareStatement(
@@ -232,25 +232,5 @@ while (rs.next()) {
                 }
             });
 }
-    }*/
-    public PartenairesPanel() {
-        // Créez une grille pour afficher les partenaires
-        Grid<Partenaire> grid = new Grid<>(Partenaire.class);
-
-        // Ajoutez des données fictives pour tester l'affichage
-        grid.setItems(
-            new Partenaire(1, "Test Partenaire 1", "Paris", "France"),
-            new Partenaire(2, "Test Partenaire 2", "Berlin", "Allemagne")
-        );
-
-        // Configurez les colonnes pour le tableau
-        grid.addColumn(Partenaire::getVille).setHeader("Ville");
-        grid.addColumn(Partenaire::getPays).setHeader("Pays");
-
-        // Ajoutez la grille au layout
-        add(grid);
-
-        // Optionnel : Ajoutez du style ou ajustez la taille
-        setSizeFull();
     }
 }
