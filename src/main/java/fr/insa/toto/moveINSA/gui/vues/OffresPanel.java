@@ -17,6 +17,7 @@ import fr.insa.beuvron.vaadin.utils.dataGrid.ResultSetGrid;
 import fr.insa.toto.moveINSA.gui.MainLayout;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import com.vaadin.flow.component.UI;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
@@ -62,18 +63,21 @@ public class OffresPanel extends VerticalLayout {
             this.add(this.gOffres);
 
             // Bouton "Postuler"
-            this.bPostule = new Button("Postuler");
-            this.bPostule.addClickListener((e) -> {
-                // Récupérer les lignes sélectionnées
-                Set<List<Object>> lignesSelected = this.gOffres.getSelectedItems();
-                if (lignesSelected.isEmpty()) {
-                    Notification.show("Sélectionnez une offre avant de postuler.");
-                } else {
-                    List<Object> ligne = lignesSelected.iterator().next();
-                    // Afficher la notification avec l'offre sélectionnée
-                    Notification.show("Vous postulez sur l'offre N° " + ligne.get(0) + " proposée par " + ligne.get(1));
-                }
-            });
+this.bPostule = new Button("Postuler");
+this.bPostule.addClickListener((e) -> {
+    // Récupérer les lignes sélectionnées
+    Set<List<Object>> lignesSelected = this.gOffres.getSelectedItems();
+    if (lignesSelected.isEmpty()) {
+        Notification.show("Sélectionnez une offre avant de postuler.");
+    } else {
+        List<Object> ligne = lignesSelected.iterator().next();
+        // Afficher la notification avec l'offre sélectionnée
+        Notification.show("Vous postulez sur l'offre N° " + ligne.get(0) + " proposée par " + ligne.get(1));
+        
+        // Naviguer vers le CandidaturePanel
+        UI.getCurrent().navigate(CandidaturePanel.class);  // Redirige vers le CandidaturePanel
+    }
+});
             this.add(this.bPostule);
 
             // Table groupée par partenaires (avec pourcentage)
