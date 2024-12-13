@@ -86,6 +86,13 @@ public Partenaire(String refPartenaire, String ville, String pays) {
     public Partenaire(int idPartenaire, String refPartenaire, String ville, String pays) {
         this.idPartenaire = idPartenaire;
         this.refPartenaire = refPartenaire;
+        this.ville = ville; // Si la ville n'est pas disponible, tu peux la mettre à null
+        this.pays = pays; // idem pour pays
+    }
+    
+    public Partenaire(int idPartenaire, String refPartenaire) {
+        this.idPartenaire = idPartenaire;
+        this.refPartenaire = refPartenaire;
         this.ville = null; // Si la ville n'est pas disponible, tu peux la mettre à null
         this.pays = null; // idem pour pays
     }
