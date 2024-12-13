@@ -15,7 +15,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 @PageTitle("Candidature")
-@Route("candidature/:idOffre") // Paramètre dans l'URL
+@Route("candidature/:idOffre") // Paramètre dynamique dans l'URL
 public class CandidaturePanel extends VerticalLayout {
 
     private Candidature nouveau;
