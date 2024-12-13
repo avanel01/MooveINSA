@@ -178,9 +178,9 @@ public class GestionBdD {
     public static void initBdDTest(Connection con) throws SQLException {
     // Initialisation des partenaires
     List<Partenaire> partenaires = List.of(
-        new Partenaire("MIT", "Cambridge", "USA"),
-        new Partenaire("Oxford", "Oxford", "UK"),
-        new Partenaire("Laval University", "Laval", "CA")
+        new Partenaire(1,"MIT", "Cambridge", "USA"),
+        new Partenaire(2,"Oxford", "Oxford", "UK"),
+        new Partenaire(3,"Laval University", "Laval", "CA")
     );
     for (var partenaire : partenaires) {
         System.out.println("Avant appel de saveInDB");
