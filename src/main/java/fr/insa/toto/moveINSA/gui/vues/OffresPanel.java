@@ -47,7 +47,7 @@ public class OffresPanel extends VerticalLayout {
 
             // Table avec mise en forme (Offres groupées par partenaires)
             PreparedStatement offresAvecPart = con.prepareStatement(
-                    "select offremobilite.idOffre as idOffre, partenaire.refPartenaire, offremobilite.nbrplaces, partenaire.idpartenaire as idPartenaire " +
+                    "select offremobilite.id as idOffre, partenaire.refPartenaire, offremobilite.nbrplaces, partenaire.id as idPartenaire " +
                     "from OffreMobilite " +
                     "join Partenaire on offremobilite.proposepar = partenaire.id");
 
