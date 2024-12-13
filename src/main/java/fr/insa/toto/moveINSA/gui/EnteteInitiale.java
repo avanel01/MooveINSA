@@ -5,14 +5,15 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.server.VaadinSession;
 import fr.insa.toto.moveINSA.model.Etudiant;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 
 public class EnteteInitiale extends HorizontalLayout {
 
     public EnteteInitiale() {
         // Configuration de la mise en page
         this.setWidthFull();
-        this.setJustifyContentMode(JustifyContentMode.END);
-        this.setDefaultVerticalComponentAlignment(Alignment.CENTER);
+        this.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
+        this.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
 
         // Récupérer l'étudiant connecté
         Etudiant etudiant = VaadinSession.getCurrent().getAttribute(Etudiant.class);
@@ -60,7 +61,7 @@ public class EnteteInitiale extends HorizontalLayout {
 
         // Disposition des éléments
         this.add(title, lNomPrenom); // Ajoute les deux éléments
-        this.setJustifyContentMode(JustifyContentMode.BETWEEN); // Répartit les éléments : gauche-droite
-        this.setDefaultVerticalComponentAlignment(Alignment.CENTER); // Centre les éléments verticalement
+        this.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN); // Répartit les éléments : gauche-droite
+        this.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER); // Centre les éléments verticalement
     }
 }
