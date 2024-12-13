@@ -7,35 +7,35 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouteParameters;
 import fr.insa.beuvron.vaadin.utils.ConnectionPool;
 import fr.insa.toto.moveINSA.model.Candidature;
 import java.sql.Connection;
 import java.sql.SQLException;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @PageTitle("Candidature")
-@Route("candidature/:idOffre") // Utilisez un paramètre dans l'URL
+@Route("candidature/:idOffre") // Paramètre dans l'URL
 public class CandidaturePanel extends VerticalLayout {
 
     private Candidature nouveau;
     private TextField idOField;  // Champ pour la référence de l'offre
-    private TextField idEField;  // Champ pour la ville
-    private TextField OrdreField;  // Champ pour le pays
-    private TextField ClassField;
-    private TextField DateField;
-    private Button bSave;
+    private TextField idEField;  // Champ pour l'INE
+    private TextField OrdreField;  // Champ pour l'ordre de demande
+    private TextField ClassField;  // Champ pour le classement
+    private TextField DateField;  // Champ pour la date de séjour
+    private final Button bSave;
 
-    public CandidaturePanel(@RouteParameter("idOffre") String idOffre) { // Récupérer l'ID de l'offre via l'URL
+    public CandidaturePanel(@PathVariable("idOffre") String idOffre) { // Récupérer l'ID de l'offre via l'URL
         add(new H2("Formulaire de Candidature"));
 
-        this.nouveau = new Candidature(-1, -1, -1, -1, -1, null);
+        this.nouveau = new Candidature(-1, -1, null, -1, -1, null);
 
         // Champs de formulaire pour saisir les données
         this.idOField = new TextField("Référence de l'offre");
         this.idOField.setValue(idOffre);  // Pré-remplir le champ avec l'ID de l'offre
 
-        this.idEField = new TextField("Ville");
-        this.OrdreField = new TextField("Pays");
+        this.idEField = new TextField("INE");
+        this.OrdreField = new TextField("Ordre de demande");
         this.ClassField = new TextField("Classement");
         this.DateField = new TextField("Date de séjour");
 
@@ -44,10 +44,25 @@ public class CandidaturePanel extends VerticalLayout {
             try (Connection con = ConnectionPool.getConnection()) {
                 // Mise à jour des valeurs du modèle Candidature à partir des champs
                 this.nouveau.setIdOffre(Integer.parseInt(this.idOField.getValue())); // Récupérer l'ID de l'offre
-                this.nouveau.setVille(this.idEField.getValue());
-                this.nouveau.setPays(this.OrdreField.getValue());
-                this.nouveau.setClassement(Integer.parseInt(this.ClassField.getValue()));
-                this.nouveau.setDateSejour(this.DateField.getValue());
+                this.nouveau.setIdEtudiant(this.idEField.getValue());
+
+                // Validation et conversion de l'Ordre et du Classement
+                try {
+                    this.nouveau.setOrdre(Integer.parseInt(this.OrdreField.getValue()));
+                } catch (NumberFormatException e) {
+                    Notification.show("Erreur : Ordre de demande invalide. Veuillez entrer un nombre.");
+                    return;
+                }
+
+                try {
+                    this.nouveau.setClassement(Integer.parseInt(this.ClassField.getValue()));
+                } catch (NumberFormatException e) {
+                    Notification.show("Erreur : Classement invalide. Veuillez entrer un nombre.");
+                    return;
+                }
+
+                // Vérification et formatage de la date
+                this.nouveau.setDate(this.DateField.getValue());
 
                 // Sauvegarde dans la base de données
                 this.nouveau.saveInDB(con);
@@ -58,6 +73,9 @@ public class CandidaturePanel extends VerticalLayout {
                 // Gestion des erreurs SQL
                 System.err.println("Problème : " + ex.getLocalizedMessage());
                 Notification.show("Problème : " + ex.getLocalizedMessage());
+            } catch (NumberFormatException ex) {
+                // Gestion des erreurs de format pour les champs numériques
+                Notification.show("Erreur : Veuillez vérifier les valeurs numériques.");
             }
         });
 
