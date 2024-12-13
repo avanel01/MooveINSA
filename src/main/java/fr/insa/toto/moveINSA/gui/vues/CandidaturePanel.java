@@ -39,6 +39,9 @@ public class CandidaturePanel extends VerticalLayout {
         this.ClassField = new TextField("Classement");
         this.DateField = new TextField("Date de séjour");
 
+        // Rendre le champ idOField en lecture seule pour empêcher la modification
+        this.idOField.setReadOnly(true);  // Le champ est maintenant en lecture seule
+
         // Bouton pour sauvegarder la candidature
         this.bSave = new Button("Sauvegarder", (t) -> {
             try (Connection con = ConnectionPool.getConnection()) {
