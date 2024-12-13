@@ -13,6 +13,7 @@ import fr.insa.beuvron.vaadin.utils.ConnectionPool;
 import fr.insa.toto.moveINSA.model.Candidature;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Optional;
 
 @PageTitle("Candidature")
 @Route("candidature/:idOffre") // Paramètre dynamique dans l'URL
@@ -82,13 +83,23 @@ public class CandidaturePanel extends VerticalLayout {
         this.add(this.idOField, this.idEField, this.OrdreField, this.ClassField, this.DateField, this.bSave);
     }
 
+    // Méthode pour récupérer l'idOffre depuis les paramètres de la route
+    public Optional<Integer> getidO(RouteParameters parameters) {
+        String idOffreStr = parameters.get("idOffre").orElse("0"); // Valeur par défaut si le paramètre est manquant
+        try {
+            return Optional.of(Integer.parseInt(idOffreStr)); // Retourner l'idOffre sous forme d'Optional<Integer>
+        } catch (NumberFormatException e) {
+            return Optional.empty(); // Retourner un Optional vide si la conversion échoue
+        }
+    }
+
     // Récupérer le paramètre 'idOffre' dans la méthode beforeEnter()
     public void beforeEnter(BeforeEnterEvent event) {
-        // Récupérer le paramètre de route 'idOffre'
+        // Récupérer les paramètres de la route
         RouteParameters parameters = event.getRouteParameters();
-        String idOffre = parameters.get("idOffre").orElse("0"); // Valeur par défaut si le paramètre est manquant
 
-        // Pré-remplir le champ avec l'ID de l'offre
-        this.idOField.setValue(idOffre);
+        // Récupérer et pré-remplir le champ 'idOField' avec l'idOffre
+        Optional<Integer> idOffre = getidO(parameters);
+        idOffre.ifPresent(id -> this.idOField.setValue(id.toString())); // Si un idOffre est présent, le pré-remplir dans le champ
     }
 }
