@@ -180,7 +180,7 @@ public class GestionBdD {
     List<Partenaire> partenaires = List.of(
         new Partenaire("MIT", "Cambridge", "USA"),
         new Partenaire("Oxford", "Oxford", "UK"),
-        new Partenaire ("Laval University","Laval", "Canada")
+        new Partenaire ("Laval University", "Laval", "CA")
     );
     for (var partenaire : partenaires) {
         System.out.println("Avant appel de saveInDB");
