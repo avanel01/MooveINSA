@@ -7,11 +7,12 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteParameters;
+import com.vaadin.flow.router.BeforeEnterEvent;
 import fr.insa.beuvron.vaadin.utils.ConnectionPool;
 import fr.insa.toto.moveINSA.model.Candidature;
 import java.sql.Connection;
 import java.sql.SQLException;
-import org.springframework.web.bind.annotation.PathVariable;
 
 @PageTitle("Candidature")
 @Route("candidature/:idOffre") // Paramètre dans l'URL
@@ -23,17 +24,15 @@ public class CandidaturePanel extends VerticalLayout {
     private TextField OrdreField;  // Champ pour l'ordre de demande
     private TextField ClassField;  // Champ pour le classement
     private TextField DateField;  // Champ pour la date de séjour
-    private final Button bSave;
+    private Button bSave;
 
-    public CandidaturePanel(@PathVariable("idOffre") String idOffre) { // Récupérer l'ID de l'offre via l'URL
+    public CandidaturePanel() {
         add(new H2("Formulaire de Candidature"));
 
         this.nouveau = new Candidature(-1, -1, null, -1, -1, null);
 
         // Champs de formulaire pour saisir les données
         this.idOField = new TextField("Référence de l'offre");
-        this.idOField.setValue(idOffre);  // Pré-remplir le champ avec l'ID de l'offre
-
         this.idEField = new TextField("INE");
         this.OrdreField = new TextField("Ordre de demande");
         this.ClassField = new TextField("Classement");
@@ -81,5 +80,15 @@ public class CandidaturePanel extends VerticalLayout {
 
         // Ajout des champs et du bouton au panneau
         this.add(this.idOField, this.idEField, this.OrdreField, this.ClassField, this.DateField, this.bSave);
+    }
+
+    // Récupérer le paramètre 'idOffre' dans la méthode beforeEnter()
+    public void beforeEnter(BeforeEnterEvent event) {
+        // Récupérer le paramètre de route 'idOffre'
+        RouteParameters parameters = event.getRouteParameters();
+        String idOffre = parameters.get("idOffre").orElse("0"); // Valeur par défaut si le paramètre est manquant
+
+        // Pré-remplir le champ avec l'ID de l'offre
+        this.idOField.setValue(idOffre);
     }
 }
