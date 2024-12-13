@@ -39,8 +39,8 @@ public class EnteteInitiale extends HorizontalLayout {
         
          
         // Configuration de la mise en page
-        this.setWidth("85%"); // La largeur est réduite ici pour rendre l'entête plus compacte
-        this.setHeight("150px");
+        this.setWidth("80%"); // La largeur est réduite ici pour rendre l'entête plus compacte
+        this.setHeight("110px");
 
         // Couleur de fond de l'entête 
         this.getStyle().set("background-color", "\"#F0F0F0\""); 
