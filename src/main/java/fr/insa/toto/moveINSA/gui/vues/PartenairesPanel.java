@@ -197,8 +197,7 @@ while (rs.next()) {
             this.add(new H2("Affichage de tables (ResultSet) quelconques à l'aide de ResultSetGrid"));
             PreparedStatement offresAvecPart = con.prepareStatement(
                     "select partenaire.id as idPartenaire, partenaire.refPartenaire ,partenaire.ville ,partenaire.pays \n"
-                    + "  from partenaire \n"
-                    + "    join partenaire on offremobilite.proposepar = partenaire.id");
+                    + "  from partenaire");
             this.add(new H3("affichage direct (sans mise en forme) du ResultSet"));
             this.add(new ResultSetGrid(offresAvecPart));
             this.gPartenaire = new ResultSetGrid(offresAvecPart, new GridDescription(List.of(
