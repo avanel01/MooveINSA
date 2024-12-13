@@ -97,6 +97,7 @@ public class CandidaturePanel extends VerticalLayout {
     }
 
     // Récupérer le paramètre 'idOffre' dans la méthode beforeEnter()
+    
     public void beforeEnter(BeforeEnterEvent event) {
         // Récupérer les paramètres de la route
         RouteParameters parameters = event.getRouteParameters();
