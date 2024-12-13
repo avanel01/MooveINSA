@@ -28,5 +28,29 @@ public class EnteteInitiale extends HorizontalLayout {
 
         // Ajouter le label à la mise en page
         this.add(lNomPrenom);
+        
+        // Label pour l'état de connexion
+        Label etatConnexion = new Label(lNomPrenom.getText());
+        etatConnexion.getStyle().set("color", "black");
+        etatConnexion.getStyle().set("font-size", "16px");
+        etatConnexion.getStyle().set("font-weight", "normal");
+        
+         
+        this.setWidthFull();
+        this.setHeight("150px");
+
+        // Définir la couleur de fond pour correspondre à la couleur du menu déroulant
+        this.getStyle().set("background-color", "#F0F0F0"); // Ajustez selon la couleur exacte du menu
+
+        // Ajouter un label pour le texte principal
+        Label title = new Label("Bienvenue sur le site !");
+        title.getStyle().set("color", "black"); // Couleur noire
+        title.getStyle().set("font-size", "24px"); // Taille de police
+        title.getStyle().set("font-weight", "bold"); // Gras
+
+        // Disposition des éléments
+        this.add(title, lNomPrenom); // Ajoute les deux éléments
+        this.setJustifyContentMode(JustifyContentMode.BETWEEN); // Répartit les éléments : gauche-droite
+        this.setDefaultVerticalComponentAlignment(Alignment.CENTER); // Centre les éléments verticalement
     }
 }
