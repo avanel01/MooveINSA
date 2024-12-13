@@ -15,13 +15,13 @@ public class Candidature {
 
     private int idCandidature;
     private int idOffre;
-    private int idEtudiant;
+    private String idEtudiant;
     private int ordre;
     private int classementEtudiant;
     private String date;
 
     // Constructeur
-    public Candidature(int idCandidature, int idOffre, int idEtudiant, int ordre, int classementEtudiant, String date) {
+    public Candidature(int idCandidature, int idOffre, String idEtudiant, int ordre, int classementEtudiant, String date) {
         this.idCandidature = idCandidature;
         this.idOffre = idOffre;
         this.idEtudiant = idEtudiant;
@@ -49,7 +49,7 @@ public class Candidature {
         String query = "INSERT INTO candidature (idOffre, idEtudiant, ordre, classementEtudiant, date) VALUES (?,?,?,?,?)";
         try (PreparedStatement insert = con.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
             insert.setInt(1, this.idOffre);
-            insert.setInt(2, this.idEtudiant);
+            insert.setString(2, this.idEtudiant);
             insert.setInt(3, this.ordre);
             insert.setInt(4, this.classementEtudiant);
             insert.setString(5, this.date);
@@ -66,10 +66,10 @@ public class Candidature {
         }
     }
 
-    public static int nombreCandidaturesEtudiant(Connection con, int idEtudiant) throws SQLException {
+    public static int nombreCandidaturesEtudiant(Connection con, String idEtudiant) throws SQLException {
         String query = "SELECT COUNT(*) FROM candidature WHERE idEtudiant = ?";
         try (PreparedStatement pst = con.prepareStatement(query)) {
-            pst.setInt(1, idEtudiant);
+            pst.setString(1, idEtudiant);
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt(1);
@@ -92,7 +92,7 @@ public class Candidature {
                 res.add(new Candidature(
                         rs.getInt("idCandidature"),
                         rs.getInt("idOffre"),
-                        rs.getInt("idEtudiant"),
+                        rs.getString("idEtudiant"),
                         rs.getInt("ordre"),
                         rs.getInt("classementEtudiant"),
                         rs.getString("date")
@@ -102,10 +102,10 @@ public class Candidature {
         }
     }
 
-    public static List<Candidature> candidatureEtudiant(Connection con, int idEtudiant) throws SQLException {
+    public static List<Candidature> candidatureEtudiant(Connection con, String idEtudiant) throws SQLException {
         String query = "SELECT idCandidature, idOffre, ordre, classementEtudiant, date FROM candidature WHERE idEtudiant = ?";
         try (PreparedStatement pst = con.prepareStatement(query)) {
-            pst.setInt(1, idEtudiant);
+            pst.setString(1, idEtudiant);
 
             try (ResultSet rs = pst.executeQuery()) {
                 List<Candidature> res = new ArrayList<>();
@@ -125,7 +125,7 @@ public class Candidature {
     }
 
     public static int creeConsole(Connection con) throws SQLException {
-        int idEtudiant = ConsoleFdB.entreeInt("ID de l'étudiant : ");
+        String idEtudiant = ConsoleFdB.entreeString("ID de l'étudiant : ");
 
         int nombreCandidatures = Candidature.nombreCandidaturesEtudiant(con, idEtudiant);
         if (nombreCandidatures >= 5) {
@@ -152,10 +152,10 @@ public class Candidature {
         return nouvelle.saveInDB(con);
     }
 
-    public static boolean existeOrdrePourEtudiant(Connection con, int idEtudiant, int ordre) throws SQLException {
+    public static boolean existeOrdrePourEtudiant(Connection con, String idEtudiant, int ordre) throws SQLException {
         String query = "SELECT COUNT(*) FROM candidature WHERE idEtudiant = ? AND ordre = ?";
         try (PreparedStatement stmt = con.prepareStatement(query)) {
-            stmt.setInt(1, idEtudiant);
+            stmt.setString(1, idEtudiant);
             stmt.setInt(2, ordre);
 
             try (ResultSet rs = stmt.executeQuery()) {
@@ -164,24 +164,46 @@ public class Candidature {
         }
     }
 
-    // Getters
-    public int getIdCandidature() { 
-        return idCandidature; 
+    // Méthodes set
+    public void setIdOffre(int idOffre) {
+        this.idOffre = idOffre;
+    }
+
+    public void setIdEtudiant(String idEtudiant) {
+        this.idEtudiant = idEtudiant;
+    }
+
+    public void setClassement(int classementEtudiant) {
+        this.classementEtudiant = classementEtudiant;
+    }
+
+    public void setDate(String dateSejour) {
+        // Conversion de la chaîne en un objet Date (format attendu : YYYY-MM-DD)
+        this.date = dateSejour;
     }
     
+    public void setOrdre(int Ordre) {
+        this.ordre = Ordre;
+    }
+
+    // Méthodes get (si nécessaires)
     public int getIdOffre() {
         return idOffre;
     }
-    public int getIdEtudiant() { 
-        return idEtudiant; 
+
+    public String getIdEtudiant() {
+        return idEtudiant;
     }
-    public int getOrdre() { 
-        return ordre; 
+
+    public int getClassement() {
+        return classementEtudiant;
     }
-    public int getClassementEtudiant() { 
-        return classementEtudiant; 
+
+    public String getDate() {
+        return date;
     }
-    public String getDate() { 
-        return date; 
+    
+    public int getOrdre() {
+        return ordre;
     }
 }

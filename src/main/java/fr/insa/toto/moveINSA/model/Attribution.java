@@ -30,11 +30,11 @@ public class Attribution {
     
     private int idAttribution;
     private int idOffre;
-    private int idEtudiant;
+    private String idEtudiant;
     private String date;
   
     // Constructeur
-    public Attribution(int idAttribution, int idOffre, int idEtudiant, String date) {
+    public Attribution(int idAttribution, int idOffre, String idEtudiant, String date) {
         this.idAttribution = idAttribution;
         this.idOffre = idOffre;
         this.idEtudiant = idEtudiant;
@@ -64,7 +64,7 @@ public class Attribution {
                 PreparedStatement.RETURN_GENERATED_KEYS)) {
             // Assigner les valeurs des attributs
             insert.setInt(1, this.getIdOffre());
-            insert.setInt(2, this.getIdEtudiant());
+            insert.setString(2, this.getIdEtudiant());
             insert.setString(3, this.getDate());
             insert.executeUpdate();
 
@@ -95,7 +95,7 @@ public class Attribution {
         return idOffre;
     }
 
-    public int getIdEtudiant() {
+    public String getIdEtudiant() {
         return idEtudiant;
     }
 }

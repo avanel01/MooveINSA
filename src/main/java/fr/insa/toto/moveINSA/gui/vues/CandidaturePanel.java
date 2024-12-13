@@ -1,35 +1,67 @@
-/*
-Copyright 2000- Francois de Bertrand de Beuvron
-
-This file is part of CoursBeuvron.
-
-CoursBeuvron is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-CoursBeuvron is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with CoursBeuvron.  If not, see <http://www.gnu.org/licenses/>.
- */
 package fr.insa.toto.moveINSA.gui.vues;
 
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteParameters;
+import fr.insa.beuvron.vaadin.utils.ConnectionPool;
+import fr.insa.toto.moveINSA.model.Candidature;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 @PageTitle("Candidature")
-@Route("candidature") // Assurez-vous que l'URL correspond à celle que vous souhaitez
+@Route("candidature/:idOffre") // Utilisez un paramètre dans l'URL
 public class CandidaturePanel extends VerticalLayout {
 
-    public CandidaturePanel() {
-        add(new H2("Formulaire de Candidature"));
-        // Ajoutez ici le contenu de votre formulaire de candidature
-    }
-} 
+    private Candidature nouveau;
+    private TextField idOField;  // Champ pour la référence de l'offre
+    private TextField idEField;  // Champ pour la ville
+    private TextField OrdreField;  // Champ pour le pays
+    private TextField ClassField;
+    private TextField DateField;
+    private Button bSave;
 
+    public CandidaturePanel(@RouteParameter("idOffre") String idOffre) { // Récupérer l'ID de l'offre via l'URL
+        add(new H2("Formulaire de Candidature"));
+
+        this.nouveau = new Candidature(-1, -1, -1, -1, -1, null);
+
+        // Champs de formulaire pour saisir les données
+        this.idOField = new TextField("Référence de l'offre");
+        this.idOField.setValue(idOffre);  // Pré-remplir le champ avec l'ID de l'offre
+
+        this.idEField = new TextField("Ville");
+        this.OrdreField = new TextField("Pays");
+        this.ClassField = new TextField("Classement");
+        this.DateField = new TextField("Date de séjour");
+
+        // Bouton pour sauvegarder la candidature
+        this.bSave = new Button("Sauvegarder", (t) -> {
+            try (Connection con = ConnectionPool.getConnection()) {
+                // Mise à jour des valeurs du modèle Candidature à partir des champs
+                this.nouveau.setIdOffre(Integer.parseInt(this.idOField.getValue())); // Récupérer l'ID de l'offre
+                this.nouveau.setVille(this.idEField.getValue());
+                this.nouveau.setPays(this.OrdreField.getValue());
+                this.nouveau.setClassement(Integer.parseInt(this.ClassField.getValue()));
+                this.nouveau.setDateSejour(this.DateField.getValue());
+
+                // Sauvegarde dans la base de données
+                this.nouveau.saveInDB(con);
+
+                // Notification de succès
+                Notification.show("Candidature sauvegardée avec succès !");
+            } catch (SQLException ex) {
+                // Gestion des erreurs SQL
+                System.err.println("Problème : " + ex.getLocalizedMessage());
+                Notification.show("Problème : " + ex.getLocalizedMessage());
+            }
+        });
+
+        // Ajout des champs et du bouton au panneau
+        this.add(this.idOField, this.idEField, this.OrdreField, this.ClassField, this.DateField, this.bSave);
+    }
+}

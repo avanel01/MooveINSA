@@ -63,21 +63,21 @@ public class OffresPanel extends VerticalLayout {
             this.add(this.gOffres);
 
             // Bouton "Postuler"
-this.bPostule = new Button("Postuler");
-this.bPostule.addClickListener((e) -> {
-    // Récupérer les lignes sélectionnées
-    Set<List<Object>> lignesSelected = this.gOffres.getSelectedItems();
-    if (lignesSelected.isEmpty()) {
-        Notification.show("Sélectionnez une offre avant de postuler.");
-    } else {
-        List<Object> ligne = lignesSelected.iterator().next();
-        // Afficher la notification avec l'offre sélectionnée
-        Notification.show("Vous postulez sur l'offre N° " + ligne.get(0) + " proposée par " + ligne.get(1));
-        
-        // Naviguer vers le CandidaturePanel
-        UI.getCurrent().navigate(CandidaturePanel.class);  // Redirige vers le CandidaturePanel
-    }
-});
+        bPostule = new Button("Postuler");
+        bPostule.addClickListener(e -> {
+            // Récupérer l'ID de l'offre sélectionnée
+            Set<List<Object>> lignesSelected = this.gOffres.getSelectedItems();
+            if (lignesSelected.isEmpty()) {
+                Notification.show("Veuillez sélectionner une offre.");
+            } else {
+                // Récupérer l'ID de l'offre à partir de la ligne sélectionnée
+                List<Object> ligne = lignesSelected.iterator().next();
+                Integer idOffre = (Integer) ligne.get(0);  // L'ID de l'offre est en première position dans la ligne
+
+                // Naviguer vers la page de candidature en passant l'ID de l'offre
+                UI.getCurrent().navigate("candidature/" + idOffre);
+            }
+        });
             this.add(this.bPostule);
 
             // Table groupée par partenaires (avec pourcentage)
