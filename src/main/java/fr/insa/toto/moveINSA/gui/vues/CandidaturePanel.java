@@ -34,7 +34,7 @@ public class CandidaturePanel extends VerticalLayout {
         this.nouveau = new Candidature(-1, -1, null, -1, -1, null);
 
         // Champs de formulaire pour saisir les données
-        this.idOField = new Label("Référence de l'offre");
+        this.idOField = new Label("Référence de l'offre : idOffre");
         this.idEField = new TextField("INE");
         this.OrdreField = new TextField("Ordre de demande");
         this.ClassField = new TextField("Classement");
