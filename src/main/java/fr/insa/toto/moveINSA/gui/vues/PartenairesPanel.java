@@ -90,6 +90,7 @@ along with CoursBeuvron.  If not, see <http://www.gnu.org/licenses/>.
 package fr.insa.toto.moveINSA.gui.vues;
 
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Paragraph;
@@ -105,6 +106,8 @@ import fr.insa.beuvron.vaadin.utils.dataGrid.ColumnDescription;
 import fr.insa.beuvron.vaadin.utils.dataGrid.GridDescription;
 import fr.insa.beuvron.vaadin.utils.dataGrid.ResultSetGrid;
 import fr.insa.toto.moveINSA.gui.MainLayout;
+import fr.insa.toto.moveINSA.model.Partenaire;
+import java.awt.BorderLayout;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -192,20 +195,19 @@ while (rs.next()) {
         }
     }*/
     
-    public PartenairesPanel() throws SQLException {
+    /*public PartenairesPanel() throws SQLException {
         try (Connection con = ConnectionPool.getConnection()) {
             this.add(new H2("Affichage de tables (ResultSet) quelconques à l'aide de ResultSetGrid"));
-            PreparedStatement offresAvecPart = con.prepareStatement(
+            PreparedStatement part = con.prepareStatement(
                     "select partenaire.id as idPartenaire, partenaire.refPartenaire ,partenaire.ville ,partenaire.pays \n"
                     + "  from partenaire");
             this.add(new H3("affichage direct (sans mise en forme) du ResultSet"));
-            this.add(new ResultSetGrid(offresAvecPart));
-            this.gPartenaire = new ResultSetGrid(offresAvecPart, new GridDescription(List.of(
+            this.add(new ResultSetGrid(part));
+            this.gPartenaire = new ResultSetGrid(part, new GridDescription(List.of(
                     new ColumnDescription().colData(0).visible(false), // on veut pouvoir accéder à l'id de l'offre mais non l'afficher
                     new ColumnDescription().colData(1).headerString("nom"),
                     new ColumnDescription().colData(2).headerString("ville"),
-                    // pour montrer l'utilisation d'un composant dans une colonne
-                    new ColumnDescription().colData(3).headerString("pays") )));
+                    new ColumnDescription().colData(3).headerString("pays"))));
             
             this.add(new H3("la même table mais mise en forme"));
             this.add(new Paragraph("le petit bouton \"Postuler\" n'est pas vraiment opérationel : "
@@ -230,5 +232,25 @@ while (rs.next()) {
                 }
             });
 }
+    }*/
+    public PartenairesPanel() {
+        // Créez une grille pour afficher les partenaires
+        Grid<Partenaire> grid = new Grid<>(Partenaire.class);
+
+        // Ajoutez des données fictives pour tester l'affichage
+        grid.setItems(
+            new Partenaire(1, "Test Partenaire 1", "Paris", "France"),
+            new Partenaire(2, "Test Partenaire 2", "Berlin", "Allemagne")
+        );
+
+        // Configurez les colonnes pour le tableau
+        grid.addColumn(Partenaire::getVille).setHeader("Ville");
+        grid.addColumn(Partenaire::getPays).setHeader("Pays");
+
+        // Ajoutez la grille au layout
+        add(grid);
+
+        // Optionnel : Ajoutez du style ou ajustez la taille
+        setSizeFull();
     }
 }
