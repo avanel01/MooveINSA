@@ -43,7 +43,7 @@ public class EnteteInitiale extends HorizontalLayout {
         this.setHeight("150px");
 
         // Couleur de fond de l'entête 
-        this.getStyle().set("background-color", "white"); 
+        this.getStyle().set("background-color", "\"#F0F0F0\""); 
 
         // Logo à gauche
         Image logo = new Image("https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Logo_RF.svg/440px-Logo_RF.svg.png", "Logo République");
