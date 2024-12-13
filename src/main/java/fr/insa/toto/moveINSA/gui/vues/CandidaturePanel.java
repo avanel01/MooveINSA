@@ -34,7 +34,7 @@ public class CandidaturePanel extends VerticalLayout {
         this.nouveau = new Candidature(-1, -1, null, -1, -1, null);
 
         // Champs de formulaire pour saisir les données
-        this.idOField = new Label("Référence de l'offre : idOffre");
+        this.idOField = new Label();  // Initialisation du label sans texte pour le moment
         this.idEField = new TextField("INE");
         this.OrdreField = new TextField("Ordre de demande");
         this.ClassField = new TextField("Classement");
@@ -44,7 +44,7 @@ public class CandidaturePanel extends VerticalLayout {
         this.bSave = new Button("Sauvegarder", (t) -> {
             try (Connection con = ConnectionPool.getConnection()) {
                 // Mise à jour des valeurs du modèle Candidature à partir des champs
-                this.nouveau.setIdOffre(Integer.parseInt(this.idOField.getText())); // Récupérer l'ID de l'offre
+                this.nouveau.setIdOffre(Integer.parseInt(this.idOField.getText().split(":")[1].trim())); // Récupérer l'ID de l'offre
                 this.nouveau.setIdEtudiant(this.idEField.getValue());
 
                 // Validation et conversion de l'Ordre et du Classement
@@ -85,23 +85,27 @@ public class CandidaturePanel extends VerticalLayout {
     }
 
     // Méthode pour récupérer l'idOffre depuis les paramètres de la route
-    public Optional<Integer> getidO(RouteParameters parameters) {
+    private Optional<Integer> getidO(RouteParameters parameters) {
         String idOffreStr = parameters.get("idOffre").orElse("0"); // Valeur par défaut si le paramètre est manquant
         try {
-            return Optional.of(Integer.parseInt(idOffreStr)); // Retourner l'idOffre sous forme d'Optional<Integer>
+            Integer idOffre = Integer.parseInt(idOffreStr);
+            return Optional.of(idOffre); // Retourner l'idOffre sous forme d'Optional<Integer>
         } catch (NumberFormatException e) {
             return Optional.empty(); // Retourner un Optional vide si la conversion échoue
         }
     }
 
-    // Récupérer le paramètre 'idOffre' dans la méthode beforeEnter()
-   
+    // Récupérer et afficher le paramètre 'idOffre' dans la méthode beforeEnter()
+    
     public void beforeEnter(BeforeEnterEvent event) {
         // Récupérer les paramètres de la route
         RouteParameters parameters = event.getRouteParameters();
 
-        // Récupérer et pré-remplir le label 'idOField' avec l'idOffre
+        // Vérifier et mettre à jour le label avec l'idOffre
         Optional<Integer> idOffre = getidO(parameters);
-        idOffre.ifPresent(id -> this.idOField.setText("Référence de l'offre : " + id.toString())); // Afficher l'idOffre dans le label
+        idOffre.ifPresent(id -> {
+            String reference = "partenaire/" + id.toString(); // Formater la référence de l'offre
+            this.idOField.setText("Référence de l'offre : " + reference); // Afficher la référence complète dans le label
+        });
     }
 }
