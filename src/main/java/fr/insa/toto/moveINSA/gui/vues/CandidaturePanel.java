@@ -97,17 +97,19 @@ public class CandidaturePanel extends VerticalLayout {
 
     // Récupérer et afficher le paramètre 'idOffre' dans la méthode beforeEnter()
     
-    public void beforeEnter(BeforeEnterEvent event) {
-        
-         System.out.println("beforeEnter() called");
-        // Récupérer les paramètres de la route
-        RouteParameters parameters = event.getRouteParameters();
+public void beforeEnter(BeforeEnterEvent event) {
+    // Log pour vérifier l'appel de beforeEnter
+    System.out.println("beforeEnter() appelé");
 
-        // Vérifier et mettre à jour le label avec l'idOffre
-        Optional<Integer> idOffre = getidO(parameters);
-        idOffre.ifPresent(id -> {
-            String reference = "partenaire/" + id.toString(); // Formater la référence de l'offre
-            this.idOField.setText("Référence de l'offre : " + reference); // Afficher la référence complète dans le label
-        });
-    }
+    // Récupérer les paramètres de la route
+    RouteParameters parameters = event.getRouteParameters();
+
+    // Vérifier l'ID de l'offre
+    Optional<Integer> idOffre = getidO(parameters);
+    idOffre.ifPresent(id -> {
+        String reference = "partenaire/" + id.toString();
+        System.out.println("ID de l'offre récupéré : " + reference); // Log de la référence de l'offre
+        this.idOField.setText("Référence de l'offre : " + reference);
+    });
+}
 }
