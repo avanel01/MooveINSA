@@ -84,21 +84,21 @@ public class PartenairesPanel extends VerticalLayout {
      * Configure l'affichage des partenaires groupés par pays.
      */
     private void setupPartenairesParPays(Connection con) throws SQLException {
-    // Requête SQL pour afficher les partenaires groupés par pays en utilisant refPays
+    // Requête SQL pour afficher les partenaires groupés par pays en utilisant nomPays
     String sql = """
         SELECT Pays.idPays AS idPays,
                Pays.nomPays AS nomPays,
                COUNT(Partenaire.idPartenaire) AS nbrPartenaires,
                (SELECT COUNT(*) FROM Partenaire) AS totalPartenaires
         FROM Partenaire
-        JOIN Pays ON Partenaire.pays = Pays.momPays
+        JOIN Pays ON Partenaire.pays = Pays.nomPays
         GROUP BY Pays.idPays, Pays.nomPays
     """;
     PreparedStatement partenaireParPays = con.prepareStatement(sql);
 
     // Création de la grille pour les partenaires groupés par pays
     ResultSetGrid parPart = new ResultSetGrid(partenaireParPays, new GridDescription(List.of(
-            new ColumnDescription().colData(0).headerString("Référence Pays"), // refPays
+            new ColumnDescription().colData(0).headerString("ID Pays").visible(false), // ID Pays
             new ColumnDescription().colData(1).headerString("Pays"), // nomPays
             new ColumnDescription().colData(2).headerString("Nombre de partenaires"), // nbrPartenaires
             new ColumnDescription().colCalculatedObject((t) -> {
