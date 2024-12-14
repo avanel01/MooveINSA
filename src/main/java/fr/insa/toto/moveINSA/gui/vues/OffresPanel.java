@@ -55,7 +55,7 @@ public class OffresPanel extends VerticalLayout {
                     "       Partenaire.refPartenaire AS refPartenaire, " +
                     "       OffreMobilite.nbrplaces AS nbrPlaces, " +
                     "       Partenaire.idPartenaire AS idPartenaire " +
-                    "       OffreMobilité.nomOffre AS nomOffre " +
+                    "       OffreMobilite.nomOffre AS nomOffre " +
                     "FROM OffreMobilite " +
                     "JOIN Partenaire ON OffreMobilite.proposepar = Partenaire.idPartenaire"
             );
