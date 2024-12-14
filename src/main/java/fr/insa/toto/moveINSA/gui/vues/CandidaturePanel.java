@@ -10,106 +10,119 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteParameters;
 import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.server.VaadinSession;
 import fr.insa.beuvron.vaadin.utils.ConnectionPool;
 import fr.insa.toto.moveINSA.model.Candidature;
+import fr.insa.toto.moveINSA.model.Etudiant;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Optional;
 
 @PageTitle("Candidature")
 @Route("candidature/:idOffre") // Paramètre dynamique dans l'URL
-public class CandidaturePanel extends VerticalLayout {
+public class CandidaturePanel extends VerticalLayout implements BeforeEnterObserver {
 
     private Candidature nouveau;
-    private Label idOField;  // Label pour la référence de l'offre
-    private TextField idEField;  // Champ pour l'INE
-    private TextField OrdreField;  // Champ pour l'ordre de demande
-    private TextField ClassField;  // Champ pour le classement
-    private TextField DateField;  // Champ pour la date de séjour
+    private Label idOField;   // Label pour afficher la référence de l'offre
+    private Label idEField;   // Label pour afficher l'INE de l'étudiant
+    private TextField ordreField; // Champ pour l'ordre de demande
+    private TextField dateField;  // Champ pour la date de séjour
     private Button bSave;
+
+    private Etudiant etudiantConnecte;
 
     public CandidaturePanel() {
         add(new H2("Formulaire de Candidature"));
 
+        // Récupérer l'étudiant connecté depuis la session
+        etudiantConnecte = VaadinSession.getCurrent().getAttribute(Etudiant.class);
+        if (etudiantConnecte == null) {
+            Notification.show("Erreur : Aucun étudiant connecté. Veuillez vous connecter.");
+            return;
+        }
+
+        // Initialiser une nouvelle candidature
         this.nouveau = new Candidature(-1, -1, null, -1, -1, null);
 
-        // Champs de formulaire pour saisir les données
-        this.idOField = new Label();  // Initialisation du label sans texte pour le moment
-        this.idEField = new TextField("INE");
-        this.OrdreField = new TextField("Ordre de demande");
-        this.ClassField = new TextField("Classement");
-        this.DateField = new TextField("Date de séjour");
+        // Champs pour le formulaire
+        this.idOField = new Label("Référence de l'offre : (non chargée)");
+        this.idEField = new Label("INE : " + etudiantConnecte.getINE());
+        this.ordreField = new TextField("Ordre de demande");
+        this.dateField = new TextField("Date de séjour");
 
         // Bouton pour sauvegarder la candidature
-        this.bSave = new Button("Sauvegarder", (t) -> {
-            try (Connection con = ConnectionPool.getConnection()) {
-                // Mise à jour des valeurs du modèle Candidature à partir des champs
-                this.nouveau.setIdOffre(Integer.parseInt(this.idOField.getText().split(":")[1].trim())); // Récupérer l'ID de l'offre
-                this.nouveau.setIdEtudiant(this.idEField.getValue());
-
-                // Validation et conversion de l'Ordre et du Classement
-                try {
-                    this.nouveau.setOrdre(Integer.parseInt(this.OrdreField.getValue()));
-                } catch (NumberFormatException e) {
-                    Notification.show("Erreur : Ordre de demande invalide. Veuillez entrer un nombre.");
-                    return;
-                }
-
-                try {
-                    this.nouveau.setClassement(Integer.parseInt(this.ClassField.getValue()));
-                } catch (NumberFormatException e) {
-                    Notification.show("Erreur : Classement invalide. Veuillez entrer un nombre.");
-                    return;
-                }
-
-                // Vérification et formatage de la date
-                this.nouveau.setDate(this.DateField.getValue());
-
-                // Sauvegarde dans la base de données
-                this.nouveau.saveInDB(con);
-
-                // Notification de succès
-                Notification.show("Candidature sauvegardée avec succès !");
-            } catch (SQLException ex) {
-                // Gestion des erreurs SQL
-                System.err.println("Problème : " + ex.getLocalizedMessage());
-                Notification.show("Problème : " + ex.getLocalizedMessage());
-            } catch (NumberFormatException ex) {
-                // Gestion des erreurs de format pour les champs numériques
-                Notification.show("Erreur : Veuillez vérifier les valeurs numériques.");
-            }
-        });
+        this.bSave = new Button("Sauvegarder", event -> handleSave());
 
         // Ajout des champs et du bouton au panneau
-        this.add(this.idOField, this.idEField, this.OrdreField, this.ClassField, this.DateField, this.bSave);
+        this.add(idOField, idEField, ordreField, dateField, bSave);
     }
 
-    // Méthode pour récupérer l'idOffre depuis les paramètres de la route
-    private Optional<Integer> getidO(RouteParameters parameters) {
-        String idOffreStr = parameters.get("idOffre").orElse("0"); // Valeur par défaut si le paramètre est manquant
-        try {
-            Integer idOffre = Integer.parseInt(idOffreStr);
-            return Optional.of(idOffre); // Retourner l'idOffre sous forme d'Optional<Integer>
-        } catch (NumberFormatException e) {
-            return Optional.empty(); // Retourner un Optional vide si la conversion échoue
+    @Override
+    public void beforeEnter(BeforeEnterEvent event) {
+        // Récupérer les paramètres de la route
+        RouteParameters parameters = event.getRouteParameters();
+
+        // Vérifier l'ID de l'offre
+        Optional<Integer> idOffreOpt = getIdOffreFromParameters(parameters);
+        if (idOffreOpt.isPresent()) {
+            int idOffre = idOffreOpt.get();
+            this.idOField.setText("Référence de l'offre : partenaire/" + idOffre);
+            this.nouveau.setIdOffre(idOffre);
+        } else {
+            Notification.show("Erreur : ID de l'offre invalide ou manquant.");
+            this.idOField.setText("Référence de l'offre : (invalide)");
         }
     }
 
-    // Récupérer et afficher le paramètre 'idOffre' dans la méthode beforeEnter()
-    
-public void beforeEnter(BeforeEnterEvent event) {
-    // Log pour vérifier l'appel de beforeEnter
-    System.out.println("beforeEnter() appelé");
+    private Optional<Integer> getIdOffreFromParameters(RouteParameters parameters) {
+        try {
+            String idOffreStr = parameters.get("idOffre").orElse(null);
+            if (idOffreStr != null) {
+                return Optional.of(Integer.parseInt(idOffreStr));
+            }
+        } catch (NumberFormatException e) {
+            System.err.println("Erreur : ID de l'offre non valide.");
+        }
+        return Optional.empty();
+    }
 
-    // Récupérer les paramètres de la route
-    RouteParameters parameters = event.getRouteParameters();
+    private void handleSave() {
+        if (etudiantConnecte == null) {
+            Notification.show("Erreur : Aucun étudiant connecté.");
+            return;
+        }
 
-    // Vérifier l'ID de l'offre
-    Optional<Integer> idOffre = getidO(parameters);
-    idOffre.ifPresent(id -> {
-        String reference = "partenaire/" + id.toString();
-        System.out.println("ID de l'offre récupéré : " + reference); // Log de la référence de l'offre
-        this.idOField.setText("Référence de l'offre : " + reference);
-    });
-}
+        try (Connection con = ConnectionPool.getConnection()) {
+            // Remplir les informations de la candidature
+            this.nouveau.setIdEtudiant(etudiantConnecte.getINE());
+
+            // Validation et conversion des champs
+            try {
+                int ordre = Integer.parseInt(this.ordreField.getValue().trim());
+                this.nouveau.setOrdre(ordre);
+            } catch (NumberFormatException e) {
+                Notification.show("Erreur : Ordre de demande invalide. Veuillez entrer un nombre.");
+                return;
+            }
+
+            String dateSejour = this.dateField.getValue().trim();
+            if (dateSejour.isEmpty()) {
+                Notification.show("Erreur : La date de séjour est obligatoire.");
+                return;
+            }
+            this.nouveau.setDate(dateSejour);
+
+            // Sauvegarde dans la base de données
+            this.nouveau.saveInDB(con);
+
+            // Notification de succès
+            Notification.show("Candidature sauvegardée avec succès !");
+        } catch (SQLException ex) {
+            // Gestion des erreurs SQL
+            System.err.println("Problème lors de la sauvegarde : " + ex.getLocalizedMessage());
+            Notification.show("Erreur : " + ex.getLocalizedMessage());
+        }
+    }
 }
