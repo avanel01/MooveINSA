@@ -36,7 +36,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Optional;
 
-@Route(value = "", layout = MainLayout.class) // La route reste la page d'accueil
+@Route(value = "connexion", layout = MainLayout.class) // La route reste la page d'accueil
 @PageTitle("Connexion")
 public class ConnexionPanel extends VerticalLayout {
 
