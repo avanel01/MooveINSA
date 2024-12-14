@@ -10,58 +10,45 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 public class EnteteInitiale extends HorizontalLayout {
 
     public EnteteInitiale() {
-        // Configuration de la mise en page
+        // Configuration globale de la mise en page
         this.setWidthFull();
-        this.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
+        this.setHeight("110px"); // Hauteur fixe de l'entête
+        this.setPadding(true);
+        this.setSpacing(true);
         this.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
+        this.getStyle().set("background-color", "#F0F0F0"); // Couleur de fond de l'entête
 
-        // Récupérer l'étudiant connecté
+        // Ajouter le logo à gauche
+        Image logo = new Image("https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Logo_RF.svg/440px-Logo_RF.svg.png", "Logo République");
+        logo.setHeight("80px"); // Taille réduite du logo pour s'adapter à l'entête
+        this.add(logo);
+
+        // Ajouter un label pour le texte principal au centre
+        Label title = new Label("Bienvenue sur le site !");
+        title.getStyle().set("color", "black");
+        title.getStyle().set("font-size", "24px");
+        title.getStyle().set("font-weight", "bold");
+        title.getStyle().set("margin-left", "20px");
+        this.add(title);
+
+        // Ajouter un label pour afficher l'état de connexion à droite
+        Label lNomPrenom = new Label();
         Etudiant etudiant = VaadinSession.getCurrent().getAttribute(Etudiant.class);
 
-        // Créer un label pour afficher le nom et prénom de l'étudiant
-        Label lNomPrenom = new Label();
-
-        // Vérifier si un étudiant est connecté
         if (etudiant != null) {
             lNomPrenom.setText("Connecté : " + etudiant.getNomEtudiant() + " " + etudiant.getPrenom());
         } else {
             lNomPrenom.setText("Aucun étudiant connecté.");
         }
 
-        // Ajouter le label à la mise en page
+        lNomPrenom.getStyle().set("color", "black");
+        lNomPrenom.getStyle().set("font-size", "16px");
+        lNomPrenom.getStyle().set("font-weight", "normal");
+        lNomPrenom.getStyle().set("margin-left", "auto"); // Décale ce label à l'extrême droite
+
         this.add(lNomPrenom);
-        
-        // Label pour l'état de connexion
-        Label etatConnexion = new Label(lNomPrenom.getText());
-        etatConnexion.getStyle().set("color", "black");
-        etatConnexion.getStyle().set("font-size", "16px");
-        etatConnexion.getStyle().set("font-weight", "normal");
-        
-         
-        // Configuration de la mise en page
-        this.setWidth("80%"); // La largeur est réduite ici pour rendre l'entête plus compacte
-        this.setHeight("110px");
 
-        // Couleur de fond de l'entête 
-        this.getStyle().set("background-color", "\"#F0F0F0\""); 
-
-        // Logo à gauche
-        Image logo = new Image("https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Logo_RF.svg/440px-Logo_RF.svg.png", "Logo République");
-        logo.setHeight("80px"); // Réduit la taille du logo
-
-        // Ajouter le logo à la mise en page
-        this.add(logo);
-
-        // Ajouter un label pour le texte principal
-        Label title = new Label("Bienvenue sur le site !");
-        title.getStyle().set("color", "black"); // Couleur noire
-        title.getStyle().set("font-size", "24px"); // Taille de police
-        title.getStyle().set("font-weight", "bold"); // Gras
-        title.getStyle().set("text-align", "center");
-
-        // Disposition des éléments
-        this.add(title, lNomPrenom); // Ajoute les deux éléments
-        this.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN); // Répartit les éléments : gauche-droite
-        this.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER); // Centre les éléments verticalement
+        // Justification des éléments entre gauche, centre et droite
+        this.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
     }
 }
