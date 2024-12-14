@@ -37,6 +37,15 @@ public class NouvelleOffrePanel extends VerticalLayout {
         ifNomO = new TextField("Nom de l'offre");
         ifSpe = new TextField("Spécialité");
         bSave = new Button("Sauvegarder");
+        
+        // Changer la couleur du bouton "Sauvegarder" en rouge
+        bSave.getStyle().set("background-color", "red");
+        bSave.getStyle().set("color", "white");
+        bSave.getStyle().set("border", "none");
+        bSave.getStyle().set("padding", "10px 20px");
+        bSave.getStyle().set("cursor", "pointer");
+        bSave.getStyle().set("font-weight", "bold");
+        bSave.getStyle().set("border-radius", "4px");
 
         // Action au clic sur le bouton "Sauvegarder"
         bSave.addClickListener(e -> {
@@ -115,6 +124,9 @@ public class NouvelleOffrePanel extends VerticalLayout {
                 Notification.show("Erreur lors de l'enregistrement de l'offre : " + ex.getMessage());
             }
         });
+        
+        // Centrer les éléments dans la disposition verticale
+        this.setAlignItems(Alignment.CENTER);
 
         // Ajout des composants à l'interface
         this.add(cbPartenaire, ifPlaces, ifPar, ifSemestre, ifNiv, ifDispo, ifNomO, ifSpe, bSave);
