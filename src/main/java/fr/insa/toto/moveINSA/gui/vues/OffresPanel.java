@@ -69,7 +69,7 @@ public class OffresPanel extends VerticalLayout {
                 .set("background-color", "#f9f9f9");
 
             // Titre principal
-            H2 titre = new H2("Affichage des offres de mobilité (tables formatées)");
+            H2 titre = new H2("Affichage des offres de mobilité");
             titre.getStyle()
                 .set("text-align", "center")
                 .set("color", "#333")
@@ -100,7 +100,7 @@ public class OffresPanel extends VerticalLayout {
             bPostule.getStyle()
                 .set("margin-top", "20px")
                 .set("padding", "10px 20px")
-                .set("background-color", "#FF0000") // Couleur bleue
+                .set("background-color", "#FF0000") 
                 .set("color", "white")
                 .set("font-size", "16px")
                 .set("font-weight", "bold")
