@@ -45,55 +45,64 @@ public class OffresPanel extends VerticalLayout {
 
     private ResultSetGrid gOffres;
     private Button bPostule;
+public OffresPanel() {
+    try (Connection con = ConnectionPool.getConnection()) {
 
-    public OffresPanel() {
-        try (Connection con = ConnectionPool.getConnection()) {
-            
-            // Création de la table pour afficher les offres
-            PreparedStatement offresAvecPart = con.prepareStatement(
-                    "SELECT OffreMobilite.idOffre AS idOffre, " +
-                    "       Partenaire.refPartenaire AS refPartenaire, " +
-                    "       OffreMobilite.nbrplaces AS nbrPlaces, " +
-                    "       Partenaire.idPartenaire AS idPartenaire " +
-                    "       OffreMobilite.nomOffre AS nomOffre " +
-                    "FROM OffreMobilite " +
-                    "JOIN Partenaire ON OffreMobilite.proposepar = Partenaire.idPartenaire"
-            );
-            
-            // Centrage global du contenu
-            this.getStyle()
-                .set("display", "flex")
-                .set("flex-direction", "column")
-                .set("align-items", "center")
-                .set("justify-content", "center")
-                .set("padding", "20px")
-                .set("background-color", "#f9f9f9");
+        // Requête SQL pour récupérer les offres de mobilité
+        PreparedStatement offresAvecPart = con.prepareStatement(
+            "SELECT OffreMobilite.idOffre AS idOffre, " +
+            "       Partenaire.refPartenaire AS refPartenaire, " +
+            "       OffreMobilite.nbrPlaces AS nbrPlaces, " +
+            "       Partenaire.idPartenaire AS idPartenaire, " +
+            "       OffreMobilite.nomOffre AS nomOffre " +
+            "FROM OffreMobilite " +
+            "JOIN Partenaire ON OffreMobilite.proposepar = Partenaire.idPartenaire"
+        );
 
-            // Titre principal
-            H2 titre = new H2("Affichage des offres de mobilité");
-            titre.getStyle()
-                .set("text-align", "center")
-                .set("color", "#333")
-                .set("margin-bottom", "20px");
-            this.add(titre);
+        // Centrage global du contenu
+        this.getStyle()
+            .set("display", "flex")
+            .set("flex-direction", "column")
+            .set("align-items", "center")
+            .set("justify-content", "center")
+            .set("padding", "20px")
+            .set("background-color", "#f9f9f9");
 
-            this.gOffres = new ResultSetGrid(offresAvecPart, new GridDescription(List.of(
-                    new ColumnDescription().colData(0).visible(false), // ID de l'offre (non affichée)
-                    new ColumnDescription().colData(1).headerString("Partenaire"),
-                    new ColumnDescription().colData(4).headerString("Intitulé de l'offre"),
-                    new ColumnDescription().colDataCompo(2, (t) -> new IntAsIcon((Integer) t)).headerString("Places"),
-                    new ColumnDescription().colCalculatedObject((t) -> t.get(1) + " : " + t.get(2)).headerString("Résumé"),
-                    new ColumnDescription().colData(3).visible(false) // ID du partenaire (non affichée)
-            )));
-            this.add(new H3("Offres de mobilité avec mise en forme"));
-            this.add(this.gOffres);
-            this.gOffres.getStyle()
-                .set("width", "80%")
-                .set("margin", "20px auto")
-                .set("border", "1px solid #ccc")
-                .set("border-radius", "5px")
-                .set("box-shadow", "0px 4px 10px rgba(0, 0, 0, 0.1)")
-                .set("background-color", "white");
+        // Titre principal
+        H2 titre = new H2("Affichage des offres de mobilité");
+        titre.getStyle()
+            .set("text-align", "center")
+            .set("color", "#333")
+            .set("margin-bottom", "20px");
+        this.add(titre);
+
+        // Configuration de la grille
+        this.gOffres = new ResultSetGrid(offresAvecPart, new GridDescription(List.of(
+            new ColumnDescription().colData(0).visible(false), // ID de l'offre (non affichée)
+            new ColumnDescription().colData(1).headerString("Partenaire"), // refPartenaire
+            new ColumnDescription().colData(4).headerString("Intitulé de l'offre"), // nomOffre
+            new ColumnDescription().colDataCompo(2, (nbrPlaces) -> 
+                new IntAsIcon((Integer) nbrPlaces) // Composant pour afficher le nombre de places
+            ).headerString("Places disponibles"),
+            new ColumnDescription().colCalculatedObject((row) -> 
+                row.get(1) + " : " + row.get(4) // Résumé avec le partenaire et l'intitulé
+            ).headerString("Résumé"),
+            new ColumnDescription().colData(3).visible(false) // ID du partenaire (non affichée)
+        )));
+
+        // Sous-titre pour la section des offres
+        this.add(new H3("Offres de mobilité avec mise en forme"));
+
+        // Ajout de la grille des offres
+        this.add(this.gOffres);
+        this.gOffres.getStyle()
+            .set("width", "80%")
+            .set("margin", "20px auto")
+            .set("border", "1px solid #ccc")
+            .set("border-radius", "5px")
+            .set("box-shadow", "0px 4px 10px rgba(0, 0, 0, 0.1)")
+            .set("background-color", "white");
+
             this.add(gOffres);
 
             // Ajout du bouton "Postuler"
