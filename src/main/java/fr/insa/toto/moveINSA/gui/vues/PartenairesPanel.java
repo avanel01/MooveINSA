@@ -27,9 +27,24 @@ public class PartenairesPanel extends VerticalLayout {
     private Button bOffre;
 
     public PartenairesPanel() {
+        
         try (Connection con = ConnectionPool.getConnection()) {
             // Ajout du titre principal
-            this.add(new H2("Affichage des partenaires"));
+            H2 titre = new H2("Affichage des partenaires");
+            titre.getStyle()
+                .set("text-align", "center")
+                .set("color", "#333")
+                .set("margin-bottom", "20px");
+            this.add(titre);
+            
+            // Centrage global du contenu
+            this.getStyle()
+                .set("display", "flex")
+                .set("flex-direction", "column")
+                .set("align-items", "center")
+                .set("justify-content", "center")
+                .set("padding", "20px")
+                .set("background-color", "#f9f9f9");
 
             // Configuration de la grille des partenaires
             setupPartenaireGrid(con);
@@ -67,8 +82,13 @@ public class PartenairesPanel extends VerticalLayout {
             new ColumnDescription().colData(3).headerString("Pays")
         )));
 
-        this.add(new H3("Liste des partenaires"));
-        this.add(gPartenaire);
+        H3 titre = new H3("Liste des partenaires");
+            titre.getStyle()
+                .set("margin-top", "30px")
+                .set("text-align", "center")
+                .set("color", "#555");
+            this.add(titre);
+            this.add(gPartenaire);
     }
 
     /**
@@ -76,8 +96,18 @@ public class PartenairesPanel extends VerticalLayout {
      */
     private void setupOffresButton() {
         bOffre = new Button("Voir les offres");
-        bOffre.addClickListener(event -> UI.getCurrent().navigate("offres/liste"));
-        this.add(bOffre);
+        bOffre.getStyle()
+              .set("margin-top", "20px")
+              .set("padding", "10px 20px")
+              .set("background-color", "#FF0000") 
+              .set("color", "white")
+              .set("font-size", "16px")
+              .set("font-weight", "bold")
+              .set("border", "none")
+              .set("border-radius", "5px")
+              .set("cursor", "pointer");
+            bOffre.addClickListener(event -> UI.getCurrent().navigate("offres/liste"));
+            this.add(bOffre);
     }
 
     /**
