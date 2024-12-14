@@ -20,7 +20,6 @@ import com.vaadin.flow.component.UI;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
@@ -52,12 +51,13 @@ public class OffresPanel extends VerticalLayout {
 
             // Création de la table pour afficher les offres
             PreparedStatement offresAvecPart = con.prepareStatement(
-                    "SELECT offremobilite.idOffre AS idOffre, " +
-                    "       partenaire.refPartenaire AS refPartenaire, " +
-                    "       offremobilite.nbrplaces AS nbrPlaces, " +
-                    "       partenaire.id AS idPartenaire " +
+                    "SELECT OffreMobilite.idOffre AS idOffre, " +
+                    "       Partenaire.refPartenaire AS refPartenaire, " +
+                    "       OffreMobilite.nbrplaces AS nbrPlaces, " +
+                    "       Partenaire.idPartenaire AS idPartenaire " +
                     "FROM OffreMobilite " +
-                    "JOIN Partenaire ON OffreMobilite.proposepar = partenaire.id");
+                    "JOIN Partenaire ON OffreMobilite.proposepar = Partenaire.idPartenaire"
+            );
 
             this.gOffres = new ResultSetGrid(offresAvecPart, new GridDescription(List.of(
                     new ColumnDescription().colData(0).visible(false), // ID de l'offre (non affichée)
@@ -72,20 +72,19 @@ public class OffresPanel extends VerticalLayout {
 
             // Ajout du bouton "Postuler"
             bPostule = new Button("Postuler");
-            bPostule.addClickListener(e -> {
-                handlePostulerClick();
-            });
+            bPostule.addClickListener(e -> handlePostulerClick());
             this.add(this.bPostule);
 
             // Création de la table groupée par partenaires
             PreparedStatement offresParPartenaire = con.prepareStatement(
-                    "SELECT partenaire.id AS idPartenaire, " +
-                    "       partenaire.refPartenaire AS refPartenaire, " +
-                    "       SUM(offremobilite.nbrplaces) AS placesPartenaire, " +
-                    "       (SELECT SUM(nbrplaces) FROM offremobilite) AS totPlaces " +
+                    "SELECT Partenaire.idPartenaire AS idPartenaire, " +
+                    "       Partenaire.refPartenaire AS refPartenaire, " +
+                    "       SUM(OffreMobilite.nbrplaces) AS placesPartenaire, " +
+                    "       (SELECT SUM(nbrplaces) FROM OffreMobilite) AS totPlaces " +
                     "FROM OffreMobilite " +
-                    "JOIN Partenaire ON offremobilite.proposepar = partenaire.id " +
-                    "GROUP BY partenaire.id");
+                    "JOIN Partenaire ON OffreMobilite.proposepar = Partenaire.idPartenaire " +
+                    "GROUP BY Partenaire.idPartenaire, Partenaire.refPartenaire"
+            );
 
             ResultSetGrid parPart = new ResultSetGrid(offresParPartenaire, new GridDescription(List.of(
                     new ColumnDescription().colData(0).visible(false), // ID du partenaire (non affichée)
