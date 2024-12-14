@@ -18,16 +18,16 @@ public class Candidature {
     private String idEtudiant;
     private int ordre;
     private int classementEtudiant;
-    private String date;
+    private int date;  // La date est le semestre sous forme d'entier (1 à 9)
 
     // Constructeur
-    public Candidature(int idCandidature, int idOffre, String idEtudiant, int ordre, int classementEtudiant, String date) {
+    public Candidature(int idCandidature, int idOffre, String idEtudiant, int ordre, int classementEtudiant, int date) {
         this.idCandidature = idCandidature;
         this.idOffre = idOffre;
         this.idEtudiant = idEtudiant;
         this.ordre = ordre;
         this.classementEtudiant = classementEtudiant;
-        this.date = date;
+        this.date = date;  // Le semestre est passé ici en paramètre
     }
 
     @Override
@@ -38,7 +38,7 @@ public class Candidature {
                 ", idEtudiant=" + idEtudiant +
                 ", ordre=" + ordre +
                 ", classementEtudiant=" + classementEtudiant +
-                ", date='" + date + '\'' +
+                ", date=" + date +  // Affichage du semestre
                 '}';
     }
 
@@ -52,7 +52,7 @@ public class Candidature {
             insert.setString(2, this.idEtudiant);
             insert.setInt(3, this.ordre);
             insert.setInt(4, this.classementEtudiant);
-            insert.setString(5, this.date);
+            insert.setInt(5, this.date);  // Utilisation du semestre comme date
             insert.executeUpdate();
 
             try (ResultSet rid = insert.getGeneratedKeys()) {
@@ -95,7 +95,7 @@ public class Candidature {
                         rs.getString("idEtudiant"),
                         rs.getInt("ordre"),
                         rs.getInt("classementEtudiant"),
-                        rs.getString("date")
+                        rs.getInt("date")  // Le semestre est récupéré ici
                 ));
             }
             return res;
@@ -116,7 +116,7 @@ public class Candidature {
                             idEtudiant,
                             rs.getInt("ordre"),
                             rs.getInt("classementEtudiant"),
-                            rs.getString("date")
+                            rs.getInt("date")  // Le semestre est récupéré ici
                     ));
                 }
                 return res;
@@ -127,28 +127,43 @@ public class Candidature {
     public static int creeConsole(Connection con) throws SQLException {
         String idEtudiant = ConsoleFdB.entreeString("ID de l'étudiant : ");
 
+        // Vérifier le nombre de candidatures de l'étudiant
         int nombreCandidatures = Candidature.nombreCandidaturesEtudiant(con, idEtudiant);
         if (nombreCandidatures >= 5) {
             System.out.println("Cet étudiant a déjà soumis 5 candidatures. Impossible d'en soumettre davantage.");
             return -1;
         }
 
+        // Demander l'ordre de préférence
         int ordre = ConsoleFdB.entreeInt("Ordre de préférence (entre 1 et 5) : ");
         while (ordre < 1 || ordre > 5) {
             System.out.println("L'ordre de préférence doit être compris entre 1 et 5.");
             ordre = ConsoleFdB.entreeInt("Ordre de préférence (entre 1 et 5) : ");
         }
 
+        // Vérifier si l'ordre est déjà utilisé pour cet étudiant
         if (Candidature.existeOrdrePourEtudiant(con, idEtudiant, ordre)) {
             System.out.println("Cet ordre de préférence est déjà utilisé pour une autre candidature.");
             return -1;
         }
 
+        // Demander l'ID de l'offre
         int idOffre = ConsoleFdB.entreeInt("ID de l'offre de mobilité : ");
+        
+        // Demander le classement de l'étudiant
         int classement = ConsoleFdB.entreeInt("Classement de l'étudiant : ");
-        String date = ConsoleFdB.entreeString("Date de la candidature (YYYY-MM-DD) : ");
+        
+        // Demander le semestre (entre 5 et 9)
+        int semestre = ConsoleFdB.entreeInt("Numéro du semestre (entre 5 et 9) : ");
+        
+        // Vérifier que le semestre est entre 5 et 9 inclus
+        while (semestre < 5 || semestre > 9) {
+            System.out.println("Erreur : Le semestre doit être compris entre 5 et 9.");
+            semestre = ConsoleFdB.entreeInt("Numéro du semestre (entre 5 et 9) : ");
+        }
 
-        Candidature nouvelle = new Candidature(-1, idOffre, idEtudiant, ordre, classement, date);
+        // Créer une nouvelle candidature avec le semestre comme date
+        Candidature nouvelle = new Candidature(-1, idOffre, idEtudiant, ordre, classement, semestre);
         return nouvelle.saveInDB(con);
     }
 
@@ -177,8 +192,8 @@ public class Candidature {
         this.classementEtudiant = classementEtudiant;
     }
 
-    public void setDate(String dateSejour) {
-        // Conversion de la chaîne en un objet Date (format attendu : YYYY-MM-DD)
+    public void setDate(int dateSejour) {
+        // La date est maintenant le semestre sous forme d'entier (1 à 9)
         this.date = dateSejour;
     }
     
@@ -186,7 +201,7 @@ public class Candidature {
         this.ordre = Ordre;
     }
 
-    // Méthodes get (si nécessaires)
+    // Méthodes get
     public int getIdOffre() {
         return idOffre;
     }
@@ -199,8 +214,8 @@ public class Candidature {
         return classementEtudiant;
     }
 
-    public String getDate() {
-        return date;
+    public int getDate() {
+        return date;  // La date renvoie le semestre
     }
     
     public int getOrdre() {

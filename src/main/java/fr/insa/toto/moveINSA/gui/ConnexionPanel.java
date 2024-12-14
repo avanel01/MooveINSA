@@ -1,21 +1,3 @@
-/*
-Copyright 2000- Francois de Bertrand de Beuvron
-
-This file is part of CoursBeuvron.
-
-CoursBeuvron is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-CoursBeuvron is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with CoursBeuvron.  If not, see <http://www.gnu.org/licenses/>.
- */
 package fr.insa.toto.moveINSA.gui;
 
 import com.vaadin.flow.component.UI;
@@ -141,6 +123,14 @@ public class ConnexionPanel extends VerticalLayout {
                     // Stocker l'étudiant dans la session
                     VaadinSession.getCurrent().setAttribute(Etudiant.class, etudiant);
                     Notification.show("Bienvenue, " + etudiant.getNomEtudiant() + " " + etudiant.getPrenom() + " !");
+                    
+                    // Appel à la méthode de l'entête pour mettre à jour les informations
+                    // Récupération de l'entête via le layout
+                    MainLayout mainLayout = (MainLayout) UI.getCurrent().getChildren().filter(c -> c instanceof MainLayout).findFirst().orElse(null);
+                    if (mainLayout != null) {
+                        mainLayout.getEntete().updateEtudiantInfo();
+                    }
+
                     // Naviguer vers la vue principale
                     UI.getCurrent().navigate(VuePrincipale.class);
                 } else {
@@ -152,5 +142,3 @@ public class ConnexionPanel extends VerticalLayout {
         }
     }
 }
-
-
