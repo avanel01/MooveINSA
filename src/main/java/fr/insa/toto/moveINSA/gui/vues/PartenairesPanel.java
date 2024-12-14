@@ -56,9 +56,38 @@ public class PartenairesPanel extends VerticalLayout {
             });
             this.add(this.bOffre);
 
+        
+        
+        // Requête pour partenaires groupés par pays
+            this.add(new H3("Partenaires groupés par pays"));
+            PreparedStatement PartenaireParPays = con.prepareStatement(
+                    "SELECT pays.idPays, pays.nomPays, COUNT(partenaire.id) AS nbrPartenaires, " +
+                    "       (SELECT COUNT(*) FROM partenaire) AS totalPartenaires " +
+                    "FROM partenaire " +
+                    "JOIN Pays ON partenaire.pays = pays.idPays " +
+                    "GROUP BY pays.idPays"
+            );
+
+            ResultSetGrid parPart = new ResultSetGrid(PartenaireParPays, new GridDescription(List.of(
+                    new ColumnDescription().colData(0).visible(false),
+                    new ColumnDescription().colData(1).headerString("Pays"),
+                    new ColumnDescription().colData(2).headerString("Nombre de partenaires"),
+                    new ColumnDescription().colCalculatedObject((t) -> {
+                        int nbrPart = Integer.parseInt("" + t.get(2));
+                        int nbrTot = Integer.parseInt("" + t.get(3));
+                        double percent = ((double) nbrPart) / nbrTot * 100;
+                        return String.format("%.0f%%", percent);
+                    }).headerString("Pourcentage")
+            )));
+            this.add(parPart);
+
         } catch (SQLException ex) {
             System.out.println("Problème : " + ex.getLocalizedMessage());
             Notification.show("Problème : " + ex.getLocalizedMessage());
         }
+        
     }
+    
+    
+    
 }
