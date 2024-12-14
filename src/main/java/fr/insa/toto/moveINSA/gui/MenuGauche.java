@@ -47,7 +47,7 @@ public class MenuGauche extends SideNav {
             .set("padding", "10px");
 
         // Crée les items principaux et applique les styles immédiatement
-        SideNavItem main = new SideNavItem("main", VuePrincipale.class);
+        SideNavItem main = new SideNavItem("Accueil", VuePrincipale.class);
         styleItem(main);
 
         SideNavItem connexion = new SideNavItem("Connexion", ConnexionPanel.class);
@@ -71,13 +71,13 @@ public class MenuGauche extends SideNav {
         debug.addItem(new SideNavItem("test DataGrid", TestDataGrid.class));
         debug.addItem(new SideNavItem("test Grid direct", TestGridDirect.class));
 
-        SideNavItem jeux = new SideNavItem("jeux");
-        styleItem(jeux);
-        jeux.addItem(new SideNavItem("boite à coucou", BoiteACoucou.class));
-        jeux.addItem(new SideNavItem("trouve", TrouveEntier.class));
+        //SideNavItem jeux = new SideNavItem("jeux");
+        //styleItem(jeux);
+        //jeux.addItem(new SideNavItem("boite à coucou", BoiteACoucou.class));
+        //jeux.addItem(new SideNavItem("trouve", TrouveEntier.class));
 
         // Ajoute tous les éléments au SideNav
-        this.addItem(main, connexion, partenaires, offres, debug, jeux);
+        this.addItem(main, connexion, partenaires, offres, debug);
     }
 
     // Méthode pour appliquer les styles directement à un SideNavItem
