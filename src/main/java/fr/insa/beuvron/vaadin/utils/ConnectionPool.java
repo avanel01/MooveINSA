@@ -19,7 +19,7 @@ public class ConnectionPool {
         config.setJdbcUrl("jdbc:mysql://92.222.25.165:3306/m3_mhirschy01"); // Remplacez par votre URL MySQL
         config.setUsername("m3_mhirschy01"); // Remplacez par votre utilisateur
         config.setPassword("be111c10"); // Remplacez par votre mot de passe
-        config.setMaximumPoolSize(10); // Taille maximale du pool
+        config.setMaximumPoolSize(30); // Taille maximale du pool
 
         // Optimisations pour MySQL
         config.addDataSourceProperty("cachePrepStmts", "true");
