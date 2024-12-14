@@ -65,7 +65,7 @@ public class Etudiant {
  */
 public static Optional<Etudiant> getEtudiantByINE(Connection con, String INE) throws SQLException {
     // Mise à jour de la requête SQL pour utiliser nometudiant au lieu de nom
-    String sql = "SELECT INE, nometudiant, prenom, classe, annee, classement, mdp FROM etudiant WHERE INE = ?";
+    String sql = "SELECT INE, nometudiant, prenom, classe, annee, classement, mdp FROM Etudiant WHERE INE = ?";
     
     try (PreparedStatement pst = con.prepareStatement(sql)) {
         pst.setString(1, INE); // Remplace le paramètre INE dans la requête SQL
