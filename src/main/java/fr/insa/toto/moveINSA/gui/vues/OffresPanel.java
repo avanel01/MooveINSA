@@ -87,7 +87,7 @@ public OffresPanel() {
             ).headerString("Places disponibles"),
             new ColumnDescription().colData(5).headerString("Spécialité"), // specialiteAssocie
             new ColumnDescription().colCalculatedObject((row) -> 
-                row.get(1) + " : " + row.get(4) // Résumé avec le partenaire et l'intitulé
+                row.get(4) + " : " + row.get(5) // Résumé avec le partenaire et l'intitulé
             ).headerString("Résumé"),
             new ColumnDescription().colData(3).visible(false) // ID du partenaire (non affichée)
         )));
