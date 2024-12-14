@@ -56,8 +56,8 @@ public class OffresPanel extends VerticalLayout {
                     "       partenaire.refPartenaire AS refPartenaire, " +
                     "       offremobilite.nbrplaces AS nbrPlaces, " +
                     "       partenaire.id AS idPartenaire " +
-                    "FROM offremobilite " +
-                    "JOIN partenaire ON offremobilite.proposepar = partenaire.id");
+                    "FROM OffreMobilite " +
+                    "JOIN Partenaire ON OffreMobilite.proposepar = partenaire.id");
 
             this.gOffres = new ResultSetGrid(offresAvecPart, new GridDescription(List.of(
                     new ColumnDescription().colData(0).visible(false), // ID de l'offre (non affichée)
@@ -83,8 +83,8 @@ public class OffresPanel extends VerticalLayout {
                     "       partenaire.refPartenaire AS refPartenaire, " +
                     "       SUM(offremobilite.nbrplaces) AS placesPartenaire, " +
                     "       (SELECT SUM(nbrplaces) FROM offremobilite) AS totPlaces " +
-                    "FROM offremobilite " +
-                    "JOIN partenaire ON offremobilite.proposepar = partenaire.id " +
+                    "FROM OffreMobilite " +
+                    "JOIN Partenaire ON offremobilite.proposepar = partenaire.id " +
                     "GROUP BY partenaire.id");
 
             ResultSetGrid parPart = new ResultSetGrid(offresParPartenaire, new GridDescription(List.of(
