@@ -28,33 +28,38 @@ public class PartenairesPanel extends VerticalLayout {
 
     public PartenairesPanel() {
         try (Connection con = ConnectionPool.getConnection()) {
-            // Titre principal
+            // Ajout du titre principal
             this.add(new H2("Affichage des partenaires"));
 
             // Configuration de la grille des partenaires
             setupPartenaireGrid(con);
 
-            // Bouton pour naviguer vers la liste des offres
+            // Configuration du bouton pour naviguer vers les offres
             setupOffresButton();
 
-            // Affichage des partenaires groupés par pays
+            // Configuration de l'affichage des partenaires groupés par pays
             setupPartenairesParPays(con);
 
         } catch (SQLException ex) {
-            // Gestion des erreurs SQL
-            System.err.println("Erreur SQL : " + ex.getLocalizedMessage());
-            Notification.show("Problème : " + ex.getLocalizedMessage(), 3000, Notification.Position.MIDDLE);
+            handleSQLException(ex);
         }
     }
 
+    /**
+     * Configure la grille affichant la liste des partenaires.
+     */
     private void setupPartenaireGrid(Connection con) throws SQLException {
-        // Requête pour récupérer les partenaires
-        PreparedStatement part = con.prepareStatement(
-            "SELECT Partenaire.idPartenaire AS idPartenaire, Partenaire.refPartenaire, Partenaire.ville, Partenaire.pays " +
-            "FROM Partenaire"
-        );
+        // Requête SQL pour récupérer les partenaires
+        String sql = """
+            SELECT Partenaire.idPartenaire AS idPartenaire,
+                   Partenaire.refPartenaire AS refPartenaire,
+                   Partenaire.ville AS ville,
+                   Partenaire.pays AS pays
+            FROM Partenaire
+        """;
+        PreparedStatement part = con.prepareStatement(sql);
 
-        // Création de la grille avec mise en forme
+        // Création de la grille des partenaires
         gPartenaire = new ResultSetGrid(part, new GridDescription(List.of(
             new ColumnDescription().colData(0).visible(false), // ID non affiché
             new ColumnDescription().colData(1).headerString("Nom"),
@@ -66,26 +71,32 @@ public class PartenairesPanel extends VerticalLayout {
         this.add(gPartenaire);
     }
 
+    /**
+     * Configure le bouton pour naviguer vers la liste des offres.
+     */
     private void setupOffresButton() {
         bOffre = new Button("Voir les offres");
-        bOffre.addClickListener(event -> {
-            // Navigation vers la liste des offres
-            UI.getCurrent().navigate("offres/liste");
-        });
+        bOffre.addClickListener(event -> UI.getCurrent().navigate("offres/liste"));
         this.add(bOffre);
     }
 
+    /**
+     * Configure l'affichage des partenaires groupés par pays.
+     */
     private void setupPartenairesParPays(Connection con) throws SQLException {
-        // Requête pour afficher les partenaires groupés par pays
-        PreparedStatement partenaireParPays = con.prepareStatement(
-            "SELECT Pays.idPays, Pays.nomPays, COUNT(Partenaire.idPartenaire) AS nbrPartenaires, " +
-            "       (SELECT COUNT(*) FROM Partenaire) AS totalPartenaires " +
-            "FROM Partenaire " +
-            "JOIN Pays ON Partenaire.pays = Pays.idPays " +
-            "GROUP BY Pays.idPays"
-        );
+        // Requête SQL pour afficher les partenaires groupés par pays
+        String sql = """
+            SELECT Pays.idPays AS idPays,
+                   Pays.nomPays AS nomPays,
+                   COUNT(Partenaire.idPartenaire) AS nbrPartenaires,
+                   (SELECT COUNT(*) FROM Partenaire) AS totalPartenaires
+            FROM Partenaire
+            JOIN Pays ON Partenaire.pays = Pays.idPays
+            GROUP BY Pays.idPays, Pays.nomPays
+        """;
+        PreparedStatement partenaireParPays = con.prepareStatement(sql);
 
-        // Grille pour afficher les partenaires groupés par pays
+        // Création de la grille pour les partenaires groupés par pays
         ResultSetGrid parPart = new ResultSetGrid(partenaireParPays, new GridDescription(List.of(
             new ColumnDescription().colData(0).visible(false), // ID non affiché
             new ColumnDescription().colData(1).headerString("Pays"),
@@ -100,5 +111,14 @@ public class PartenairesPanel extends VerticalLayout {
 
         this.add(new H3("Partenaires groupés par pays"));
         this.add(parPart);
+    }
+
+    /**
+     * Gère les erreurs SQL en affichant une notification et en loguant l'exception.
+     */
+    private void handleSQLException(SQLException ex) {
+        System.err.println("Erreur SQL : " + ex.getLocalizedMessage());
+        ex.printStackTrace();
+        Notification.show("Problème : " + ex.getLocalizedMessage(), 3000, Notification.Position.MIDDLE);
     }
 }
