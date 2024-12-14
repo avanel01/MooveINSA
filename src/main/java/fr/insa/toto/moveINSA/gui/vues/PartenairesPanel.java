@@ -18,7 +18,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Set;
 
 @PageTitle("MoveINSA - Partenaires")
 @Route(value = "partenaires/liste", layout = MainLayout.class)
@@ -29,65 +28,77 @@ public class PartenairesPanel extends VerticalLayout {
 
     public PartenairesPanel() {
         try (Connection con = ConnectionPool.getConnection()) {
-            this.add(new H2("Affichage de partenaires (mise en forme)"));
+            // Titre principal
+            this.add(new H2("Affichage des partenaires"));
 
-            // Requête pour récupérer les partenaires
-            PreparedStatement part = con.prepareStatement(
-                "SELECT Partenaire.idPartenaire AS idPartenaire, Partenaire.refPartenaire, Partenaire.ville, Partenaire.pays " +
-                "FROM Partenaire"
-            );
+            // Configuration de la grille des partenaires
+            setupPartenaireGrid(con);
 
-            // Configuration de la grille avec mise en forme
-            this.gPartenaire = new ResultSetGrid(part, new GridDescription(List.of(
-                new ColumnDescription().colData(0).visible(false), // ID non affiché
-                new ColumnDescription().colData(1).headerString("Nom"),
-                new ColumnDescription().colData(2).headerString("Ville"),
-                new ColumnDescription().colData(3).headerString("Pays")
-            )));
+            // Bouton pour naviguer vers la liste des offres
+            setupOffresButton();
 
-            this.add(new H3("Liste des partenaires"));
-            this.add(this.gPartenaire);
-
-            // Bouton "Postuler"
-            this.bOffre = new Button("les offres !!");
-            this.bOffre.addClickListener((event) -> {
-                // Récupération de la ligne sélectionnée
-                    UI.getCurrent().navigate("offres/liste" );
-            });
-            this.add(this.bOffre);
-
-        
-        
-        // Requête pour partenaires groupés par pays
-            this.add(new H3("Partenaires groupés par pays"));
-            PreparedStatement PartenaireParPays = con.prepareStatement(
-                    "SELECT pays.idPays, pays.nomPays, COUNT(partenaire.id) AS nbrPartenaires, " +
-                    "       (SELECT COUNT(*) FROM partenaire) AS totalPartenaires " +
-                    "FROM Partenaire " +
-                    "JOIN Pays ON partenaire.pays = pays.idPays " +
-                    "GROUP BY pays.idPays"
-            );
-
-            ResultSetGrid parPart = new ResultSetGrid(PartenaireParPays, new GridDescription(List.of(
-                    new ColumnDescription().colData(0).visible(false),
-                    new ColumnDescription().colData(1).headerString("Pays"),
-                    new ColumnDescription().colData(2).headerString("Nombre de partenaires"),
-                    new ColumnDescription().colCalculatedObject((t) -> {
-                        int nbrPart = Integer.parseInt("" + t.get(2));
-                        int nbrTot = Integer.parseInt("" + t.get(3));
-                        double percent = ((double) nbrPart) / nbrTot * 100;
-                        return String.format("%.0f%%", percent);
-                    }).headerString("Pourcentage")
-            )));
-            this.add(parPart);
+            // Affichage des partenaires groupés par pays
+            setupPartenairesParPays(con);
 
         } catch (SQLException ex) {
-            System.out.println("Problème : " + ex.getLocalizedMessage());
-            Notification.show("Problème : " + ex.getLocalizedMessage());
+            // Gestion des erreurs SQL
+            System.err.println("Erreur SQL : " + ex.getLocalizedMessage());
+            Notification.show("Problème : " + ex.getLocalizedMessage(), 3000, Notification.Position.MIDDLE);
         }
-        
     }
-    
-    
-    
+
+    private void setupPartenaireGrid(Connection con) throws SQLException {
+        // Requête pour récupérer les partenaires
+        PreparedStatement part = con.prepareStatement(
+            "SELECT Partenaire.idPartenaire AS idPartenaire, Partenaire.refPartenaire, Partenaire.ville, Partenaire.pays " +
+            "FROM Partenaire"
+        );
+
+        // Création de la grille avec mise en forme
+        gPartenaire = new ResultSetGrid(part, new GridDescription(List.of(
+            new ColumnDescription().colData(0).visible(false), // ID non affiché
+            new ColumnDescription().colData(1).headerString("Nom"),
+            new ColumnDescription().colData(2).headerString("Ville"),
+            new ColumnDescription().colData(3).headerString("Pays")
+        )));
+
+        this.add(new H3("Liste des partenaires"));
+        this.add(gPartenaire);
+    }
+
+    private void setupOffresButton() {
+        bOffre = new Button("Voir les offres");
+        bOffre.addClickListener(event -> {
+            // Navigation vers la liste des offres
+            UI.getCurrent().navigate("offres/liste");
+        });
+        this.add(bOffre);
+    }
+
+    private void setupPartenairesParPays(Connection con) throws SQLException {
+        // Requête pour afficher les partenaires groupés par pays
+        PreparedStatement partenaireParPays = con.prepareStatement(
+            "SELECT pays.idPays, pays.nomPays, COUNT(partenaire.id) AS nbrPartenaires, " +
+            "       (SELECT COUNT(*) FROM partenaire) AS totalPartenaires " +
+            "FROM Partenaire " +
+            "JOIN Pays ON partenaire.pays = pays.idPays " +
+            "GROUP BY pays.idPays"
+        );
+
+        // Grille pour afficher les partenaires groupés par pays
+        ResultSetGrid parPart = new ResultSetGrid(partenaireParPays, new GridDescription(List.of(
+            new ColumnDescription().colData(0).visible(false), // ID non affiché
+            new ColumnDescription().colData(1).headerString("Pays"),
+            new ColumnDescription().colData(2).headerString("Nombre de partenaires"),
+            new ColumnDescription().colCalculatedObject(t -> {
+                int nbrPart = Integer.parseInt("" + t.get(2));
+                int nbrTot = Integer.parseInt("" + t.get(3));
+                double percent = ((double) nbrPart) / nbrTot * 100;
+                return String.format("%.0f%%", percent);
+            }).headerString("Pourcentage")
+        )));
+
+        this.add(new H3("Partenaires groupés par pays"));
+        this.add(parPart);
+    }
 }
