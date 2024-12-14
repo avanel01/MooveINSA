@@ -46,6 +46,33 @@ public class NouvelleOffrePanel extends VerticalLayout {
         bSave.getStyle().set("cursor", "pointer");
         bSave.getStyle().set("font-weight", "bold");
         bSave.getStyle().set("border-radius", "4px");
+                
+        // Élargir les encadrés pour les champs
+        ifPlaces.getStyle().set("width", "300px");
+        ifPar.getStyle().set("width", "300px");
+        ifSemestre.getStyle().set("width", "300px");
+        ifNiv.getStyle().set("width", "300px");
+        ifDispo.getStyle().set("width", "300px");
+        ifNomO.getStyle().set("width", "300px");
+        ifSpe.getStyle().set("width", "300px");
+
+        // Agrandir les écritures des labels et centrer le texte
+        ifPlaces.getStyle().set("font-size", "16px");
+        ifPar.getStyle().set("font-size", "16px");
+        ifSemestre.getStyle().set("font-size", "16px");
+        ifNiv.getStyle().set("font-size", "16px");
+        ifDispo.getStyle().set("font-size", "16px");
+        ifNomO.getStyle().set("font-size", "16px");
+        ifSpe.getStyle().set("font-size", "16px");
+
+        // Centrer les labels
+        ifPlaces.getElement().getStyle().set("text-align", "center");
+        ifPar.getElement().getStyle().set("text-align", "center");
+        ifSemestre.getElement().getStyle().set("text-align", "center");
+        ifNiv.getElement().getStyle().set("text-align", "center");
+        ifDispo.getElement().getStyle().set("text-align", "center");
+        ifNomO.getElement().getStyle().set("text-align", "center");
+        ifSpe.getElement().getStyle().set("text-align", "center");
 
         // Action au clic sur le bouton "Sauvegarder"
         bSave.addClickListener(e -> {
