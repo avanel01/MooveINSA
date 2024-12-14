@@ -60,7 +60,6 @@ public class CandidaturePanel extends VerticalLayout implements BeforeEnterObser
 
         // ComboBox pour le semestre (en tant qu'Integer)
         this.semestreField = new ComboBox<>("Semestre");
-        this.semestreField.setItems(5, 6, 7, 8, 9);  // Semestres sous forme d'entiers
         this.semestreField.setPlaceholder("Choisissez un semestre");
 
         // Bouton pour sauvegarder la candidature
@@ -90,7 +89,11 @@ public class CandidaturePanel extends VerticalLayout implements BeforeEnterObser
 
                     // Récupérer les semestres de l'offre et les ajouter dans le ComboBox
                     List<Integer> semestres = offre.getSemestres();  // Liste des semestres disponibles pour l'offre
-                    semestreField.setItems(semestres);  // Ajouter les semestres au ComboBox
+                    if (semestres.isEmpty()) {
+                        Notification.show("Aucun semestre disponible pour cette offre.");
+                    } else {
+                        semestreField.setItems(semestres);  // Ajouter les semestres au ComboBox
+                    }
                 } else {
                     Notification.show("Erreur : Offre introuvable.");
                 }
