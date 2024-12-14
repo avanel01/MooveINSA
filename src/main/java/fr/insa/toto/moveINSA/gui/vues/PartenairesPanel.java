@@ -84,36 +84,37 @@ public class PartenairesPanel extends VerticalLayout {
      * Configure l'affichage des partenaires groupés par pays.
      */
     private void setupPartenairesParPays(Connection con) throws SQLException {
-    // Requête SQL pour afficher les partenaires groupés par pays
+    // Requête SQL pour afficher les partenaires groupés par pays en utilisant refPays
     String sql = """
-        SELECT 
-            Pays.idPays AS idPays,
-            Pays.nomPays AS nomPays,
-            COUNT(Partenaire.idPartenaire) AS nbrPartenaires,
-            (SELECT COUNT(*) FROM Partenaire) AS totalPartenaires
+        SELECT Pays.refPays AS refPays,
+               Pays.nomPays AS nomPays,
+               COUNT(Partenaire.idPartenaire) AS nbrPartenaires,
+               (SELECT COUNT(*) FROM Partenaire) AS totalPartenaires
         FROM Partenaire
-        JOIN Pays ON Partenaire.pays = Pays.idPays
-        GROUP BY Pays.idPays, Pays.nomPays
+        JOIN Pays ON Partenaire.refPays = Pays.refPays
+        GROUP BY Pays.refPays, Pays.nomPays
     """;
+    PreparedStatement partenaireParPays = con.prepareStatement(sql);
 
-    try (PreparedStatement partenaireParPays = con.prepareStatement(sql)) {
-        // Création de la grille pour les partenaires groupés par pays
-        ResultSetGrid parPart = new ResultSetGrid(partenaireParPays, new GridDescription(List.of(
-            new ColumnDescription().colData(0).visible(false), // ID du pays (non affiché)
-            new ColumnDescription().colData(1).headerString("Pays"), // Nom du pays
-            new ColumnDescription().colData(2).headerString("Nombre de partenaires"), // Nombre de partenaires
-            new ColumnDescription().colCalculatedObject(row -> {
-                int nbrPart = Integer.parseInt("" + row.get(2)); // Nombre de partenaires pour le pays
-                int nbrTot = Integer.parseInt("" + row.get(3)); // Total des partenaires
+    // Création de la grille pour les partenaires groupés par pays
+    ResultSetGrid parPart = new ResultSetGrid(partenaireParPays, new GridDescription(List.of(
+            new ColumnDescription().colData(0).headerString("Référence Pays"), // refPays
+            new ColumnDescription().colData(1).headerString("Pays"), // nomPays
+            new ColumnDescription().colData(2).headerString("Nombre de partenaires"), // nbrPartenaires
+            new ColumnDescription().colCalculatedObject((t) -> {
+                int nbrPart = Integer.parseInt("" + t.get(2)); // Nombre de partenaires
+                int nbrTot = Integer.parseInt("" + t.get(3)); // Total des partenaires
                 double percent = ((double) nbrPart / nbrTot) * 100;
-                return String.format("%.0f%%", percent); // Pourcentage
+                return String.format("%.0f%%", percent);
             }).headerString("Pourcentage")
-        )));
+    )));
 
-        this.add(new H3("Partenaires groupés par pays"));
-        this.add(parPart);
-    }
+    this.add(new H3("Partenaires groupés par pays"));
+    this.add(parPart);
 }
+
+
+
 
     /**
      * Gère les erreurs SQL en affichant une notification et en loguant l'exception.
