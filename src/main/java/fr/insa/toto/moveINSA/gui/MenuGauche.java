@@ -21,8 +21,8 @@ package fr.insa.toto.moveINSA.gui;
 
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
-import fr.insa.toto.moveINSA.gui.jeu.BoiteACoucou;
-import fr.insa.toto.moveINSA.gui.jeu.TrouveEntier;
+//import fr.insa.toto.moveINSA.gui.jeu.BoiteACoucou;
+//import fr.insa.toto.moveINSA.gui.jeu.TrouveEntier;
 import fr.insa.toto.moveINSA.gui.testDataGrid.TestDataGrid;
 import fr.insa.toto.moveINSA.gui.testDataGrid.TestGridDirect;
 import fr.insa.toto.moveINSA.gui.testDataGrid.TestResultSetGrid;
