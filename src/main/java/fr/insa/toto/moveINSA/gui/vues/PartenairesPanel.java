@@ -86,13 +86,13 @@ public class PartenairesPanel extends VerticalLayout {
     private void setupPartenairesParPays(Connection con) throws SQLException {
     // Requête SQL pour afficher les partenaires groupés par pays en utilisant refPays
     String sql = """
-        SELECT Pays.refPays AS refPays,
+        SELECT Pays.idPays AS idPays,
                Pays.nomPays AS nomPays,
                COUNT(Partenaire.idPartenaire) AS nbrPartenaires,
                (SELECT COUNT(*) FROM Partenaire) AS totalPartenaires
         FROM Partenaire
-        JOIN Pays ON Partenaire.refPays = Pays.refPays
-        GROUP BY Pays.refPays, Pays.nomPays
+        JOIN Pays ON Partenaire.pays = Pays.momPays
+        GROUP BY Pays.idPays, Pays.nomPays
     """;
     PreparedStatement partenaireParPays = con.prepareStatement(sql);
 
