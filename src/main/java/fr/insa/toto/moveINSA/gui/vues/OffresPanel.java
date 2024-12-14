@@ -15,21 +15,26 @@ import fr.insa.beuvron.vaadin.utils.dataGrid.ColumnDescription;
 import fr.insa.beuvron.vaadin.utils.dataGrid.GridDescription;
 import fr.insa.beuvron.vaadin.utils.dataGrid.ResultSetGrid;
 import fr.insa.toto.moveINSA.gui.MainLayout;
+
+import com.vaadin.flow.component.UI;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import com.vaadin.flow.component.UI;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
 
 /**
- *
+ * Classe pour afficher les offres de mobilité.
+ * 
  * @author francois
  */
 @PageTitle("MoveINSA")
 @Route(value = "offres/liste", layout = MainLayout.class)
 public class OffresPanel extends VerticalLayout {
 
+    // Classe interne pour représenter des icônes en fonction d'un nombre
     public static class IntAsIcon extends HorizontalLayout {
         public IntAsIcon(int nbr) {
             for (int i = 0; i < nbr; i++) {
@@ -45,51 +50,45 @@ public class OffresPanel extends VerticalLayout {
         try (Connection con = ConnectionPool.getConnection()) {
             this.add(new H2("Affichage des offres de mobilité (tables formatées)"));
 
-            // Table avec mise en forme (Offres groupées par partenaires)
+            // Création de la table pour afficher les offres
             PreparedStatement offresAvecPart = con.prepareStatement(
-                    "select offremobilite.id as idOffre, partenaire.refPartenaire, offremobilite.nbrplaces, partenaire.id as idPartenaire " +
-                    "from OffreMobilite " +
-                    "join Partenaire on offremobilite.proposepar = partenaire.id");
+                    "SELECT offremobilite.idOffre AS idOffre, " +
+                    "       partenaire.refPartenaire AS refPartenaire, " +
+                    "       offremobilite.nbrplaces AS nbrPlaces, " +
+                    "       partenaire.id AS idPartenaire " +
+                    "FROM offremobilite " +
+                    "JOIN partenaire ON offremobilite.proposepar = partenaire.id");
 
             this.gOffres = new ResultSetGrid(offresAvecPart, new GridDescription(List.of(
-                    new ColumnDescription().colData(0).visible(false), // id de l'offre (non affichée)
+                    new ColumnDescription().colData(0).visible(false), // ID de l'offre (non affichée)
                     new ColumnDescription().colData(1).headerString("Partenaire"),
                     new ColumnDescription().colData(2).headerString("Nombre de places"),
                     new ColumnDescription().colDataCompo(2, (t) -> new IntAsIcon((Integer) t)).headerString("Places"),
                     new ColumnDescription().colCalculatedObject((t) -> t.get(1) + " : " + t.get(2)).headerString("Résumé"),
-                    new ColumnDescription().colData(3).visible(false) // id du partenaire (non affichée)
+                    new ColumnDescription().colData(3).visible(false) // ID du partenaire (non affichée)
             )));
             this.add(new H3("Offres de mobilité avec mise en forme"));
             this.add(this.gOffres);
 
-            // Bouton "Postuler"
-        bPostule = new Button("Postuler");
-        bPostule.addClickListener(e -> {
-            // Récupérer l'ID de l'offre sélectionnée
-            Set<List<Object>> lignesSelected = this.gOffres.getSelectedItems();
-            if (lignesSelected.isEmpty()) {
-                Notification.show("Veuillez sélectionner une offre.");
-            } else {
-                // Récupérer l'ID de l'offre à partir de la ligne sélectionnée
-                List<Object> ligne = lignesSelected.iterator().next();
-                Integer idOffre = (Integer) ligne.get(0);  // L'ID de l'offre est en première position dans la ligne
-
-                // Naviguer vers la page de candidature en passant l'ID de l'offre
-                UI.getCurrent().navigate("candidature/" + idOffre);
-            }
-        });
+            // Ajout du bouton "Postuler"
+            bPostule = new Button("Postuler");
+            bPostule.addClickListener(e -> {
+                handlePostulerClick();
+            });
             this.add(this.bPostule);
 
-            // Table groupée par partenaires (avec pourcentage)
+            // Création de la table groupée par partenaires
             PreparedStatement offresParPartenaire = con.prepareStatement(
-                    "select partenaire.id, partenaire.refPartenaire, sum(offremobilite.nbrplaces) as placesPartenaire, " +
-                    "(select sum(nbrplaces) from offremobilite) as totplaces " +
-                    "from offremobilite " +
-                    "join partenaire on offremobilite.proposepar = partenaire.id " +
-                    "group by partenaire.id");
+                    "SELECT partenaire.id AS idPartenaire, " +
+                    "       partenaire.refPartenaire AS refPartenaire, " +
+                    "       SUM(offremobilite.nbrplaces) AS placesPartenaire, " +
+                    "       (SELECT SUM(nbrplaces) FROM offremobilite) AS totPlaces " +
+                    "FROM offremobilite " +
+                    "JOIN partenaire ON offremobilite.proposepar = partenaire.id " +
+                    "GROUP BY partenaire.id");
 
             ResultSetGrid parPart = new ResultSetGrid(offresParPartenaire, new GridDescription(List.of(
-                    new ColumnDescription().colData(0).visible(false), // id du partenaire (non affichée)
+                    new ColumnDescription().colData(0).visible(false), // ID du partenaire (non affichée)
                     new ColumnDescription().colData(1).headerString("Partenaire"),
                     new ColumnDescription().colData(2).headerString("Total places offertes"),
                     new ColumnDescription().colCalculatedObject((t) -> {
@@ -103,8 +102,37 @@ public class OffresPanel extends VerticalLayout {
             this.add(parPart);
 
         } catch (SQLException ex) {
-            System.out.println("Problème : " + ex.getLocalizedMessage());
-            Notification.show("Problème : " + ex.getLocalizedMessage());
+            logAndNotifyError(ex, "Erreur lors du chargement des données");
         }
+    }
+
+    /**
+     * Gère le clic sur le bouton "Postuler".
+     */
+    private void handlePostulerClick() {
+        Set<List<Object>> lignesSelected = this.gOffres.getSelectedItems();
+        if (lignesSelected.isEmpty()) {
+            Notification.show("Veuillez sélectionner une offre.");
+        } else {
+            try {
+                List<Object> ligne = lignesSelected.iterator().next();
+                Integer idOffre = (Integer) ligne.get(0); // L'ID de l'offre est en première position
+                UI.getCurrent().navigate("candidature/" + idOffre);
+            } catch (Exception ex) {
+                logAndNotifyError(ex, "Erreur lors de la navigation vers la candidature");
+            }
+        }
+    }
+
+    /**
+     * Affiche un message d'erreur et loggue les détails.
+     * 
+     * @param ex Exception levée
+     * @param message Message utilisateur
+     */
+    private void logAndNotifyError(Exception ex, String message) {
+        System.err.println(message + ": " + ex.getLocalizedMessage());
+        ex.printStackTrace();
+        Notification.show(message + ". Consultez les logs pour plus de détails.");
     }
 }
