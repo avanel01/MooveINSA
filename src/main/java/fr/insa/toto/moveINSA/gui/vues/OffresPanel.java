@@ -15,6 +15,7 @@ import fr.insa.beuvron.vaadin.utils.dataGrid.ColumnDescription;
 import fr.insa.beuvron.vaadin.utils.dataGrid.GridDescription;
 import fr.insa.beuvron.vaadin.utils.dataGrid.ResultSetGrid;
 import fr.insa.toto.moveINSA.gui.MainLayout;
+import java.sql.ResultSet;
 
 import com.vaadin.flow.component.UI;
 
@@ -47,8 +48,7 @@ public class OffresPanel extends VerticalLayout {
 
     public OffresPanel() {
         try (Connection con = ConnectionPool.getConnection()) {
-            this.add(new H2("Affichage des offres de mobilité (tables formatées)"));
-
+            
             // Création de la table pour afficher les offres
             PreparedStatement offresAvecPart = con.prepareStatement(
                     "SELECT OffreMobilite.idOffre AS idOffre, " +
@@ -58,6 +58,23 @@ public class OffresPanel extends VerticalLayout {
                     "FROM OffreMobilite " +
                     "JOIN Partenaire ON OffreMobilite.proposepar = Partenaire.idPartenaire"
             );
+            
+            // Centrage global du contenu
+            this.getStyle()
+                .set("display", "flex")
+                .set("flex-direction", "column")
+                .set("align-items", "center")
+                .set("justify-content", "center")
+                .set("padding", "20px")
+                .set("background-color", "#f9f9f9");
+
+            // Titre principal
+            H2 titre = new H2("Affichage des offres de mobilité (tables formatées)");
+            titre.getStyle()
+                .set("text-align", "center")
+                .set("color", "#333")
+                .set("margin-bottom", "20px");
+            this.add(titre);
 
             this.gOffres = new ResultSetGrid(offresAvecPart, new GridDescription(List.of(
                     new ColumnDescription().colData(0).visible(false), // ID de l'offre (non affichée)
@@ -69,13 +86,39 @@ public class OffresPanel extends VerticalLayout {
             )));
             this.add(new H3("Offres de mobilité avec mise en forme"));
             this.add(this.gOffres);
+            this.gOffres.getStyle()
+                .set("width", "80%")
+                .set("margin", "20px auto")
+                .set("border", "1px solid #ccc")
+                .set("border-radius", "5px")
+                .set("box-shadow", "0px 4px 10px rgba(0, 0, 0, 0.1)")
+                .set("background-color", "white");
+            this.add(gOffres);
 
             // Ajout du bouton "Postuler"
             bPostule = new Button("Postuler");
+            bPostule.getStyle()
+                .set("margin-top", "20px")
+                .set("padding", "10px 20px")
+                .set("background-color", "#FF0000") // Couleur bleue
+                .set("color", "white")
+                .set("font-size", "16px")
+                .set("font-weight", "bold")
+                .set("border", "none")
+                .set("border-radius", "5px")
+                .set("cursor", "pointer");
             bPostule.addClickListener(e -> handlePostulerClick());
             this.add(this.bPostule);
-
-            // Création de la table groupée par partenaires
+            
+            // Titre pour les offres groupées
+            H3 titreParPartenaire = new H3("Offres groupées par partenaires");
+            titreParPartenaire.getStyle()
+                .set("margin-top", "30px")
+                .set("text-align", "center")
+                .set("color", "#555");
+            this.add(titreParPartenaire);
+            
+            // Création de la table groupée par partenaires // Préparation de la requête SQL pour les offres groupées
             PreparedStatement offresParPartenaire = con.prepareStatement(
                     "SELECT Partenaire.idPartenaire AS idPartenaire, " +
                     "       Partenaire.refPartenaire AS refPartenaire, " +
@@ -85,7 +128,11 @@ public class OffresPanel extends VerticalLayout {
                     "JOIN Partenaire ON OffreMobilite.proposepar = Partenaire.idPartenaire " +
                     "GROUP BY Partenaire.idPartenaire, Partenaire.refPartenaire"
             );
+            
+            // Exécution de la requête pour récupérer les résultats
+            ResultSet resultSetParPart = offresParPartenaire.executeQuery();
 
+            // Table groupée par partenaire
             ResultSetGrid parPart = new ResultSetGrid(offresParPartenaire, new GridDescription(List.of(
                     new ColumnDescription().colData(0).visible(false), // ID du partenaire (non affichée)
                     new ColumnDescription().colData(1).headerString("Partenaire"),
@@ -97,9 +144,16 @@ public class OffresPanel extends VerticalLayout {
                         return String.format("%.0f%%", percent);
                     }).headerString("Pourcentage")
             )));
-            this.add(new H3("Offres groupées par partenaires"));
+            parPart.getStyle()
+                .set("width", "80%")
+                .set("margin", "20px auto")
+                .set("border", "1px solid #ccc")
+                .set("border-radius", "5px")
+                .set("box-shadow", "0px 4px 10px rgba(0, 0, 0, 0.1)")
+                .set("background-color", "white");
             this.add(parPart);
-
+           
+            
         } catch (SQLException ex) {
             logAndNotifyError(ex, "Erreur lors du chargement des données");
         }
@@ -134,4 +188,6 @@ public class OffresPanel extends VerticalLayout {
         ex.printStackTrace();
         Notification.show(message + ". Consultez les logs pour plus de détails.");
     }
+    
+    
 }
