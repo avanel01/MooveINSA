@@ -28,7 +28,7 @@ public class OffreMobilite {
     private String dispositif;
     private String nomOffre;
     private String specialiteAssocie;
-    private List<String> semestres; // Liste des semestres associés à l'offre
+    private List<Integer> semestres; // Liste des semestres associés à l'offre, corrigée en List<Integer>
 
     /**
      * Création d'une nouvelle Offre en mémoire, non existante dans la base de
@@ -65,7 +65,7 @@ public class OffreMobilite {
         this.dispositif = dispositif;
         this.nomOffre = nomOffre;
         this.specialiteAssocie = specialiteAssocie;
-        this.semestres = new ArrayList<>();
+        this.semestres = new ArrayList<>(); // Initialisation de la liste des semestres
     }
 
     @Override
@@ -214,8 +214,8 @@ public class OffreMobilite {
      * @param idOffre l'ID de l'offre
      * @return une liste de semestres associés à l'offre
      */
-    private static List<String> getSemestresForOffre(Connection con, int idOffre) {
-        List<String> semestres = new ArrayList<>();
+    private static List<Integer> getSemestresForOffre(Connection con, int idOffre) {
+        List<Integer> semestres = new ArrayList<>();
         String query = "SELECT semestre FROM SemestresOffre WHERE idOffre = ?"; // Exemple de requête
 
         try (PreparedStatement stmt = con.prepareStatement(query)) {
@@ -223,7 +223,7 @@ public class OffreMobilite {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    semestres.add(rs.getString("semestre"));
+                    semestres.add(rs.getInt("semestre")); // Ajout des semestres en tant qu'entiers
                 }
             }
         } catch (SQLException ex) {
@@ -242,13 +242,67 @@ public class OffreMobilite {
         this.idOffre = idOffre;
     }
 
-    public List<String> getSemestres() {
+    public List<Integer> getSemestres() {
         return semestres;
     }
 
-    public void setSemestres(List<String> semestres) {
+    public void setSemestres(List<Integer> semestres) {
         this.semestres = semestres;
     }
 
-    // Autres getters et setters pour les autres attributs...
+    public int getNbrPlaces() {
+        return nbrPlaces;
+    }
+
+    public void setNbrPlaces(int nbrPlaces) {
+        this.nbrPlaces = nbrPlaces;
+    }
+
+    public int getProposePar() {
+        return proposePar;
+    }
+
+    public void setProposePar(int proposePar) {
+        this.proposePar = proposePar;
+    }
+
+    public int getSemestre() {
+        return semestre;
+    }
+
+    public void setSemestre(int semestre) {
+        this.semestre = semestre;
+    }
+
+    public int getNiveauScolaire() {
+        return niveauScolaire;
+    }
+
+    public void setNiveauScolaire(int niveauScolaire) {
+        this.niveauScolaire = niveauScolaire;
+    }
+
+    public String getDispositif() {
+        return dispositif;
+    }
+
+    public void setDispositif(String dispositif) {
+        this.dispositif = dispositif;
+    }
+
+    public String getNomOffre() {
+        return nomOffre;
+    }
+
+    public void setNomOffre(String nomOffre) {
+        this.nomOffre = nomOffre;
+    }
+
+    public String getSpecialiteAssocie() {
+        return specialiteAssocie;
+    }
+
+    public void setSpecialiteAssocie(String specialiteAssocie) {
+        this.specialiteAssocie = specialiteAssocie;
+    }
 }

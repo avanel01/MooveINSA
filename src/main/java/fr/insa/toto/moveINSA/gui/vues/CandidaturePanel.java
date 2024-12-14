@@ -30,7 +30,7 @@ public class CandidaturePanel extends VerticalLayout implements BeforeEnterObser
     private Label idOField;   // Label pour afficher la référence de l'offre
     private Label idEField;   // Label pour afficher l'INE de l'étudiant
     private ComboBox<Integer> ordreField; // Champ pour l'ordre de demande (ComboBox au lieu de TextField)
-    private ComboBox<String> semestreField;  // ComboBox pour le semestre
+    private ComboBox<Integer> semestreField;  // ComboBox pour le semestre (en tant qu'Integer)
     private Button bSave;
 
     private Etudiant etudiantConnecte;
@@ -58,9 +58,9 @@ public class CandidaturePanel extends VerticalLayout implements BeforeEnterObser
         this.ordreField.setItems(1, 2, 3, 4, 5);  // Valeurs possibles de 1 à 5
         this.ordreField.setPlaceholder("Choisissez un ordre");
 
-        // ComboBox pour le semestre
+        // ComboBox pour le semestre (en tant qu'Integer)
         this.semestreField = new ComboBox<>("Semestre");
-        this.ordreField.setItems(5, 6, 7, 8, 9);
+        this.semestreField.setItems(5, 6, 7, 8, 9);  // Semestres sous forme d'entiers
         this.semestreField.setPlaceholder("Choisissez un semestre");
 
         // Bouton pour sauvegarder la candidature
@@ -89,7 +89,7 @@ public class CandidaturePanel extends VerticalLayout implements BeforeEnterObser
                     this.offre = offreOpt.get();
 
                     // Récupérer les semestres de l'offre et les ajouter dans le ComboBox
-                    List<String> semestres = offre.getSemestres();  // Liste des semestres disponibles pour l'offre
+                    List<Integer> semestres = offre.getSemestres();  // Liste des semestres disponibles pour l'offre
                     semestreField.setItems(semestres);  // Ajouter les semestres au ComboBox
                 } else {
                     Notification.show("Erreur : Offre introuvable.");
@@ -115,7 +115,7 @@ public class CandidaturePanel extends VerticalLayout implements BeforeEnterObser
         return Optional.empty();
     }
 
-     private void handleSave() {
+    private void handleSave() {
         if (etudiantConnecte == null) {
             Notification.show("Erreur : Aucun étudiant connecté.");
             return;
@@ -133,13 +133,13 @@ public class CandidaturePanel extends VerticalLayout implements BeforeEnterObser
             }
             this.nouveau.setOrdre(ordre);
 
-            // Validation et récupération du semestre
-            String semestre = this.semestreField.getValue();
+            // Validation et récupération du semestre (en tant qu'Integer)
+            Integer semestre = this.semestreField.getValue();
             if (semestre == null || !offre.getSemestres().contains(semestre)) {
                 Notification.show("Erreur : Veuillez sélectionner un semestre valide pour l'offre.");
                 return;
             }
-            this.nouveau.setDate(Integer.parseInt(semestre));
+            this.nouveau.setDate(semestre);  // Utiliser le semestre comme Integer
 
             // Sauvegarde dans la base de données
             this.nouveau.saveInDB(con);
