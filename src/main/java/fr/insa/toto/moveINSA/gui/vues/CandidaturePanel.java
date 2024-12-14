@@ -60,6 +60,7 @@ public class CandidaturePanel extends VerticalLayout implements BeforeEnterObser
 
         // ComboBox pour le semestre
         this.semestreField = new ComboBox<>("Semestre");
+        this.ordreField.setItems(5, 6, 7, 8, 9);
         this.semestreField.setPlaceholder("Choisissez un semestre");
 
         // Bouton pour sauvegarder la candidature
@@ -114,7 +115,7 @@ public class CandidaturePanel extends VerticalLayout implements BeforeEnterObser
         return Optional.empty();
     }
 
-    private void handleSave() {
+     private void handleSave() {
         if (etudiantConnecte == null) {
             Notification.show("Erreur : Aucun étudiant connecté.");
             return;
@@ -134,8 +135,8 @@ public class CandidaturePanel extends VerticalLayout implements BeforeEnterObser
 
             // Validation et récupération du semestre
             String semestre = this.semestreField.getValue();
-            if (semestre == null || semestre.isEmpty()) {
-                Notification.show("Erreur : Veuillez sélectionner un semestre.");
+            if (semestre == null || !offre.getSemestres().contains(semestre)) {
+                Notification.show("Erreur : Veuillez sélectionner un semestre valide pour l'offre.");
                 return;
             }
             this.nouveau.setDate(Integer.parseInt(semestre));
