@@ -54,7 +54,8 @@ public OffresPanel() {
             "       Partenaire.refPartenaire AS refPartenaire, " +
             "       OffreMobilite.nbrPlaces AS nbrPlaces, " +
             "       Partenaire.idPartenaire AS idPartenaire, " +
-            "       OffreMobilite.nomOffre AS nomOffre " +
+            "       OffreMobilite.nomOffre AS nomOffre, " +
+            "       OffreMobilite.spacialiteAssocie AS spe " +
             "FROM OffreMobilite " +
             "JOIN Partenaire ON OffreMobilite.proposepar = Partenaire.idPartenaire"
         );
@@ -84,6 +85,7 @@ public OffresPanel() {
             new ColumnDescription().colDataCompo(2, (nbrPlaces) -> 
                 new IntAsIcon((Integer) nbrPlaces) // Composant pour afficher le nombre de places
             ).headerString("Places disponibles"),
+            new ColumnDescription().colData(5).headerString("Pour"),
             new ColumnDescription().colCalculatedObject((row) -> 
                 row.get(1) + " : " + row.get(4) // Résumé avec le partenaire et l'intitulé
             ).headerString("Résumé"),
