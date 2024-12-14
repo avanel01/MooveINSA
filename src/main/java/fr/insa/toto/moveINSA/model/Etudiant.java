@@ -189,7 +189,7 @@ public String saveInDB(Connection con) throws SQLException, EntiteDejaSauvegarde
     // Vérifie si l'INE est déjà défini
     if (this.INE != null) {
         // Vérifie dans la base de données si un étudiant avec le même INE existe
-        String sqlCheck = "SELECT INE FROM etudiant WHERE INE = ?";
+        String sqlCheck = "SELECT INE FROM Etudiant WHERE INE = ?";
         try (PreparedStatement checkStmt = con.prepareStatement(sqlCheck)) {
             checkStmt.setString(1, this.INE);
             try (ResultSet rs = checkStmt.executeQuery()) {
@@ -201,7 +201,7 @@ public String saveInDB(Connection con) throws SQLException, EntiteDejaSauvegarde
     }
 
     // Insère un nouvel étudiant dans la base de données
-    String sqlInsert = "INSERT INTO etudiant (INE, nometudiant, prenom, classe, annee, classement, mdp) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    String sqlInsert = "INSERT INTO Etudiant (INE, nometudiant, prenom, classe, annee, classement, mdp) VALUES (?, ?, ?, ?, ?, ?, ?)";
     try (PreparedStatement insertStmt = con.prepareStatement(sqlInsert)) {
         insertStmt.setString(1, this.INE);
         insertStmt.setString(2, this.nomEtudiant);
@@ -230,7 +230,7 @@ public String saveInDB(Connection con) throws SQLException, EntiteDejaSauvegarde
  * @throws SQLException En cas de problème avec la base de données
  */
 private static boolean ineExisteDeja(Connection con, String ine) throws SQLException {
-    String sql = "SELECT COUNT(*) FROM etudiant WHERE INE = ?";
+    String sql = "SELECT COUNT(*) FROM Etudiant WHERE INE = ?";
     try (PreparedStatement check = con.prepareStatement(sql)) {
         check.setString(1, ine);
         try (ResultSet rs = check.executeQuery()) {
@@ -250,7 +250,7 @@ private static boolean ineExisteDeja(Connection con, String ine) throws SQLExcep
      */
     public static List<Etudiant> tousLesEtudiants(Connection con) throws SQLException {
         try (PreparedStatement pst = con.prepareStatement(
-                "SELECT INE, nom, prenom, classe, annee, classement, mdp FROM etudiant")) {
+                "SELECT INE, nom, prenom, classe, annee, classement, mdp FROM Etudiant")) {
             ResultSet rs = pst.executeQuery();
             List<Etudiant> res = new ArrayList<>();
             while (rs.next()) {

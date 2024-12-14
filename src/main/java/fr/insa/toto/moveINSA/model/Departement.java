@@ -70,7 +70,7 @@ public class Departement {
         }
 
         try (PreparedStatement insert = con.prepareStatement(
-                "INSERT INTO departement (nomDepartement, specialite) VALUES (?, ?)", // Correction du nom de la table
+                "INSERT INTO Departement (nomDepartement, specialite) VALUES (?, ?)", // Correction du nom de la table
                 PreparedStatement.RETURN_GENERATED_KEYS)) {
 
             insert.setString(1, this.nomDepartement);
@@ -94,7 +94,7 @@ public class Departement {
      */
     public static List<Departement> tousLesDepartements(Connection con) throws SQLException {
         try (PreparedStatement pst = con.prepareStatement(
-                "SELECT idDepartement, nomDepartement, specialite FROM departement")) { // Correction du nom de la table
+                "SELECT idDepartement, nomDepartement, specialite FROM Departement")) { // Correction du nom de la table
             ResultSet rs = pst.executeQuery();
             List<Departement> res = new ArrayList<>(); // Utilisation de la bonne liste
             while (rs.next()) {

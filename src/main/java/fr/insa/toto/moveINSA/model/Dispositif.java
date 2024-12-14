@@ -38,7 +38,7 @@ public class Dispositif {
     public int saveInDB(Connection con) throws SQLException {
         // Insertion dans la table dispositif
         try (PreparedStatement insert = con.prepareStatement(
-                "insert into dispositif (type) values (?)",
+                "insert into Dispositif (type) values (?)",
                 PreparedStatement.RETURN_GENERATED_KEYS)) {
             insert.setString(1, this.type);
             insert.executeUpdate();
@@ -63,7 +63,7 @@ public class Dispositif {
      */
     public static List<Dispositif> tousLesDispositif(Connection con) throws SQLException {
         try (PreparedStatement pst = con.prepareStatement(
-                "select id, type from dispositif")) {
+                "select id, type from Dispositif")) {
             ResultSet rs = pst.executeQuery();
             List<Dispositif> res = new ArrayList<>();
             while (rs.next()) {

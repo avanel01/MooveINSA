@@ -29,7 +29,7 @@ public class Semestre {
     
      public static List<Semestre> tousLesSemestre(Connection con) throws SQLException {
         try (PreparedStatement pst = con.prepareStatement(
-                "select idSemestre, nomSemestre from dispositif")) {
+                "select idSemestre, nomSemestre from Dispositif")) {
             ResultSet rs = pst.executeQuery();
             List<Semestre> res = new ArrayList<>();
             while (rs.next()) {
@@ -49,7 +49,7 @@ public class Semestre {
     public int saveInDB(Connection con) throws SQLException {
         // Insertion dans la table semestre
         try (PreparedStatement insert = con.prepareStatement(
-                "insert into semestre (nomSemestre) values (?)",
+                "insert into Semestre (nomSemestre) values (?)",
                 PreparedStatement.RETURN_GENERATED_KEYS)) {
             insert.setString(1, this.nomSemestre);  // Insère le nom du semestre
             insert.executeUpdate();

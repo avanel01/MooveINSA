@@ -126,7 +126,7 @@ public Partenaire(String refPartenaire, String ville, String pays) {
     System.out.println("Pays: " + this.getPays());
 
 
-    String sql = "INSERT INTO partenaire (refPartenaire, ville, pays) VALUES (?, ?, ?)";
+    String sql = "INSERT INTO Partenaire (refPartenaire, ville, pays) VALUES (?, ?, ?)";
     try (PreparedStatement insert = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
         // Assigner les valeurs des attributs refPartenaire, ville et pays
         insert.setString(1, this.getRefPartenaire());
@@ -149,7 +149,7 @@ public Partenaire(String refPartenaire, String ville, String pays) {
 
     public static List<Partenaire> tousLesPartenaires(Connection con) throws SQLException {
         try (PreparedStatement pst = con.prepareStatement(
-                "select idPartenaire,refPartenaire from partenaire")) {
+                "select idPartenaire,refPartenaire from Partenaire")) {
             ResultSet rs = pst.executeQuery();
             List<Partenaire> res = new ArrayList<>();
             while (rs.next()) {
@@ -160,7 +160,7 @@ public Partenaire(String refPartenaire, String ville, String pays) {
     }
     public static List<String> toutesLesVilles(Connection con) throws SQLException {
     try (PreparedStatement pst = con.prepareStatement(
-            "select distinct ville from partenaire")) {
+            "select distinct ville from Partenaire")) {
         ResultSet rs = pst.executeQuery();
         List<String> villes = new ArrayList<>();
         while (rs.next()) {
@@ -171,7 +171,7 @@ public Partenaire(String refPartenaire, String ville, String pays) {
 }
     public static List<String> tousLesPays(Connection con) throws SQLException {
     try (PreparedStatement pst = con.prepareStatement(
-            "SELECT DISTINCT pays FROM partenaire")) {
+            "SELECT DISTINCT pays FROM Partenaire")) {
         ResultSet rs = pst.executeQuery();
         List<String> pays = new ArrayList<>();
         while (rs.next()) {
@@ -183,7 +183,7 @@ public Partenaire(String refPartenaire, String ville, String pays) {
     
     public static Optional<Partenaire> RechercherPartenaireParRef(Connection con, String ref) throws SQLException {
     try (PreparedStatement pst = con.prepareStatement(
-            "SELECT idPartenaire, refPartenaire, ville, pays FROM partenaire WHERE refPartenaire = ?")) {
+            "SELECT idPartenaire, refPartenaire, ville, pays FROM Partenaire WHERE refPartenaire = ?")) {
         pst.setString(1, ref); // Définit la valeur pour le paramètre refPartenaire
         ResultSet rs = pst.executeQuery();
         if (rs.next()) {
@@ -230,7 +230,7 @@ public Partenaire(String refPartenaire, String ville, String pays) {
     
     public static Optional<Partenaire> getPartenaireByRef(Connection con, String refPartenaire) throws SQLException {
     try (PreparedStatement pst = con.prepareStatement(
-            "SELECT idPartenaire, refPartenaire, ville, pays FROM partenaire WHERE refPartenaire = ?")) {
+            "SELECT idPartenaire, refPartenaire, ville, pays FROM Partenaire WHERE refPartenaire = ?")) {
         pst.setString(1, refPartenaire);  // Définir la valeur de la référence du partenaire
 
         ResultSet rs = pst.executeQuery();

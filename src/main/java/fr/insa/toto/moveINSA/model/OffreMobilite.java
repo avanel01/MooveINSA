@@ -96,7 +96,7 @@ public class OffreMobilite {
             throw new EntiteDejaSauvegardee();
         }
         try (PreparedStatement insert = con.prepareStatement(
-                "INSERT INTO offremobilite (nbrplaces, proposepar, semestre, niveauScolaire, dispositif, nomOffre, specialiteAssocie) VALUES (?,?,?,?,?,?,?)",
+                "INSERT INTO OffreMobilite (nbrplaces, proposepar, semestre, niveauScolaire, dispositif, nomOffre, specialiteAssocie) VALUES (?,?,?,?,?,?,?)",
                 PreparedStatement.RETURN_GENERATED_KEYS)) {
             insert.setInt(1, this.nbrPlaces);
             insert.setInt(2, this.proposePar);
@@ -127,7 +127,7 @@ public class OffreMobilite {
      */
     public static List<OffreMobilite> toutesLesOffres(Connection con) throws SQLException {
         try (PreparedStatement pst = con.prepareStatement(
-                "SELECT id, nbrplaces, proposepar, semestre, niveauScolaire, dispositif, nomOffre, specialiteAssocie FROM offremobilite")) {
+                "SELECT id, nbrplaces, proposepar, semestre, niveauScolaire, dispositif, nomOffre, specialiteAssocie FROM OffreMobilite")) {
             ResultSet rs = pst.executeQuery();
             List<OffreMobilite> res = new ArrayList<>();
             while (rs.next()) {

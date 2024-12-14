@@ -171,7 +171,7 @@ public class Classe {
     }
     
     public static Classe recupererParNomClasse(Connection con, String nomClasse) throws SQLException {
-    String requete = "SELECT idClasse, nomClasse, effectifClasse, specialite, annee FROM Classe WHERE nomClasse = ?";
+    String requete = "SELECT idClasse, nomClasse, effectifClasse, specialite, annee FROM classe WHERE nomClasse = ?";
     try (PreparedStatement pst = con.prepareStatement(requete)) {
         pst.setString(1, nomClasse);
         try (ResultSet rs = pst.executeQuery()) {

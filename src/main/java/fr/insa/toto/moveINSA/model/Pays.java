@@ -74,7 +74,7 @@ public Pays (String nomPays) {
             throw new EntiteDejaSauvegardee();
         }
         try (PreparedStatement insert = con.prepareStatement(
-                "insert into partenaire (nomPays) values (?)",
+                "insert into Pays (nomPays) values (?)",
                 PreparedStatement.RETURN_GENERATED_KEYS)) {
             // Assigner les valeurs des attributs nomPays
             insert.setString(1, this.getNomPays());
@@ -90,7 +90,7 @@ public Pays (String nomPays) {
 
     public static List<Pays> tousLesNomsPays(Connection con) throws SQLException {
         try (PreparedStatement pst = con.prepareStatement(
-                "select idPays,nomPays from pays")) {
+                "select idPays,nomPays from Pays")) {
             ResultSet rs = pst.executeQuery();
             List<Pays> res = new ArrayList<>();
             while (rs.next()) {

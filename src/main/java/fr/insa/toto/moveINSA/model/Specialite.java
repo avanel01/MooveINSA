@@ -73,7 +73,7 @@ public class Specialite {
         }
 
         try (PreparedStatement insert = con.prepareStatement(
-                "INSERT INTO specialite (nomSpecialite, specialite) VALUES (?, ?)",
+                "INSERT INTO Specialite (nomSpecialite, specialite) VALUES (?, ?)",
                 PreparedStatement.RETURN_GENERATED_KEYS)) { // Correction du nom de la table
 
             insert.setString(1, this.nomSpecialite);

@@ -46,7 +46,7 @@ public class Candidature {
      * Sauvegarde une candidature dans la base de données et retourne l'ID généré.
      */
     public int saveInDB(Connection con) throws SQLException {
-        String query = "INSERT INTO candidature (idOffre, idEtudiant, ordre, classementEtudiant, date) VALUES (?,?,?,?,?)";
+        String query = "INSERT INTO Candidature (idOffre, idEtudiant, ordre, classementEtudiant, date) VALUES (?,?,?,?,?)";
         try (PreparedStatement insert = con.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
             insert.setInt(1, this.idOffre);
             insert.setString(2, this.idEtudiant);
@@ -67,7 +67,7 @@ public class Candidature {
     }
 
     public static int nombreCandidaturesEtudiant(Connection con, String idEtudiant) throws SQLException {
-        String query = "SELECT COUNT(*) FROM candidature WHERE idEtudiant = ?";
+        String query = "SELECT COUNT(*) FROM Candidature WHERE idEtudiant = ?";
         try (PreparedStatement pst = con.prepareStatement(query)) {
             pst.setString(1, idEtudiant);
             try (ResultSet rs = pst.executeQuery()) {
@@ -83,7 +83,7 @@ public class Candidature {
      * Récupère toutes les candidatures de la base de données.
      */
     public static List<Candidature> toutesLesCandidatures(Connection con) throws SQLException {
-        String query = "SELECT idCandidature, idOffre, idEtudiant, ordre, classementEtudiant, date FROM candidature";
+        String query = "SELECT idCandidature, idOffre, idEtudiant, ordre, classementEtudiant, date FROM Candidature";
         try (PreparedStatement pst = con.prepareStatement(query);
              ResultSet rs = pst.executeQuery()) {
 
@@ -103,7 +103,7 @@ public class Candidature {
     }
 
     public static List<Candidature> candidatureEtudiant(Connection con, String idEtudiant) throws SQLException {
-        String query = "SELECT idCandidature, idOffre, ordre, classementEtudiant, date FROM candidature WHERE idEtudiant = ?";
+        String query = "SELECT idCandidature, idOffre, ordre, classementEtudiant, date FROM Candidature WHERE idEtudiant = ?";
         try (PreparedStatement pst = con.prepareStatement(query)) {
             pst.setString(1, idEtudiant);
 
