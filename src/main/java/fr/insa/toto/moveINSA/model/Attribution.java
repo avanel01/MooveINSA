@@ -31,10 +31,10 @@ public class Attribution {
     private int idAttribution;
     private int idOffre;
     private String idEtudiant;
-    private String date;
+    private int date;
   
     // Constructeur
-    public Attribution(int idAttribution, int idOffre, String idEtudiant, String date) {
+    public Attribution(int idAttribution, int idOffre, String idEtudiant, int date) {
         this.idAttribution = idAttribution;
         this.idOffre = idOffre;
         this.idEtudiant = idEtudiant;
@@ -65,7 +65,7 @@ public class Attribution {
             // Assigner les valeurs des attributs
             insert.setInt(1, this.getIdOffre());
             insert.setString(2, this.getIdEtudiant());
-            insert.setString(3, this.getDate());
+            insert.setInt(3, this.getDate());
             insert.executeUpdate();
 
             // Récupérer la clé générée (ID)
@@ -79,11 +79,11 @@ public class Attribution {
     }
 
     // Getters and Setters
-    public String getDate() {
+    public int getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(int date) {
         this.date = date;
     }
 

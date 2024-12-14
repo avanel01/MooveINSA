@@ -41,7 +41,7 @@ public class SRI {
     // Sauvegarde du SRI dans la base de données
     public int saveInDB(Connection con) throws SQLException {
         if (this.getIdPersonnel() != -1) {
-            throw new EntiteDejaSauvegardee();
+            throw new EntiteDejaSauvegardee(); // Exception personnalisée
         }
         try (PreparedStatement insert = con.prepareStatement(
                 "insert into SRI (login, motDePasse) values (?,?)",
@@ -69,23 +69,11 @@ public class SRI {
         Set<String> etudiantsAttribues = new HashSet<>();
 
         // Comparator personnalisé pour trier les candidatures
-        candidatures.sort(new Comparator<Candidature>() {
-            @Override
-            public int compare(Candidature c1, Candidature c2) {
-                // Comparer par idOffre
-                int compareOffre = Integer.compare(c1.getIdOffre(), c2.getIdOffre());
-                if (compareOffre != 0) {
-                    return compareOffre;
-                }
-                // Si idOffre est identique, comparer par ordre (ordre de préférence)
-                int compareOrdre = Integer.compare(c1.getOrdre(), c2.getOrdre());
-                if (compareOrdre != 0) {
-                    return compareOrdre;
-                }
-                // Si ordre est identique, comparer par classementEtudiant (classement de l'étudiant)
-                return Integer.compare(c1.getClassement(), c2.getClassement());
-            }
-        });
+        candidatures.sort(Comparator
+            .comparing(Candidature::getIdOffre)
+            .thenComparing(Candidature::getOrdre)
+            .thenComparing(Candidature::getClassement)
+        );
 
         int idAttributionCounter = 1;
 
@@ -102,7 +90,8 @@ public class SRI {
             // Vérifier si l'offre n'a pas encore été attribuée
             if (!offresAttribuees.containsKey(idOffre)) {
                 // Créer une nouvelle attribution
-                Attribution attribution = new Attribution(idAttributionCounter++, idOffre, idEtudiant, candidature.getDate());
+                Attribution attribution;
+                attribution = new Attribution(idAttributionCounter++, idOffre, idEtudiant, candidature.getDate());
                 // Ajouter l'attribution à la liste
                 attributions.add(attribution);
                 // Marquer l'offre comme attribuée

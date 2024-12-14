@@ -1,4 +1,3 @@
-
 package fr.insa.toto.moveINSA.model;
 
 import fr.insa.beuvron.utils.ConsoleFdB;
@@ -8,12 +7,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
- * Classe "miroir" de la table offremobilite.
+ * Classe "miroir" de la table offre_mobilite.
  * <p>
- * pour un commentaire plus détaillé sur ces classes "miroir", voir dans la
- * classe Partenaire
+ * Pour un commentaire plus détaillé sur ces classes "miroir", voir dans la
+ * classe Partenaire.
  * </p>
  *
  * @author francois
@@ -28,6 +28,7 @@ public class OffreMobilite {
     private String dispositif;
     private String nomOffre;
     private String specialiteAssocie;
+    private List<String> semestres; // Liste des semestres associés à l'offre
 
     /**
      * Création d'une nouvelle Offre en mémoire, non existante dans la base de
@@ -64,12 +65,13 @@ public class OffreMobilite {
         this.dispositif = dispositif;
         this.nomOffre = nomOffre;
         this.specialiteAssocie = specialiteAssocie;
+        this.semestres = new ArrayList<>();
     }
 
     @Override
     public String toString() {
         return "OffreMobilite{" +
-                "id=" + this.getId() +
+                "idOffre=" + idOffre +
                 ", nbrPlaces=" + nbrPlaces +
                 ", proposePar=" + proposePar +
                 ", semestre=" + semestre +
@@ -127,12 +129,12 @@ public class OffreMobilite {
      */
     public static List<OffreMobilite> toutesLesOffres(Connection con) throws SQLException {
         try (PreparedStatement pst = con.prepareStatement(
-                "SELECT id, nbrplaces, proposepar, semestre, niveauScolaire, dispositif, nomOffre, specialiteAssocie FROM OffreMobilite")) {
+                "SELECT idOffre, nbrplaces, proposepar, semestre, niveauScolaire, dispositif, nomOffre, specialiteAssocie FROM OffreMobilite")) {
             ResultSet rs = pst.executeQuery();
             List<OffreMobilite> res = new ArrayList<>();
             while (rs.next()) {
                 res.add(new OffreMobilite(
-                        rs.getInt("id"), 
+                        rs.getInt("idOffre"), 
                         rs.getInt("nbrplaces"), 
                         rs.getInt("proposepar"), 
                         rs.getInt("semestre"), 
@@ -167,10 +169,86 @@ public class OffreMobilite {
     }
 
     /**
-     * @return the id
+     * Récupère une offre de mobilité par son ID.
+     * 
+     * @param con la connexion à la base de données
+     * @param idOffre l'ID de l'offre
+     * @return une instance d'OffreMobilite ou un Optional vide si non trouvé
      */
+    public static Optional<OffreMobilite> getOffreById(Connection con, int idOffre) {
+        String query = "SELECT * FROM OffreMobilite WHERE idOffre = ?"; // Requête SQL
+
+        try (PreparedStatement stmt = con.prepareStatement(query)) {
+            stmt.setInt(1, idOffre);  // Paramétrage de la requête avec l'ID de l'offre
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    OffreMobilite offre = new OffreMobilite(
+                        rs.getInt("idOffre"),
+                        rs.getInt("nbrplaces"),
+                        rs.getInt("proposepar"),
+                        rs.getInt("semestre"),
+                        rs.getInt("niveauScolaire"),
+                        rs.getString("dispositif"),
+                        rs.getString("nomOffre"),
+                        rs.getString("specialiteAssocie")
+                    );
+
+                    // Récupération des semestres associés
+                    offre.setSemestres(getSemestresForOffre(con, idOffre));
+
+                    return Optional.of(offre); // Retourne l'offre trouvée
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        return Optional.empty(); // Retourne un Optional vide si l'offre n'a pas été trouvée
+    }
+
+    /**
+     * Récupère les semestres associés à une offre de mobilité.
+     * 
+     * @param con la connexion à la base de données
+     * @param idOffre l'ID de l'offre
+     * @return une liste de semestres associés à l'offre
+     */
+    private static List<String> getSemestresForOffre(Connection con, int idOffre) {
+        List<String> semestres = new ArrayList<>();
+        String query = "SELECT semestre FROM SemestresOffre WHERE idOffre = ?"; // Exemple de requête
+
+        try (PreparedStatement stmt = con.prepareStatement(query)) {
+            stmt.setInt(1, idOffre);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    semestres.add(rs.getString("semestre"));
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        return semestres;
+    }
+
+    // Getters et Setters
     public int getId() {
         return idOffre;
     }
 
+    public void setIdOffre(int idOffre) {
+        this.idOffre = idOffre;
+    }
+
+    public List<String> getSemestres() {
+        return semestres;
+    }
+
+    public void setSemestres(List<String> semestres) {
+        this.semestres = semestres;
+    }
+
+    // Autres getters et setters pour les autres attributs...
 }

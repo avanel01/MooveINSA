@@ -15,7 +15,7 @@ import com.vaadin.flow.server.VaadinSession;
 import fr.insa.beuvron.vaadin.utils.ConnectionPool;
 import fr.insa.toto.moveINSA.model.Candidature;
 import fr.insa.toto.moveINSA.model.Etudiant;
-import fr.insa.toto.moveINSA.model.Offre;  // Ajout de l'import de la classe Offre
+import fr.insa.toto.moveINSA.model.OffreMobilite;  // Ajout de l'import de la classe OffreMobilite
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -34,7 +34,7 @@ public class CandidaturePanel extends VerticalLayout implements BeforeEnterObser
     private Button bSave;
 
     private Etudiant etudiantConnecte;
-    private Offre offre;  // Offre associée à la candidature
+    private OffreMobilite offre;  // Offre associée à la candidature
 
     public CandidaturePanel() {
         add(new H2("Formulaire de Candidature"));
@@ -47,7 +47,7 @@ public class CandidaturePanel extends VerticalLayout implements BeforeEnterObser
         }
 
         // Initialiser une nouvelle candidature
-        this.nouveau = new Candidature(-1, -1, null, -1, -1, null);
+        this.nouveau = new Candidature(-1, -1, null, -1, -1, -1);
 
         // Champs pour le formulaire
         this.idOField = new Label("Référence de l'offre : (non chargée)");
@@ -78,12 +78,12 @@ public class CandidaturePanel extends VerticalLayout implements BeforeEnterObser
         Optional<Integer> idOffreOpt = getIdOffreFromParameters(parameters);
         if (idOffreOpt.isPresent()) {
             int idOffre = idOffreOpt.get();
-            this.idOField.setText("Référence de l'offre : partenaire/" + idOffre);
+            this.idOField.setText("Référence de l'offre : " + idOffre);  // Correction de l'affichage de l'ID de l'offre
             this.nouveau.setIdOffre(idOffre);
 
             // Récupérer l'offre depuis la base de données ou autre source
             try (Connection con = ConnectionPool.getConnection()) {
-                Optional<Offre> offreOpt = Offre.getOffreById(con, idOffre);  // Méthode pour récupérer l'offre par son ID
+                Optional<OffreMobilite> offreOpt = OffreMobilite.getOffreById(con, idOffre);  // Méthode pour récupérer l'offre par son ID
                 if (offreOpt.isPresent()) {
                     this.offre = offreOpt.get();
 
@@ -138,7 +138,7 @@ public class CandidaturePanel extends VerticalLayout implements BeforeEnterObser
                 Notification.show("Erreur : Veuillez sélectionner un semestre.");
                 return;
             }
-            this.nouveau.setDate(semestre);
+            this.nouveau.setDate(Integer.parseInt(semestre));
 
             // Sauvegarde dans la base de données
             this.nouveau.saveInDB(con);
