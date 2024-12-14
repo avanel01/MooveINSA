@@ -78,8 +78,8 @@ public class PartenairesPanel extends VerticalLayout {
     private void setupPartenairesParPays(Connection con) throws SQLException {
         // Requête pour afficher les partenaires groupés par pays
         PreparedStatement partenaireParPays = con.prepareStatement(
-            "SELECT pays.idPays, pays.nomPays, COUNT(partenaire.id) AS nbrPartenaires, " +
-            "       (SELECT COUNT(*) FROM partenaire) AS totalPartenaires " +
+            "SELECT pays.idPays, pays.nomPays, COUNT(partenaire.idPartenaire) AS nbrPartenaires, " +
+            "       (SELECT COUNT(*) FROM Partenaire) AS totalPartenaires " +
             "FROM Partenaire " +
             "JOIN Pays ON partenaire.pays = pays.idPays " +
             "GROUP BY pays.idPays"
