@@ -55,7 +55,7 @@ public OffresPanel() {
             "       OffreMobilite.nbrPlaces AS nbrPlaces, " +
             "       Partenaire.idPartenaire AS idPartenaire, " +
             "       OffreMobilite.nomOffre AS nomOffre, " +
-            "       OffreMobilite.spacialiteAssocie AS spe " +
+            "       OffreMobilite.specialiteAssocie AS spe " + // Vérifiez l'orthographe ici
             "FROM OffreMobilite " +
             "JOIN Partenaire ON OffreMobilite.proposepar = Partenaire.idPartenaire"
         );
@@ -85,7 +85,7 @@ public OffresPanel() {
             new ColumnDescription().colDataCompo(2, (nbrPlaces) -> 
                 new IntAsIcon((Integer) nbrPlaces) // Composant pour afficher le nombre de places
             ).headerString("Places disponibles"),
-            new ColumnDescription().colData(5).headerString("Pour"),
+            new ColumnDescription().colData(5).headerString("Spécialité"), // specialiteAssocie
             new ColumnDescription().colCalculatedObject((row) -> 
                 row.get(1) + " : " + row.get(4) // Résumé avec le partenaire et l'intitulé
             ).headerString("Résumé"),
@@ -105,7 +105,7 @@ public OffresPanel() {
             .set("box-shadow", "0px 4px 10px rgba(0, 0, 0, 0.1)")
             .set("background-color", "white");
 
-            this.add(gOffres);
+    
 
             // Ajout du bouton "Postuler"
             bPostule = new Button("Postuler");
