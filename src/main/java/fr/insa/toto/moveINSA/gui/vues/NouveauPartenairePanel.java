@@ -46,7 +46,7 @@ public class NouveauPartenairePanel extends VerticalLayout {
     private TextField villeField;  // Champ pour la ville
     private TextField paysField;  // Champ pour le pays
     private Button bSave;
-
+   
     public NouveauPartenairePanel() {
         // Titre du panneau
         this.add(new H3("Création d'un nouveau partenaire"));
@@ -58,6 +58,21 @@ public class NouveauPartenairePanel extends VerticalLayout {
         this.refField = new TextField("Référence du partenaire");
         this.villeField = new TextField("Ville");
         this.paysField = new TextField("Pays");
+        
+        // Changer la largeur des champs pour les rendre plus larges et homogènes
+        refField.getStyle().set("width", "300px");
+        villeField.getStyle().set("width", "300px");
+        paysField.getStyle().set("width", "300px");
+        
+        // Centrer les labels et le texte des champs
+        refField.getElement().getStyle().set("text-align", "center");
+        villeField.getElement().getStyle().set("text-align", "center");
+        paysField.getElement().getStyle().set("text-align", "center");
+        
+        // Centrer le texte des labels (les titres au-dessus des champs)
+        refField.setLabel("Référence du partenaire");
+        villeField.setLabel("Ville");
+        paysField.setLabel("Pays");
 
         // Bouton pour sauvegarder le partenaire
         this.bSave = new Button("Sauvegarder", (t) -> {
@@ -77,9 +92,23 @@ public class NouveauPartenairePanel extends VerticalLayout {
                 System.err.println("Problème : " + ex.getLocalizedMessage());
                 Notification.show("Problème : " + ex.getLocalizedMessage());
             }
+            
+            
         });
+        
+        // Appliquer le style au bouton pour qu'il devienne rouge
+        bSave.getStyle().set("background-color", "red");
+        bSave.getStyle().set("color", "white");
+        bSave.getStyle().set("border", "none");
+        bSave.getStyle().set("padding", "10px 20px");
+        bSave.getStyle().set("cursor", "pointer");
+        bSave.getStyle().set("font-weight", "bold");
+        bSave.getStyle().set("border-radius", "4px");
 
         // Ajout des champs et du bouton au panneau
         this.add(this.refField, this.villeField, this.paysField, this.bSave);
+        
+        // Centrer les éléments dans la disposition verticale
+        this.setAlignItems(Alignment.CENTER);
     }
 }
