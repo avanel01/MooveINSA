@@ -63,7 +63,7 @@ public class PartenairesPanel extends VerticalLayout {
             PreparedStatement PartenaireParPays = con.prepareStatement(
                     "SELECT pays.idPays, pays.nomPays, COUNT(partenaire.id) AS nbrPartenaires, " +
                     "       (SELECT COUNT(*) FROM partenaire) AS totalPartenaires " +
-                    "FROM partenaire " +
+                    "FROM Partenaire " +
                     "JOIN Pays ON partenaire.pays = pays.idPays " +
                     "GROUP BY pays.idPays"
             );
