@@ -55,6 +55,7 @@ public class OffresPanel extends VerticalLayout {
                     "       Partenaire.refPartenaire AS refPartenaire, " +
                     "       OffreMobilite.nbrplaces AS nbrPlaces, " +
                     "       Partenaire.idPartenaire AS idPartenaire " +
+                    "       OffreMobilité.nomOffre AS nomOffre " +
                     "FROM OffreMobilite " +
                     "JOIN Partenaire ON OffreMobilite.proposepar = Partenaire.idPartenaire"
             );
@@ -79,7 +80,7 @@ public class OffresPanel extends VerticalLayout {
             this.gOffres = new ResultSetGrid(offresAvecPart, new GridDescription(List.of(
                     new ColumnDescription().colData(0).visible(false), // ID de l'offre (non affichée)
                     new ColumnDescription().colData(1).headerString("Partenaire"),
-                    new ColumnDescription().colData(2).headerString("Nombre de places"),
+                    new ColumnDescription().colData(4).headerString("Intitulé de l'offre"),
                     new ColumnDescription().colDataCompo(2, (t) -> new IntAsIcon((Integer) t)).headerString("Places"),
                     new ColumnDescription().colCalculatedObject((t) -> t.get(1) + " : " + t.get(2)).headerString("Résumé"),
                     new ColumnDescription().colData(3).visible(false) // ID du partenaire (non affichée)
