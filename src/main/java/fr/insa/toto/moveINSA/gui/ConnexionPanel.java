@@ -145,7 +145,7 @@ public class ConnexionPanel extends VerticalLayout {
             SRI sri = sriOpt.get();
 
             // Vérifie le mot de passe
-            if (sri.getMdp().equals(mdpSaisi)) {
+            if (sri.getMotDePasse().equals(mdpSaisi)) {
                 // Stocker le membre SRI dans la session
                 VaadinSession.getCurrent().setAttribute("user", sri);
                 VaadinSession.getCurrent().setAttribute("role", "sri");
