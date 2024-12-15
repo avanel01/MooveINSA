@@ -6,6 +6,8 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.server.VaadinSession;
+import fr.insa.toto.moveINSA.model.Etudiant;
+import fr.insa.toto.moveINSA.model.SRI;
 
 /**
  * Utilisé par toutes les pages comme layout.
@@ -22,17 +24,16 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
     private EnteteInitiale entete;
 
     public MainLayout() {
-    VaadinSession.getCurrent().setAttribute(MainLayout.class, this);
+        VaadinSession.getCurrent().setAttribute(MainLayout.class, this);
 
-    this.menuGauche = new MenuGauche();
-    this.menuGauche.setHeightFull();
-    this.addToDrawer(this.menuGauche);
+        this.menuGauche = new MenuGauche();
+        this.menuGauche.setHeightFull();
+        this.addToDrawer(this.menuGauche);
 
-    DrawerToggle toggle = new DrawerToggle();
-    this.entete = new EnteteInitiale();
-    this.addToNavbar(toggle, entete);
-}
-
+        DrawerToggle toggle = new DrawerToggle();
+        this.entete = new EnteteInitiale();
+        this.addToNavbar(toggle, entete);
+    }
 
     /**
      * Cette méthode est appelée systématiquement par Vaadin avant l'affichage
@@ -49,5 +50,23 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
     public void beforeEnter(BeforeEnterEvent bee) {
         // Permet par exemple de modifier la destination en cas de problème
         // bee.rerouteTo(NoConnectionToBDDErrorPanel.class);
+    }
+
+    /**
+     * Cette méthode est appelée après la connexion de l'utilisateur pour
+     * mettre à jour l'entête avec les informations de l'étudiant ou du SRI.
+     */
+    public void updateMainLayout(String userInfo) {
+        // Si un étudiant est connecté, on met à jour avec les informations de l'étudiant
+        Etudiant etudiant = VaadinSession.getCurrent().getAttribute(Etudiant.class);
+        if (etudiant != null) {
+            entete.updateEtudiantInfo();  // Utiliser la méthode qui met à jour les infos de l'étudiant
+        }
+
+        // Si un membre SRI est connecté, on met à jour avec les informations du SRI
+        SRI sri = VaadinSession.getCurrent().getAttribute(SRI.class);
+        if (sri != null) {
+            entete.updateSRIInfo();  // Utiliser la méthode qui met à jour les infos du SRI
+        }
     }
 }
