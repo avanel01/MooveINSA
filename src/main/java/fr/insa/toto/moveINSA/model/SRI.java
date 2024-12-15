@@ -45,10 +45,10 @@ public class SRI {
             throw new EntiteDejaSauvegardee(); // Exception personnalisée
         }
         try (PreparedStatement insert = con.prepareStatement(
-                "insert into SRI (login, motDePasse) values (?,?)",
+                "insert into SRI (login, mdp) values (?,?)",
                 PreparedStatement.RETURN_GENERATED_KEYS)) {
             insert.setString(1, this.getLogin());
-            insert.setString(2, this.getMdp());
+            insert.setString(2, this.getMotDePasse()); // Utilise le getter correct pour le mot de passe
             insert.executeUpdate();
 
             try (ResultSet rid = insert.getGeneratedKeys()) {
@@ -114,33 +114,33 @@ public class SRI {
     }
     
     public static Optional<SRI> getSRIByLogin(Connection con, String login) throws SQLException {
-    String sql = "SELECT idPersonnel, login, motDePasse FROM SRI WHERE login = ?";
-    
-    try (PreparedStatement pst = con.prepareStatement(sql)) {
-        pst.setString(1, login); // Remplace le paramètre dans la requête SQL
+        String sql = "SELECT idPersonnel, login, mdp FROM SRI WHERE login = ?";
         
-        try (ResultSet rs = pst.executeQuery()) {
-            if (rs.next()) {
-                // Crée un objet SRI avec les données trouvées
-                SRI sri = new SRI(
-                    rs.getInt("idPersonnel"), // Assurez-vous que la colonne dans la table est bien "idPersonnel"
-                    rs.getString("login"),
-                    rs.getString("motDePasse")
-                );
-                return Optional.of(sri);
-            } else {
-                return Optional.empty(); // Aucun SRI trouvé pour ce login
+        try (PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, login); // Remplace le paramètre dans la requête SQL
+            
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    // Crée un objet SRI avec les données trouvées
+                    SRI sri = new SRI(
+                        rs.getInt("idPersonnel"), // Assurez-vous que la colonne dans la table est bien "idPersonnel"
+                        rs.getString("login"),
+                        rs.getString("mdp") // Colonne "mdp" au lieu de "motDePasse"
+                    );
+                    return Optional.of(sri);
+                } else {
+                    return Optional.empty(); // Aucun SRI trouvé pour ce login
+                }
             }
         }
     }
-}
     
     // Getters et setters
     public String getLogin() {
         return login;
     }
 
-    public String getMdp() {
+    public String getMotDePasse() {
         return motDePasse;
     }
 
