@@ -33,10 +33,6 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
     this.addToNavbar(toggle, entete);
 }
 
-    // Ajout d'un getter pour l'entête
-    public EnteteInitiale getEntete() {
-        return entete;
-    }
 
     /**
      * Cette méthode est appelée systématiquement par Vaadin avant l'affichage

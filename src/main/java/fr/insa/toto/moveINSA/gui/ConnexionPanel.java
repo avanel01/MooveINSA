@@ -116,12 +116,12 @@ public class ConnexionPanel extends VerticalLayout {
         if (etudiantOpt.isPresent()) {
             Etudiant etudiant = etudiantOpt.get();
             if (etudiant.getMdp().equals(mdpSaisi)) {
-                VaadinSession.getCurrent().setAttribute("user", etudiant);
+                VaadinSession.getCurrent().setAttribute(Etudiant.class, etudiant);
                 VaadinSession.getCurrent().setAttribute("role", "etudiant");
 
                 MainLayout mainLayout = VaadinSession.getCurrent().getAttribute(MainLayout.class);
                 if (mainLayout != null) {
-                    mainLayout.getEntete().updateEtudiantInfo();
+                    UI.getCurrent().access(() -> mainLayout.getEntete().updateEtudiantInfo());
                 }
 
                 UI.getCurrent().navigate(VuePrincipale.class);
@@ -136,12 +136,12 @@ public class ConnexionPanel extends VerticalLayout {
         if (sriOpt.isPresent()) {
             SRI sri = sriOpt.get();
             if (sri.getMotDePasse().equals(mdpSaisi)) {
-                VaadinSession.getCurrent().setAttribute("user", sri);
+                VaadinSession.getCurrent().setAttribute(SRI.class, sri);
                 VaadinSession.getCurrent().setAttribute("role", "sri");
 
                 MainLayout mainLayout = VaadinSession.getCurrent().getAttribute(MainLayout.class);
                 if (mainLayout != null) {
-                    mainLayout.getEntete().updateSRIInfo();
+                    UI.getCurrent().access(() -> mainLayout.getEntete().updateSRIInfo());
                 }
 
                 UI.getCurrent().navigate(VuePrincipale.class);
@@ -155,8 +155,8 @@ public class ConnexionPanel extends VerticalLayout {
         Notification.show("Identifiant ou mot de passe invalide.");
     } catch (SQLException ex) {
         Notification.show("Problème lors de la connexion : " + ex.getLocalizedMessage());
+        ex.printStackTrace();
     }
 }
-
 
 }
