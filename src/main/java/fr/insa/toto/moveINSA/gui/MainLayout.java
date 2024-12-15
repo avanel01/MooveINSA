@@ -5,6 +5,7 @@ import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.server.VaadinSession;
 
 /**
  * Utilisé par toutes les pages comme layout.
@@ -21,22 +22,16 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
     private EnteteInitiale entete;
 
     public MainLayout() {
-        // Initialisation du menu gauche
-        this.menuGauche = new MenuGauche();
-        this.menuGauche.setHeightFull();
+    VaadinSession.getCurrent().setAttribute(MainLayout.class, this);
 
-        // Ajout du menu gauche au drawer
-        this.addToDrawer(this.menuGauche);
+    this.menuGauche = new MenuGauche();
+    this.menuGauche.setHeightFull();
+    this.addToDrawer(this.menuGauche);
 
-        // Ajout du DrawerToggle pour ouvrir/fermer le menu
-        DrawerToggle toggle = new DrawerToggle();
-        
-        // Initialisation de l'entête
-        this.entete = new EnteteInitiale();
-
-        // Ajout du DrawerToggle et de l'entête à la navbar
-        this.addToNavbar(toggle, entete);
-    }
+    DrawerToggle toggle = new DrawerToggle();
+    this.entete = new EnteteInitiale();
+    this.addToNavbar(toggle, entete);
+}
 
     // Ajout d'un getter pour l'entête
     public EnteteInitiale getEntete() {

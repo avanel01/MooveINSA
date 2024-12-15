@@ -96,12 +96,12 @@ public class ConnexionPanel extends VerticalLayout {
         // Ajout du conteneur à la vue
         this.add(container);
     }
+    
 
     private void handleLogin() {
     String ref = this.tfINE.getValue().trim();
     String mdpSaisi = this.pfMdp.getValue().trim();
 
-    // Vérifie si les champs sont remplis
     if (ref.isEmpty()) {
         Notification.show("Veuillez entrer un identifiant.");
         return;
@@ -112,63 +112,51 @@ public class ConnexionPanel extends VerticalLayout {
     }
 
     try (Connection con = ConnectionPool.getConnection()) {
-        // Vérifier d'abord si l'utilisateur est un étudiant
         Optional<Etudiant> etudiantOpt = Etudiant.getEtudiantByINE(con, ref);
         if (etudiantOpt.isPresent()) {
             Etudiant etudiant = etudiantOpt.get();
-
-            // Vérifie le mot de passe
             if (etudiant.getMdp().equals(mdpSaisi)) {
-                // Stocker l'étudiant dans la session
                 VaadinSession.getCurrent().setAttribute("user", etudiant);
                 VaadinSession.getCurrent().setAttribute("role", "etudiant");
-                Notification.show("Bienvenue, " + etudiant.getNomEtudiant() + " " + etudiant.getPrenom() + " !");
-                    
-                    // Appel à la méthode de l'entête pour mettre à jour les informations
-                    // Récupération de l'entête via le layout
-                    MainLayout mainLayout = (MainLayout) UI.getCurrent().getChildren().filter(c -> c instanceof MainLayout).findFirst().orElse(null);
-                    if (mainLayout != null) {
-                        mainLayout.getEntete().updateEtudiantInfo();
-                    }
 
-                    // Naviguer vers la vue principale
-                    UI.getCurrent().navigate(VuePrincipale.class);
-                } else {
-                    Notification.show("Mot de passe incorrect.");
+                MainLayout mainLayout = VaadinSession.getCurrent().getAttribute(MainLayout.class);
+                if (mainLayout != null) {
+                    mainLayout.getEntete().updateEtudiantInfo();
+                }
+
+                UI.getCurrent().navigate(VuePrincipale.class);
+                return;
+            } else {
+                Notification.show("Mot de passe incorrect.");
                 return;
             }
         }
 
-        // Sinon, vérifier si l'utilisateur est un membre du SRI
-        Optional<SRI> sriOpt = SRI.getSRIByLogin(con, ref); // Remplacez par votre méthode pour récupérer un membre SRI
+        Optional<SRI> sriOpt = SRI.getSRIByLogin(con, ref);
         if (sriOpt.isPresent()) {
             SRI sri = sriOpt.get();
-
-            // Vérifie le mot de passe
             if (sri.getMotDePasse().equals(mdpSaisi)) {
-                // Stocker le membre SRI dans la session
                 VaadinSession.getCurrent().setAttribute("user", sri);
                 VaadinSession.getCurrent().setAttribute("role", "sri");
-                Notification.show("Bienvenue, menbre du sri : " + sri.getLogin() + " !");
-                
-                MainLayout mainLayout = (MainLayout) UI.getCurrent().getChildren().filter(c -> c instanceof MainLayout).findFirst().orElse(null);
-                    if (mainLayout != null) {
-                        mainLayout.getEntete().updateSRIInfo();
-                    }
 
-                    // Naviguer vers la vue principale
-                    UI.getCurrent().navigate(VuePrincipale.class);
-                } else {
-                    Notification.show("Mot de passe incorrect.");
+                MainLayout mainLayout = VaadinSession.getCurrent().getAttribute(MainLayout.class);
+                if (mainLayout != null) {
+                    mainLayout.getEntete().updateSRIInfo();
+                }
+
+                UI.getCurrent().navigate(VuePrincipale.class);
+                return;
+            } else {
+                Notification.show("Mot de passe incorrect.");
                 return;
             }
         }
 
-        // Si aucun utilisateur n'est trouvé
         Notification.show("Identifiant ou mot de passe invalide.");
     } catch (SQLException ex) {
         Notification.show("Problème lors de la connexion : " + ex.getLocalizedMessage());
     }
 }
+
 
 }
