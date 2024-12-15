@@ -24,7 +24,6 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
     private EnteteInitiale entete;
 
     public MainLayout() {
-        VaadinSession.getCurrent().setAttribute(MainLayout.class, this);
 
         this.menuGauche = new MenuGauche();
         this.menuGauche.setHeightFull();
