@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Comparator;
+import java.util.Optional;
 
 public class SRI {
     
@@ -47,7 +48,7 @@ public class SRI {
                 "insert into SRI (login, motDePasse) values (?,?)",
                 PreparedStatement.RETURN_GENERATED_KEYS)) {
             insert.setString(1, this.getLogin());
-            insert.setString(2, this.getMotDePasse());
+            insert.setString(2, this.getMdp());
             insert.executeUpdate();
 
             try (ResultSet rid = insert.getGeneratedKeys()) {
@@ -112,12 +113,34 @@ public class SRI {
         }
     }
     
+    public static Optional<SRI> getSRIByLogin(Connection con, String login) throws SQLException {
+    String sql = "SELECT idPersonnel, login, motDePasse FROM SRI WHERE login = ?";
+    
+    try (PreparedStatement pst = con.prepareStatement(sql)) {
+        pst.setString(1, login); // Remplace le paramètre dans la requête SQL
+        
+        try (ResultSet rs = pst.executeQuery()) {
+            if (rs.next()) {
+                // Crée un objet SRI avec les données trouvées
+                SRI sri = new SRI(
+                    rs.getInt("idPersonnel"), // Assurez-vous que la colonne dans la table est bien "idPersonnel"
+                    rs.getString("login"),
+                    rs.getString("motDePasse")
+                );
+                return Optional.of(sri);
+            } else {
+                return Optional.empty(); // Aucun SRI trouvé pour ce login
+            }
+        }
+    }
+}
+    
     // Getters et setters
     public String getLogin() {
         return login;
     }
 
-    public String getMotDePasse() {
+    public String getMdp() {
         return motDePasse;
     }
 

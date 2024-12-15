@@ -6,6 +6,7 @@ import com.vaadin.flow.server.VaadinSession;
 import fr.insa.toto.moveINSA.model.Etudiant;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import fr.insa.toto.moveINSA.model.SRI;
 
 public class EnteteInitiale extends HorizontalLayout {
 
@@ -53,6 +54,15 @@ public class EnteteInitiale extends HorizontalLayout {
         Etudiant etudiant = VaadinSession.getCurrent().getAttribute(Etudiant.class);
         if (etudiant != null) {
             lNomPrenom.setText("Connecté : " + etudiant.getNomEtudiant() + " " + etudiant.getPrenom());
+        } else {
+            lNomPrenom.setText("Aucun étudiant connecté.");
+        }
+    }
+    
+    public void updateSRIInfo() {
+        SRI sri = VaadinSession.getCurrent().getAttribute(SRI.class);
+        if (sri != null) {
+            lNomPrenom.setText("Connecté (membre du SRI) : " + sri.getLogin() + " " );
         } else {
             lNomPrenom.setText("Aucun étudiant connecté.");
         }

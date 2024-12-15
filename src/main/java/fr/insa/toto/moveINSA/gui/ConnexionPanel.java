@@ -14,6 +14,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 import fr.insa.beuvron.vaadin.utils.ConnectionPool;
 import fr.insa.toto.moveINSA.model.Etudiant;
+import fr.insa.toto.moveINSA.model.SRI;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Optional;
@@ -97,32 +98,31 @@ public class ConnexionPanel extends VerticalLayout {
     }
 
     private void handleLogin() {
-        String ref = this.tfINE.getValue().trim();
-        String mdpSaisi = this.pfMdp.getValue().trim();
+    String ref = this.tfINE.getValue().trim();
+    String mdpSaisi = this.pfMdp.getValue().trim();
 
-        // Vérifie si les champs sont remplis
-        if (ref.isEmpty()) {
-            Notification.show("Veuillez entrer un INE.");
-            return;
-        }
-        if (mdpSaisi.isEmpty()) {
-            Notification.show("Veuillez entrer votre mot de passe.");
-            return;
-        }
+    // Vérifie si les champs sont remplis
+    if (ref.isEmpty()) {
+        Notification.show("Veuillez entrer un identifiant.");
+        return;
+    }
+    if (mdpSaisi.isEmpty()) {
+        Notification.show("Veuillez entrer votre mot de passe.");
+        return;
+    }
 
-        try (Connection con = ConnectionPool.getConnection()) {
-            Optional<Etudiant> etudiantOpt = Etudiant.getEtudiantByINE(con, ref);
+    try (Connection con = ConnectionPool.getConnection()) {
+        // Vérifier d'abord si l'utilisateur est un étudiant
+        Optional<Etudiant> etudiantOpt = Etudiant.getEtudiantByINE(con, ref);
+        if (etudiantOpt.isPresent()) {
+            Etudiant etudiant = etudiantOpt.get();
 
-            if (etudiantOpt.isEmpty()) {
-                Notification.show("INE invalide : " + ref);
-            } else {
-                Etudiant etudiant = etudiantOpt.get();
-
-                // Vérifie le mot de passe
-                if (etudiant.getMdp().equals(mdpSaisi)) {
-                    // Stocker l'étudiant dans la session
-                    VaadinSession.getCurrent().setAttribute(Etudiant.class, etudiant);
-                    Notification.show("Bienvenue, " + etudiant.getNomEtudiant() + " " + etudiant.getPrenom() + " !");
+            // Vérifie le mot de passe
+            if (etudiant.getMdp().equals(mdpSaisi)) {
+                // Stocker l'étudiant dans la session
+                VaadinSession.getCurrent().setAttribute("user", etudiant);
+                VaadinSession.getCurrent().setAttribute("role", "etudiant");
+                Notification.show("Bienvenue, " + etudiant.getNomEtudiant() + " " + etudiant.getPrenom() + " !");
                     
                     // Appel à la méthode de l'entête pour mettre à jour les informations
                     // Récupération de l'entête via le layout
@@ -135,10 +135,40 @@ public class ConnexionPanel extends VerticalLayout {
                     UI.getCurrent().navigate(VuePrincipale.class);
                 } else {
                     Notification.show("Mot de passe incorrect.");
-                }
+                return;
             }
-        } catch (SQLException ex) {
-            Notification.show("Problème lors de la connexion : " + ex.getLocalizedMessage());
         }
+
+        // Sinon, vérifier si l'utilisateur est un membre du SRI
+        Optional<SRI> sriOpt = SRI.getSRIByLogin(con, ref); // Remplacez par votre méthode pour récupérer un membre SRI
+        if (sriOpt.isPresent()) {
+            SRI sri = sriOpt.get();
+
+            // Vérifie le mot de passe
+            if (sri.getMdp().equals(mdpSaisi)) {
+                // Stocker le membre SRI dans la session
+                VaadinSession.getCurrent().setAttribute("user", sri);
+                VaadinSession.getCurrent().setAttribute("role", "sri");
+                Notification.show("Bienvenue, menbre du sri : " + sri.getLogin() + " !");
+                
+                MainLayout mainLayout = (MainLayout) UI.getCurrent().getChildren().filter(c -> c instanceof MainLayout).findFirst().orElse(null);
+                    if (mainLayout != null) {
+                        mainLayout.getEntete().updateSRIInfo();
+                    }
+
+                    // Naviguer vers la vue principale
+                    UI.getCurrent().navigate(VuePrincipale.class);
+                } else {
+                    Notification.show("Mot de passe incorrect.");
+                return;
+            }
+        }
+
+        // Si aucun utilisateur n'est trouvé
+        Notification.show("Identifiant ou mot de passe invalide.");
+    } catch (SQLException ex) {
+        Notification.show("Problème lors de la connexion : " + ex.getLocalizedMessage());
     }
+}
+
 }

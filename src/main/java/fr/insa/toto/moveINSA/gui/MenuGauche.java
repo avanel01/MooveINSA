@@ -19,8 +19,7 @@ along with CoursBeuvron.  If not, see <http://www.gnu.org/licenses/>.
 
 package fr.insa.toto.moveINSA.gui;
 
-import com.vaadin.flow.component.sidenav.SideNav;
-import com.vaadin.flow.component.sidenav.SideNavItem;
+
 //import fr.insa.toto.moveINSA.gui.jeu.BoiteACoucou;
 //import fr.insa.toto.moveINSA.gui.jeu.TrouveEntier;
 import fr.insa.toto.moveINSA.gui.testDataGrid.TestDataGrid;
@@ -33,10 +32,13 @@ import fr.insa.toto.moveINSA.gui.vues.PartenairesPanel;
 import fr.insa.toto.moveINSA.gui.vues.RAZBdDPanel;
 import fr.insa.toto.moveINSA.gui.vues.TestDriverPanel;
 
-/**
- *
- * @author francois
- */
+
+import com.vaadin.flow.component.sidenav.SideNav;
+import com.vaadin.flow.component.sidenav.SideNavItem;
+import com.vaadin.flow.server.VaadinSession;
+import fr.insa.toto.moveINSA.model.Etudiant;
+import fr.insa.toto.moveINSA.model.SRI;
+
 public class MenuGauche extends SideNav {
 
     public MenuGauche() {
@@ -56,28 +58,34 @@ public class MenuGauche extends SideNav {
         SideNavItem partenaires = new SideNavItem("partenaires");
         styleItem(partenaires);
         partenaires.addItem(new SideNavItem("liste", PartenairesPanel.class));
-        partenaires.addItem(new SideNavItem("nouveau", NouveauPartenairePanel.class));
-
+        
         SideNavItem offres = new SideNavItem("offres");
-        styleItem(offres);
-        offres.addItem(new SideNavItem("liste", OffresPanel.class));
-        offres.addItem(new SideNavItem("nouvelle", NouvelleOffrePanel.class));
+            styleItem(offres);
+            offres.addItem(new SideNavItem("liste", OffresPanel.class));
 
-        SideNavItem debug = new SideNavItem("debug");
-        styleItem(debug);
-        debug.addItem(new SideNavItem("test driver", TestDriverPanel.class));
-        debug.addItem(new SideNavItem("raz BdD", RAZBdDPanel.class));
-        debug.addItem(new SideNavItem("test ResultSetGrid", TestResultSetGrid.class));
-        debug.addItem(new SideNavItem("test DataGrid", TestDataGrid.class));
-        debug.addItem(new SideNavItem("test Grid direct", TestGridDirect.class));
+        // Vérifier si un utilisateur est connecté et de quel type
+        boolean isEtudiantConnected = VaadinSession.getCurrent().getAttribute(Etudiant.class) != null;
+        boolean isSRIConnected = VaadinSession.getCurrent().getAttribute(SRI.class) != null;
 
-        //SideNavItem jeux = new SideNavItem("jeux");
-        //styleItem(jeux);
-        //jeux.addItem(new SideNavItem("boite à coucou", BoiteACoucou.class));
-        //jeux.addItem(new SideNavItem("trouve", TrouveEntier.class));
+        // Si un membre du SRI est connecté, afficher toutes les pages
+        if (isSRIConnected) {
+            partenaires.addItem(new SideNavItem("nouveau", NouveauPartenairePanel.class));
 
-        // Ajoute tous les éléments au SideNav
-        this.addItem(main, connexion, partenaires, offres, debug);
+            
+            offres.addItem(new SideNavItem("nouvelle", NouvelleOffrePanel.class));
+
+            SideNavItem debug = new SideNavItem("debug");
+            styleItem(debug);
+            debug.addItem(new SideNavItem("test driver", TestDriverPanel.class));
+            debug.addItem(new SideNavItem("raz BdD", RAZBdDPanel.class));
+            debug.addItem(new SideNavItem("test ResultSetGrid", TestResultSetGrid.class));
+            debug.addItem(new SideNavItem("test DataGrid", TestDataGrid.class));
+            debug.addItem(new SideNavItem("test Grid direct", TestGridDirect.class));
+            this.addItem(debug);
+        }
+
+        // Ajouter les éléments au menu
+        this.addItem(main, connexion, partenaires, offres);
     }
 
     // Méthode pour appliquer les styles directement à un SideNavItem
