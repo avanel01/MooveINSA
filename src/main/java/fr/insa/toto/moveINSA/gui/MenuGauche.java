@@ -70,8 +70,6 @@ public class MenuGauche extends SideNav {
         // Si un membre du SRI est connecté, afficher toutes les pages
         if (isSRIConnected) {
             partenaires.addItem(new SideNavItem("nouveau", NouveauPartenairePanel.class));
-
-            
             offres.addItem(new SideNavItem("nouvelle", NouvelleOffrePanel.class));
 
             SideNavItem debug = new SideNavItem("debug");
@@ -83,9 +81,13 @@ public class MenuGauche extends SideNav {
             debug.addItem(new SideNavItem("test Grid direct", TestGridDirect.class));
             this.addItem(debug);
         }
-
+        
+        // création de l'élément deconnexion
+        SideNavItem deconnexion = new SideNavItem("Deconnexion", DeconnexionPanel.class);
+        styleItem(deconnexion); // Appliquer le style cohérent au bouton Déconnexion
+        
         // Ajouter les éléments au menu
-        this.addItem(main, connexion, partenaires, offres);
+        this.addItem(main, connexion, partenaires, offres, deconnexion);
     }
 
     // Méthode pour appliquer les styles directement à un SideNavItem
