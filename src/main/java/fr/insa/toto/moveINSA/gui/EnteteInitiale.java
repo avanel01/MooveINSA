@@ -1,16 +1,16 @@
 package fr.insa.toto.moveINSA.gui;
 
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.server.VaadinSession;
 import fr.insa.toto.moveINSA.model.Etudiant;
-import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import fr.insa.toto.moveINSA.model.SRI;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 
 public class EnteteInitiale extends HorizontalLayout {
 
-    private Label lNomPrenom;
+    private Text lNomPrenom;
 
     public EnteteInitiale() {
         // Configuration globale de la mise en page
@@ -27,7 +27,7 @@ public class EnteteInitiale extends HorizontalLayout {
         this.add(logo);
 
         // Ajouter un label pour le texte principal au centre
-        Label title = new Label("Bienvenue sur le site !");
+        Text title = new Text("Bienvenue sur le site !");
         title.getStyle().set("color", "black");
         title.getStyle().set("font-size", "24px");
         title.getStyle().set("font-weight", "bold");
@@ -35,8 +35,8 @@ public class EnteteInitiale extends HorizontalLayout {
         this.add(title);
 
         // Ajouter un label pour afficher l'état de connexion à droite
-        lNomPrenom = new Label();
-        updateEtudiantInfo(); // Initialisation avec les informations actuelles
+        lNomPrenom = new Text();
+        updateUserInfo(); // Initialisation avec les informations actuelles
         lNomPrenom.getStyle().set("color", "black");
         lNomPrenom.getStyle().set("font-size", "16px");
         lNomPrenom.getStyle().set("font-weight", "normal");
@@ -48,23 +48,19 @@ public class EnteteInitiale extends HorizontalLayout {
     }
 
     /**
-     * Met à jour les informations de l'étudiant affichées dans l'entête.
+     * Met à jour les informations de l'utilisateur (étudiant ou membre SRI) affichées dans l'entête.
      */
-    public void updateEtudiantInfo() {
-        Etudiant etudiant = (Etudiant) VaadinSession.getCurrent().getAttribute("user");
-        if (etudiant != null) {
+    public void updateUserInfo() {
+        Object user = VaadinSession.getCurrent().getAttribute("user");
+        
+        if (user instanceof Etudiant) {
+            Etudiant etudiant = (Etudiant) user;
             lNomPrenom.setText("Connecté : " + etudiant.getNomEtudiant() + " " + etudiant.getPrenom());
+        } else if (user instanceof SRI) {
+            SRI sri = (SRI) user;
+            lNomPrenom.setText("Connecté (membre du SRI) : " + sri.getLogin());
         } else {
-            lNomPrenom.setText("Aucun étudiant connecté.");
-        }
-    }
-    
-    public void updateSRIInfo() {
-        SRI sri = (SRI) VaadinSession.getCurrent().getAttribute("user");
-        if (sri != null) {
-            lNomPrenom.setText("Connecté (membre du SRI) : " + sri.getLogin() + " " );
-        } else {
-            lNomPrenom.setText("Aucun étudiant connecté.");
+            lNomPrenom.setText("Aucun utilisateur connecté.");
         }
     }
 }
