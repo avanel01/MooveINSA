@@ -133,28 +133,32 @@ public class OffresPanel extends VerticalLayout {
     /**
      * Configure et ajoute le bouton "Postuler".
      */
-    private void configurePostulerButton() {
-        bPostule = new Button("Postuler", e -> handlePostulerClick());
+private void configurePostulerButton() {
+    bPostule = new Button("Postuler", e -> handlePostulerClick());
 
-        // Désactiver le bouton si aucun étudiant n'est connecté
-        if (etudiantConnecte == null) {
-            bPostule.setEnabled(false);
-            bPostule.setText("Connectez-vous pour postuler");
-            bPostule.getStyle().set("background-color", "#ccc");
-        }
-
-        bPostule.getStyle()
-            .set("margin-top", "20px")
-            .set("padding", "10px 20px")
-            .set("color", "white")
-            .set("font-size", "16px")
-            .set("font-weight", "bold")
-            .set("border", "none")
-            .set("border-radius", "5px")
-            .set("cursor", "pointer");
-
-        this.add(bPostule);
+    // Désactiver le bouton si aucun étudiant n'est connecté
+    if (etudiantConnecte == null) {
+        bPostule.setEnabled(false);
+        bPostule.setText("Connectez-vous pour postuler");
+        bPostule.getStyle().set("background-color", "#ccc"); // Fond gris quand étudiant déconnecté
+    } else {
+        bPostule.getStyle().set("background-color", "#d9534f"); // Fond rouge quand étudiant connecté
     }
+
+    // Styles communs pour le bouton
+    bPostule.getStyle()
+        .set("margin-top", "20px")
+        .set("padding", "10px 20px")
+        .set("color", "white")
+        .set("font-size", "16px")
+        .set("font-weight", "bold")
+        .set("border", "none")
+        .set("border-radius", "5px")
+        .set("cursor", "pointer");
+
+    this.add(bPostule);
+}
+
 
     /**
      * Ajoute la section des offres groupées par partenaire.
