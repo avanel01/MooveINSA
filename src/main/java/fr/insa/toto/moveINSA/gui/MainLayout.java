@@ -57,13 +57,13 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
      */
     public void updateMainLayout(String userInfo) {
         // Si un étudiant est connecté, on met à jour avec les informations de l'étudiant
-        Etudiant etudiant = VaadinSession.getCurrent().getAttribute(Etudiant.class);
+        Etudiant etudiant = (Etudiant) VaadinSession.getCurrent().getAttribute("user");
         if (etudiant != null) {
             entete.updateEtudiantInfo();  // Utiliser la méthode qui met à jour les infos de l'étudiant
         }
 
         // Si un membre SRI est connecté, on met à jour avec les informations du SRI
-        SRI sri = VaadinSession.getCurrent().getAttribute(SRI.class);
+        SRI sri = (SRI) VaadinSession.getCurrent().getAttribute("user");
         if (sri != null) {
             entete.updateSRIInfo();  // Utiliser la méthode qui met à jour les infos du SRI
         }

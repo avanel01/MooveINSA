@@ -40,7 +40,7 @@ public class CandidaturePanel extends VerticalLayout implements BeforeEnterObser
         add(new H2("Formulaire de Candidature"));
 
         // Récupérer l'étudiant connecté depuis la session
-        etudiantConnecte = VaadinSession.getCurrent().getAttribute(Etudiant.class);
+        etudiantConnecte = (Etudiant) VaadinSession.getCurrent().getAttribute("user");
         if (etudiantConnecte == null) {
             Notification.show("Erreur : Aucun étudiant connecté. Veuillez vous connecter.");
             return;

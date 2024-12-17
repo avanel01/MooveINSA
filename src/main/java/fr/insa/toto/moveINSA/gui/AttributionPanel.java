@@ -1,11 +1,16 @@
-package fr.insa.toto.moveINSA.gui.vues;
+package fr.insa.toto.moveINSA.gui;
 
 import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.VaadinSession;
 import fr.insa.beuvron.vaadin.utils.ConnectionPool;
 import fr.insa.beuvron.vaadin.utils.dataGrid.ColumnDescription;
 import fr.insa.beuvron.vaadin.utils.dataGrid.GridDescription;
 import fr.insa.beuvron.vaadin.utils.dataGrid.ResultSetGrid;
+import fr.insa.toto.moveINSA.model.Etudiant;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -35,12 +40,22 @@ along with CoursBeuvron.  If not, see <http://www.gnu.org/licenses/>.
  *
  * @author alixvanel
  */
+@Route(value = "attribution", layout = MainLayout.class) // La route reste la page d'accueil
+@PageTitle("Atribution")
 public class AttributionPanel extends VerticalLayout {
 
     private ResultSetGrid gAttribution;
+    private Etudiant etudiant;
 
     private void configureGrid() {
         try (Connection con = ConnectionPool.getConnection()) {
+            
+            etudiant = (Etudiant) VaadinSession.getCurrent().getAttribute("user");
+            if (etudiant == null) {
+                Notification.show("Erreur : Aucun étudiant connecté. Veuillez vous connecter.");
+                return;
+            }
+            String ine = etudiant.getINE();
             // Requête SQL avec jointure pour récupérer le nom de l'offre
             PreparedStatement offresAvecPart = con.prepareStatement(
                 "SELECT Attribution.idAttribution, " +
@@ -49,7 +64,7 @@ public class AttributionPanel extends VerticalLayout {
                 "       Attribution.date " +
                 "FROM Attribution " +
                 "JOIN OffreMobilite ON Attribution.idOffre = OffreMobilite.idOffre " +
-                "WHERE Attribution.idEtudiant = ?"
+                "WHERE Attribution.idEtudiant = " + ine
             );
 
             // Vous devez définir ici l'ID de l'étudiant pour filtrer les attributions

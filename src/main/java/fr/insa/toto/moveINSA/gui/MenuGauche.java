@@ -44,8 +44,8 @@ public class MenuGauche extends SideNav {
         offres.addItem(new SideNavItem("Liste", OffresPanel.class));
 
         // Vérifier si un utilisateur est connecté et de quel type
-        Etudiant etudiant = VaadinSession.getCurrent().getAttribute(Etudiant.class);
-        SRI sri = VaadinSession.getCurrent().getAttribute(SRI.class);
+        Etudiant etudiant = (Etudiant) VaadinSession.getCurrent().getAttribute("user");
+        SRI sri = (SRI) VaadinSession.getCurrent().getAttribute("user");
 
         // Si un membre du SRI est connecté, afficher toutes les pages supplémentaires
         if (sri != null) {

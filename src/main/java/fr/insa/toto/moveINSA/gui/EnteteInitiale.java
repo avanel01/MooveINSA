@@ -51,7 +51,7 @@ public class EnteteInitiale extends HorizontalLayout {
      * Met à jour les informations de l'étudiant affichées dans l'entête.
      */
     public void updateEtudiantInfo() {
-        Etudiant etudiant = VaadinSession.getCurrent().getAttribute(Etudiant.class);
+        Etudiant etudiant = (Etudiant) VaadinSession.getCurrent().getAttribute("user");
         if (etudiant != null) {
             lNomPrenom.setText("Connecté : " + etudiant.getNomEtudiant() + " " + etudiant.getPrenom());
         } else {
@@ -60,7 +60,7 @@ public class EnteteInitiale extends HorizontalLayout {
     }
     
     public void updateSRIInfo() {
-        SRI sri = VaadinSession.getCurrent().getAttribute(SRI.class);
+        SRI sri = (SRI) VaadinSession.getCurrent().getAttribute("user");
         if (sri != null) {
             lNomPrenom.setText("Connecté (membre du SRI) : " + sri.getLogin() + " " );
         } else {

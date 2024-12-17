@@ -52,7 +52,10 @@ public class OffresPanel extends VerticalLayout {
 
     public OffresPanel() {
         // Récupérer l'utilisateur connecté depuis la session
-        this.etudiantConnecte = VaadinSession.getCurrent().getAttribute(Etudiant.class);
+        this.etudiantConnecte = (Etudiant) VaadinSession.getCurrent().getAttribute("user");
+        System.out.println("etudiant connecté dans offrespanel : " + this.etudiantConnecte);
+                            System.out.println("session courante : " + VaadinSession.getCurrent());
+ 
 
         // Configuration globale du panneau
         configureLayout();
