@@ -22,6 +22,7 @@ package fr.insa.toto.moveINSA.gui;
  *
  * @author rouxh
  */
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H3;
@@ -33,6 +34,11 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.VaadinSession;
+import fr.insa.beuvron.vaadin.utils.ConnectionPool;
+import fr.insa.toto.moveINSA.model.Etudiant;
+import java.sql.Connection;
+import java.util.Optional;
 
 @Route(value = "deconnexion", layout = MainLayout.class)
 @PageTitle("Deconnexion")
@@ -106,12 +112,31 @@ public class DeconnexionPanel extends VerticalLayout {
         this.add(logo, layout);
     }
 
-    // Logique pour gérer la déconnexion
+    // Gérer la déconnexion
     private void handleDeconnexion() {
-        // Déconnexion logique ici (nettoyage de session par exemple)
-        Notification.show("Vous êtes maintenant déconnecté.");
-        getUI().ifPresent(ui -> ui.getPage().setLocation("/"));
+    // Récupérer l'utilisateur actuellement connecté à partir de la session
+    Object utilisateur = VaadinSession.getCurrent().getAttribute("user");
+    
+    if (utilisateur != null) {
+        // Afficher une notification pour indiquer que l'utilisateur est bien déconnecté
+        Notification.show("Déconnexion réussie.");
+        
+        // Supprimer l'utilisateur et son rôle de la session
+        VaadinSession.getCurrent().setAttribute("user", null);
+        VaadinSession.getCurrent().setAttribute("role", null);
+        
+        // Optionnel: Rediriger vers la page de connexion
+        UI.getCurrent().navigate(ConnexionPanel.class);  // Ou la page de connexion appropriée
+        
+        // Si vous avez une mise à jour dans l'interface (comme un changement dans le menu de navigation)
+        MainLayout mainLayout = VaadinSession.getCurrent().getAttribute(MainLayout.class);
+        if (mainLayout != null) {
+            mainLayout.updateMainLayout("Déconnecté");
+        }
+    } else {
+        // Si aucun utilisateur n'est connecté
+        Notification.show("Aucun utilisateur connecté.");
     }
 }
 
-
+}
