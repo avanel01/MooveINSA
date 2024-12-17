@@ -77,7 +77,7 @@ public class OffresPanel extends VerticalLayout {
             .set("align-items", "center")
             .set("justify-content", "center")
             .set("padding", "20px")
-            .set("background-color", "#FF0000");
+            .set("background-color", "#f9f9f9");
     }
 
     /**
@@ -145,7 +145,7 @@ private void configurePostulerButton() {
         bPostule.setText("Connectez-vous pour postuler");
         bPostule.getStyle().set("background-color", "#ccc"); // Fond gris quand étudiant déconnecté
     } else {
-        bPostule.getStyle().set("background-color", "#d9534f"); // Fond rouge quand étudiant connecté
+        bPostule.getStyle().set("background-color", "#FF0000"); // Fond rouge quand étudiant connecté
     }
 
     // Styles communs pour le bouton
