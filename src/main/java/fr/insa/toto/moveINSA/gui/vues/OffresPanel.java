@@ -77,7 +77,7 @@ public class OffresPanel extends VerticalLayout {
             .set("align-items", "center")
             .set("justify-content", "center")
             .set("padding", "20px")
-            .set("background-color", "#f9f9f9");
+            .set("background-color", "#FF0000");
     }
 
     /**
