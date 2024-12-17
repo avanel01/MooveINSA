@@ -4,12 +4,13 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.server.VaadinSession;
 import fr.insa.toto.moveINSA.model.Etudiant;
 import fr.insa.toto.moveINSA.model.SRI;
+
+// Imports pour les composants personnalisés
 
 /**
  * Utilisé par toutes les pages comme layout.
@@ -26,18 +27,23 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
     private EnteteInitiale entete;
 
     public MainLayout() {
+    // Créer l'instance de MenuGauche
+    this.menuGauche = new MenuGauche();
 
-        this.menuGauche = new MenuGauche();
-        this.menuGauche.setHeightFull();
-        this.addToDrawer(this.menuGauche);
+    // Enregistrer l'instance dans la session Vaadin
+    VaadinSession.getCurrent().setAttribute(MenuGauche.class, this.menuGauche);
 
-        DrawerToggle toggle = new DrawerToggle();
-        this.entete = new EnteteInitiale();
-        this.addToNavbar(toggle, entete);
-        
-        // Sauvegarder l'instance de l'entête dans la session
-        VaadinSession.getCurrent().setAttribute("entete", this.entete);
-    }
+    // Ajouter le menu à la vue
+    this.menuGauche.setHeightFull();
+    this.addToDrawer(this.menuGauche);
+
+    // Créer l'entête et le toggle du drawer
+    DrawerToggle toggle = new DrawerToggle();
+    this.entete = new EnteteInitiale();
+    this.addToNavbar(toggle, entete);
+}
+
+
 
     /**
      * Cette méthode est appelée systématiquement par Vaadin avant l'affichage
@@ -95,6 +101,20 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
     }
 }
     
+   public void refreshLayout() {
+    // Supprimer l'ancien menu gauche si nécessaire
+    if (this.menuGauche != null) {
+        this.remove(this.menuGauche);  // Retirer le menu actuel
+    }
+
+    // Recréer un nouveau menu gauche
+    this.menuGauche = new MenuGauche();
+    this.menuGauche.setHeightFull();
+    this.addToDrawer(this.menuGauche);  // Ajouter le nouveau menu dans le tiroir
+
+    // Mettre à jour l'entête avec les informations de l'utilisateur
+    updateMainLayout(null);
+}
 }
 
 

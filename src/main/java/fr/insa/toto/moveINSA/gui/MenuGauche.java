@@ -90,4 +90,55 @@ public class MenuGauche extends SideNav {
             .set("padding", "10px")        // Espacement
             .set("border-bottom", "1px solid #ddd");  // Ligne de séparation
     }
+    
+    public void refreshMenu() {
+    // Nettoyer les éléments existants
+    this.removeAll();
+
+    // Reconstruire le menu avec les éléments appropriés
+    Object user = VaadinSession.getCurrent().getAttribute("user");
+    boolean isSRIConnecte = user instanceof SRI;
+
+    // Créer les éléments du menu
+    SideNavItem main = new SideNavItem("Accueil", VuePrincipale.class);
+    SideNavItem connexion = new SideNavItem("Connexion", ConnexionPanel.class);
+
+    SideNavItem partenaires = new SideNavItem("Partenaires");
+    partenaires.addItem(new SideNavItem("Liste", PartenairesPanel.class));
+    if (isSRIConnecte) {
+        partenaires.addItem(new SideNavItem("Nouveau", NouveauPartenairePanel.class));
+    }
+
+    SideNavItem offres = new SideNavItem("Offres");
+    offres.addItem(new SideNavItem("Liste", OffresPanel.class));
+    if (isSRIConnecte) {
+        offres.addItem(new SideNavItem("Nouvelle", NouvelleOffrePanel.class));
+    }
+
+    SideNavItem attribution = new SideNavItem("Attribution", AttributionPanel.class);
+    SideNavItem deconnexion = new SideNavItem("Déconnexion", DeconnexionPanel.class);
+
+    // Ajouter les éléments au menu
+    this.addItem(main, connexion, partenaires, offres, attribution, deconnexion);
+
+    // Si un membre SRI est connecté, ajouter les options de debug
+    if (isSRIConnecte) {
+        SideNavItem debug = new SideNavItem("Debug");
+        debug.addItem(new SideNavItem("Test Driver", TestDriverPanel.class));
+        debug.addItem(new SideNavItem("RAZ BDD", RAZBdDPanel.class));
+        debug.addItem(new SideNavItem("Test ResultSetGrid", TestResultSetGrid.class));
+        debug.addItem(new SideNavItem("Test DataGrid", TestDataGrid.class));
+        debug.addItem(new SideNavItem("Test Grid Direct", TestGridDirect.class));
+        this.addItem(debug);
+    }
+
+    // Appliquer les styles
+    styleItem(main);
+    styleItem(connexion);
+    styleItem(partenaires);
+    styleItem(offres);
+    styleItem(attribution);
+    styleItem(deconnexion);
+}
+
 }

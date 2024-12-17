@@ -99,74 +99,95 @@ public class ConnexionPanel extends VerticalLayout {
     }
 
     private void handleLogin() {
-        String ref = this.tfINE.getValue().trim();
-        String mdpSaisi = this.pfMdp.getValue().trim();
+    String ref = this.tfINE.getValue().trim();
+    String mdpSaisi = this.pfMdp.getValue().trim();
 
-        // Vérifie si les champs sont remplis
-        if (ref.isEmpty()) {
-            Notification.show("Veuillez entrer un identifiant.");
-            return;
-        }
-        if (mdpSaisi.isEmpty()) {
-            Notification.show("Veuillez entrer votre mot de passe.");
-            return;
-        }
-
-        try (Connection con = ConnectionPool.getConnection()) {
-            // Vérifier d'abord si l'utilisateur est un étudiant
-            Optional<Etudiant> etudiantOpt = Etudiant.getEtudiantByINE(con, ref);
-            if (etudiantOpt.isPresent()) {
-                Etudiant etudiant = etudiantOpt.get();
-
-                // Vérifie le mot de passe
-                if (etudiant.getMdp().equals(mdpSaisi)) {
-                    // Stocker l'étudiant dans la session
-                    VaadinSession.getCurrent().setAttribute("user", etudiant);
-                    VaadinSession.getCurrent().setAttribute("role", "etudiant");
-                    Notification.show("Bienvenue, " + etudiant.getNomEtudiant() + " " + etudiant.getPrenom() + " !");
-                    
-                    // Mettre à jour l'interface et rediriger
-                    MainLayout mainLayout = VaadinSession.getCurrent().getAttribute(MainLayout.class);
-                    if (mainLayout != null) {
-                        mainLayout.updateMainLayout(etudiant.getNomEtudiant() + " " + etudiant.getPrenom());
-                    }
-                    UI.getCurrent().navigate(VuePrincipale.class);
-                    return;
-                } else {
-                    Notification.show("Mot de passe incorrect.");
-                    return;
-                }
-            }
-
-            // Sinon, vérifier si l'utilisateur est un membre du SRI
-            Optional<SRI> sriOpt = SRI.getSRIByLogin(con, ref);
-            if (sriOpt.isPresent()) {
-                SRI sri = sriOpt.get();
-
-                // Vérifie le mot de passe
-                if (sri.getMotDePasse().equals(mdpSaisi)) {
-                    // Stocker le membre SRI dans la session
-                    VaadinSession.getCurrent().setAttribute("user", sri);
-                    VaadinSession.getCurrent().setAttribute("role", "sri");
-                    Notification.show("Bienvenue, " + sri.getLogin() + " !");
-                    
-                    // Mettre à jour l'interface et rediriger
-                    MainLayout mainLayout = VaadinSession.getCurrent().getAttribute(MainLayout.class);
-                    if (mainLayout != null) {
-                        mainLayout.updateMainLayout(sri.getLogin());
-                    }
-                    UI.getCurrent().navigate(VuePrincipale.class); // Vue différente pour le SRI
-                    return;
-                } else {
-                    Notification.show("Mot de passe incorrect.");
-                    return;
-                }
-            }
-
-            // Si aucun utilisateur n'est trouvé
-            Notification.show("Identifiant ou mot de passe invalide.");
-        } catch (SQLException ex) {
-            Notification.show("Problème lors de la connexion : " + ex.getLocalizedMessage());
-        }
+    // Vérifie si les champs sont remplis
+    if (ref.isEmpty()) {
+        Notification.show("Veuillez entrer un identifiant.");
+        return;
     }
+    if (mdpSaisi.isEmpty()) {
+        Notification.show("Veuillez entrer votre mot de passe.");
+        return;
+    }
+
+    try (Connection con = ConnectionPool.getConnection()) {
+        // Vérifier d'abord si l'utilisateur est un étudiant
+        Optional<Etudiant> etudiantOpt = Etudiant.getEtudiantByINE(con, ref);
+        if (etudiantOpt.isPresent()) {
+            Etudiant etudiant = etudiantOpt.get();
+
+            // Vérifie le mot de passe
+            if (etudiant.getMdp().equals(mdpSaisi)) {
+                // Stocker l'étudiant dans la session
+                VaadinSession.getCurrent().setAttribute("user", etudiant);
+                VaadinSession.getCurrent().setAttribute("role", "etudiant");
+                Notification.show("Bienvenue, " + etudiant.getNomEtudiant() + " " + etudiant.getPrenom() + " !");
+                
+                // Mettre à jour le MainLayout
+                MainLayout mainLayout = VaadinSession.getCurrent().getAttribute(MainLayout.class);
+                if (mainLayout != null) {
+                    mainLayout.updateMainLayout(etudiant.getNomEtudiant() + " " + etudiant.getPrenom());
+                }
+
+                // Mettre à jour le menu gauche dynamiquement
+                MenuGauche menuGauche = VaadinSession.getCurrent().getAttribute(MenuGauche.class);
+                if (menuGauche != null) {
+                    menuGauche.refreshMenu();  // Appel de refreshMenu pour mettre à jour le menu
+                } else {
+                    Notification.show("MenuGauche non trouvé dans la session.");
+                }
+
+                // Rediriger vers la vue principale
+                UI.getCurrent().navigate(VuePrincipale.class);
+                return;
+            } else {
+                Notification.show("Mot de passe incorrect.");
+                return;
+            }
+        }
+
+        // Vérifier si l'utilisateur est un membre du SRI
+        Optional<SRI> sriOpt = SRI.getSRIByLogin(con, ref);
+        if (sriOpt.isPresent()) {
+            SRI sri = sriOpt.get();
+
+            // Vérifie le mot de passe
+            if (sri.getMotDePasse().equals(mdpSaisi)) {
+                // Stocker le membre SRI dans la session
+                VaadinSession.getCurrent().setAttribute("user", sri);
+                VaadinSession.getCurrent().setAttribute("role", "sri");
+                Notification.show("Bienvenue, " + sri.getLogin() + " !");
+                
+                // Mettre à jour le MainLayout
+                MainLayout mainLayout = VaadinSession.getCurrent().getAttribute(MainLayout.class);
+                if (mainLayout != null) {
+                    mainLayout.updateMainLayout(sri.getLogin());
+                }
+
+                // Mettre à jour le menu gauche dynamiquement
+                MenuGauche menuGauche = VaadinSession.getCurrent().getAttribute(MenuGauche.class);
+                if (menuGauche != null) {
+                    menuGauche.refreshMenu();  // Appel de refreshMenu pour mettre à jour le menu
+                } else {
+                    Notification.show("MenuGauche non trouvé dans la session.");
+                }
+
+                // Rediriger vers la vue principale
+                UI.getCurrent().navigate(VuePrincipale.class);
+                return;
+            } else {
+                Notification.show("Mot de passe incorrect.");
+                return;
+            }
+        }
+
+        // Si aucun utilisateur n'est trouvé
+        Notification.show("Identifiant ou mot de passe invalide.");
+    } catch (SQLException ex) {
+        Notification.show("Problème lors de la connexion : " + ex.getLocalizedMessage());
+    }
+}
+
 }
