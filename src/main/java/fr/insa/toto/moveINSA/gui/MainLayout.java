@@ -1,7 +1,9 @@
 package fr.insa.toto.moveINSA.gui;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
@@ -46,26 +48,51 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
      * @param bee
      */
     @Override
-    public void beforeEnter(BeforeEnterEvent bee) {
-        // Permet par exemple de modifier la destination en cas de problème
-        // bee.rerouteTo(NoConnectionToBDDErrorPanel.class);
+    public void beforeEnter(BeforeEnterEvent event) {
+    // Récupérer l'utilisateur connecté depuis la session
+    Object user = VaadinSession.getCurrent().getAttribute("user");
+
+    // Vérifier si un utilisateur est connecté
+    if (user == null) {
+        // Si aucun utilisateur n'est connecté, rediriger vers la page de connexion
+        event.rerouteTo("connexion");  // Rediriger vers la page de connexion
+    } else {
+        // Si un utilisateur est connecté, mettre à jour l'entête avec ses informations
+        updateMainLayout(null);  // Appeler updateMainLayout pour mettre à jour l'entête
     }
+}
+
 
     /**
      * Cette méthode est appelée après la connexion de l'utilisateur pour
      * mettre à jour l'entête avec les informations de l'étudiant ou du SRI.
      */
     public void updateMainLayout(String userInfo) {
-        // Si un étudiant est connecté, on met à jour avec les informations de l'étudiant
-        Etudiant etudiant = (Etudiant) VaadinSession.getCurrent().getAttribute("user");
-        if (etudiant != null) {
-            entete.updateEtudiantInfo();  // Utiliser la méthode qui met à jour les infos de l'étudiant
-        }
+    // Récupérer l'utilisateur connecté depuis la session
+    Object user = VaadinSession.getCurrent().getAttribute("user");
 
-        // Si un membre SRI est connecté, on met à jour avec les informations du SRI
-        SRI sri = (SRI) VaadinSession.getCurrent().getAttribute("user");
-        if (sri != null) {
-            entete.updateSRIInfo();  // Utiliser la méthode qui met à jour les infos du SRI
+    // Vérifier si un utilisateur est connecté
+    if (user != null) {
+        // Si l'utilisateur est un étudiant, mettre à jour l'entête avec ses informations
+        if (user instanceof Etudiant) {
+            Etudiant etudiant = (Etudiant) user;
+            // Passer les informations nécessaires à la méthode pour mettre à jour l'entête
+            entete.updateEtudiantInfo();
         }
+        // Si l'utilisateur est un membre SRI, mettre à jour l'entête avec ses informations
+        else if (user instanceof SRI) {
+            SRI sri = (SRI) user;
+            // Passer les informations nécessaires à la méthode pour mettre à jour l'entête
+            entete.updateSRIInfo();
+        }
+    } else {
+        // Si aucun utilisateur n'est connecté, rediriger vers la page de connexion
+        Notification.show("Aucun utilisateur connecté.");
+        UI.getCurrent().navigate("connexion");  // Rediriger vers la page de connexion
     }
 }
+    
+}
+
+
+

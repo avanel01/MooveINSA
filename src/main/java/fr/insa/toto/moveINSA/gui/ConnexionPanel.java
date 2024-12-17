@@ -15,6 +15,7 @@ import com.vaadin.flow.server.VaadinSession;
 import fr.insa.beuvron.vaadin.utils.ConnectionPool;
 import fr.insa.toto.moveINSA.model.Etudiant;
 import fr.insa.toto.moveINSA.model.SRI;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Optional;
@@ -120,10 +121,7 @@ public class ConnexionPanel extends VerticalLayout {
                 // Vérifie le mot de passe
                 if (etudiant.getMdp().equals(mdpSaisi)) {
                     // Stocker l'étudiant dans la session
-                    System.out.println("session courante : " + VaadinSession.getCurrent());
                     VaadinSession.getCurrent().setAttribute("user", etudiant);
-                    System.out.println("Utilisateur stocké en session : " + VaadinSession.getCurrent().getAttribute("user"));
-
                     VaadinSession.getCurrent().setAttribute("role", "etudiant");
                     Notification.show("Bienvenue, " + etudiant.getNomEtudiant() + " " + etudiant.getPrenom() + " !");
                     
@@ -141,7 +139,7 @@ public class ConnexionPanel extends VerticalLayout {
             }
 
             // Sinon, vérifier si l'utilisateur est un membre du SRI
-            Optional<SRI> sriOpt = SRI.getSRIByLogin(con, ref); // Remplacez par votre méthode pour récupérer un membre SRI
+            Optional<SRI> sriOpt = SRI.getSRIByLogin(con, ref);
             if (sriOpt.isPresent()) {
                 SRI sri = sriOpt.get();
 
