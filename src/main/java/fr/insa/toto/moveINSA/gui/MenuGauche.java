@@ -65,6 +65,7 @@ public class MenuGauche extends SideNav {
             debug.addItem(new SideNavItem("Test DataGrid", TestDataGrid.class));
             debug.addItem(new SideNavItem("Test Grid Direct", TestGridDirect.class));
             this.addItem(debug);
+            styleItem(debug);
         }
 
         // Appliquer les styles aux items
@@ -130,6 +131,7 @@ public class MenuGauche extends SideNav {
         debug.addItem(new SideNavItem("Test DataGrid", TestDataGrid.class));
         debug.addItem(new SideNavItem("Test Grid Direct", TestGridDirect.class));
         this.addItem(debug);
+        styleItem(debug);
     }
 
     // Appliquer les styles
@@ -139,6 +141,7 @@ public class MenuGauche extends SideNav {
     styleItem(offres);
     styleItem(attribution);
     styleItem(deconnexion);
+    
 }
 
 }
