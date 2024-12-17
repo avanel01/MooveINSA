@@ -16,46 +16,49 @@ import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.server.VaadinSession;
 
-
 public class MenuGauche extends SideNav {
 
     public MenuGauche() {
-        // Styliser le conteneur principal
+        // Appliquer un style global au menu
         this.getStyle()
             .set("display", "flex")
             .set("flex-direction", "column")
             .set("padding", "10px");
 
-        // Crée les items principaux et applique les styles immédiatement
+        // Récupération unique de l'utilisateur
+        Object user = VaadinSession.getCurrent().getAttribute("user");
+        boolean isSRIConnecte = user instanceof SRI;
+
+        // Création des items principaux
         SideNavItem main = new SideNavItem("Accueil", VuePrincipale.class);
-        styleItem(main);
-
         SideNavItem connexion = new SideNavItem("Connexion", ConnexionPanel.class);
-        styleItem(connexion);
 
-        // Partie partenaires
+        // Partie Partenaires
         SideNavItem partenaires = new SideNavItem("Partenaires");
-        styleItem(partenaires);
         partenaires.addItem(new SideNavItem("Liste", PartenairesPanel.class));
-
-        // Partie offres
-        SideNavItem offres = new SideNavItem("Offres");
-        styleItem(offres);
-        offres.addItem(new SideNavItem("Liste", OffresPanel.class));
-
-        // Vérifier si un utilisateur est connecté et de quel type
-        Etudiant etudiant = (Etudiant) VaadinSession.getCurrent().getAttribute("user");
-        SRI sri = (SRI) VaadinSession.getCurrent().getAttribute("user");
-
-        // Si un membre du SRI est connecté, afficher toutes les pages supplémentaires
-        if (sri != null) {
-            // Ajout de nouveaux éléments pour le SRI
+        if (isSRIConnecte) {
             partenaires.addItem(new SideNavItem("Nouveau", NouveauPartenairePanel.class));
-            offres.addItem(new SideNavItem("Nouvelle", NouvelleOffrePanel.class));
+        }
 
-            // Ajouter un menu de debug avec plusieurs options
+        // Partie Offres
+        SideNavItem offres = new SideNavItem("Offres");
+        offres.addItem(new SideNavItem("Liste", OffresPanel.class));
+        if (isSRIConnecte) {
+            offres.addItem(new SideNavItem("Nouvelle", NouvelleOffrePanel.class));
+        }
+
+        // Partie Attribution
+        SideNavItem attribution = new SideNavItem("Attribution", AttributionPanel.class);
+
+        // Déconnexion
+        SideNavItem deconnexion = new SideNavItem("Déconnexion", DeconnexionPanel.class);
+
+        // Ajout des items principaux
+        this.addItem(main, connexion, partenaires, offres, attribution, deconnexion);
+
+        // Si un membre SRI est connecté, ajouter les menus de debug
+        if (isSRIConnecte) {
             SideNavItem debug = new SideNavItem("Debug");
-            styleItem(debug);
             debug.addItem(new SideNavItem("Test Driver", TestDriverPanel.class));
             debug.addItem(new SideNavItem("RAZ BDD", RAZBdDPanel.class));
             debug.addItem(new SideNavItem("Test ResultSetGrid", TestResultSetGrid.class));
@@ -64,26 +67,27 @@ public class MenuGauche extends SideNav {
             this.addItem(debug);
         }
 
-        // Partie attribution
-        SideNavItem attribution = new SideNavItem("Attribution", AttributionPanel.class);
+        // Appliquer les styles aux items
+        styleItem(main);
+        styleItem(connexion);
+        styleItem(partenaires);
+        styleItem(offres);
         styleItem(attribution);
-
-        // Création de l'élément de déconnexion
-        SideNavItem deconnexion = new SideNavItem("Déconnexion", DeconnexionPanel.class);
-        styleItem(deconnexion); // Appliquer le style cohérent au bouton Déconnexion
-
-        // Ajouter les éléments au menu
-        this.addItem(main, connexion, partenaires, offres, attribution, deconnexion);
+        styleItem(deconnexion);
     }
 
-    // Méthode pour appliquer les styles directement à un SideNavItem
+    /**
+     * Applique un style cohérent à un item du menu.
+     * 
+     * @param item L'élément SideNavItem à styliser.
+     */
     private void styleItem(SideNavItem item) {
         item.getStyle()
-            .set("text-align", "center")  // Centrer le texte
+            .set("text-align", "center")   // Centrer le texte
             .set("text-transform", "uppercase")  // Majuscules
-            .set("font-weight", "bold")  // Texte en gras
-            .set("font-size", "12px")  // Réduire la taille de l'écriture
-            .set("padding", "10px")  // Espacement
+            .set("font-weight", "bold")    // Texte en gras
+            .set("font-size", "12px")      // Taille de police
+            .set("padding", "10px")        // Espacement
             .set("border-bottom", "1px solid #ddd");  // Ligne de séparation
     }
 }
