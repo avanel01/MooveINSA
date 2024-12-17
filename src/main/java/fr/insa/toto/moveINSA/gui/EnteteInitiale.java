@@ -7,10 +7,11 @@ import fr.insa.toto.moveINSA.model.Etudiant;
 import fr.insa.toto.moveINSA.model.SRI;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.html.Paragraph;
 
 public class EnteteInitiale extends HorizontalLayout {
 
-    private Text lNomPrenom;
+    private Paragraph lNomPrenom;
 
     public EnteteInitiale() {
         // Configuration globale de la mise en page
@@ -27,7 +28,7 @@ public class EnteteInitiale extends HorizontalLayout {
         this.add(logo);
 
         // Ajouter un label pour le texte principal au centre
-        Text title = new Text("Bienvenue sur le site !");
+        Paragraph title = new Paragraph ("Bienvenue sur le site !");
         title.getStyle().set("color", "black");
         title.getStyle().set("font-size", "24px");
         title.getStyle().set("font-weight", "bold");
@@ -35,7 +36,7 @@ public class EnteteInitiale extends HorizontalLayout {
         this.add(title);
 
         // Ajouter un label pour afficher l'état de connexion à droite
-        lNomPrenom = new Text();
+        lNomPrenom = new Paragraph ();
         updateUserInfo(); // Initialisation avec les informations actuelles
         lNomPrenom.getStyle().set("color", "black");
         lNomPrenom.getStyle().set("font-size", "16px");
