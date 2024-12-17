@@ -35,16 +35,15 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
-import fr.insa.beuvron.vaadin.utils.ConnectionPool;
 import fr.insa.toto.moveINSA.model.Etudiant;
-import java.sql.Connection;
-import java.util.Optional;
+ 
 
 @Route(value = "deconnexion", layout = MainLayout.class)
 @PageTitle("Deconnexion")
 public class DeconnexionPanel extends VerticalLayout {
 
     public DeconnexionPanel() {
+        
         // Styliser le conteneur principal avec une image de fond
         this.getStyle()
             .set("background-image", "url('https://www.insa-strasbourg.fr/wp-content/uploads/28070823_1895678403840285_8548131256382231960_o.jpg')")
@@ -125,18 +124,19 @@ public class DeconnexionPanel extends VerticalLayout {
         VaadinSession.getCurrent().setAttribute("user", null);
         VaadinSession.getCurrent().setAttribute("role", null);
         
-        // Optionnel: Rediriger vers la page de connexion
-        UI.getCurrent().navigate(ConnexionPanel.class);  // Ou la page de connexion appropriée
-        
-        // Si vous avez une mise à jour dans l'interface (comme un changement dans le menu de navigation)
-        MainLayout mainLayout = VaadinSession.getCurrent().getAttribute(MainLayout.class);
-        if (mainLayout != null) {
-            mainLayout.updateMainLayout("Déconnecté");
-        }
+          // Mettre à jour l'entête pour refléter l'état déconnecté
+         EnteteInitiale entete = (EnteteInitiale) VaadinSession.getCurrent().getAttribute("entete");
+         if (entete != null) {
+            entete.updateUserInfo();  // Actualiser l'affichage de l'entête
+            }
+            
+        // Rediriger vers la page de connexion
+        UI.getCurrent().navigate(ConnexionPanel.class);
     } else {
-        // Si aucun utilisateur n'est connecté
         Notification.show("Aucun utilisateur connecté.");
     }
+        
+        
 }
 
 }
