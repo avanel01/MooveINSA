@@ -77,13 +77,13 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         if (user instanceof Etudiant) {
             Etudiant etudiant = (Etudiant) user;
             // Passer les informations nécessaires à la méthode pour mettre à jour l'entête
-            entete.updateEtudiantInfo();
+            entete.updateUserInfo();
         }
         // Si l'utilisateur est un membre SRI, mettre à jour l'entête avec ses informations
         else if (user instanceof SRI) {
             SRI sri = (SRI) user;
             // Passer les informations nécessaires à la méthode pour mettre à jour l'entête
-            entete.updateSRIInfo();
+            entete.updateUserInfo();
         }
     } else {
         // Si aucun utilisateur n'est connecté, rediriger vers la page de connexion
