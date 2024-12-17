@@ -1,27 +1,5 @@
-/*
-Copyright 2000- Francois de Bertrand de Beuvron
-
-This file is part of CoursBeuvron.
-
-CoursBeuvron is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-CoursBeuvron is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with CoursBeuvron.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
 package fr.insa.toto.moveINSA.gui;
 
-
-//import fr.insa.toto.moveINSA.gui.jeu.BoiteACoucou;
-//import fr.insa.toto.moveINSA.gui.jeu.TrouveEntier;
 import fr.insa.toto.moveINSA.gui.testDataGrid.TestDataGrid;
 import fr.insa.toto.moveINSA.gui.testDataGrid.TestGridDirect;
 import fr.insa.toto.moveINSA.gui.testDataGrid.TestResultSetGrid;
@@ -37,7 +15,7 @@ import fr.insa.toto.moveINSA.model.SRI;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.server.VaadinSession;
-import fr.insa.toto.moveINSA.gui.vues.AttributionPanel;
+
 
 public class MenuGauche extends SideNav {
 
@@ -66,11 +44,12 @@ public class MenuGauche extends SideNav {
         offres.addItem(new SideNavItem("Liste", OffresPanel.class));
 
         // Vérifier si un utilisateur est connecté et de quel type
-        boolean isEtudiantConnected = VaadinSession.getCurrent().getAttribute(Etudiant.class) != null;
-        boolean isSRIConnected = VaadinSession.getCurrent().getAttribute(SRI.class) != null;
+        Etudiant etudiant = VaadinSession.getCurrent().getAttribute(Etudiant.class);
+        SRI sri = VaadinSession.getCurrent().getAttribute(SRI.class);
 
         // Si un membre du SRI est connecté, afficher toutes les pages supplémentaires
-        if (isSRIConnected) {
+        if (sri != null) {
+            // Ajout de nouveaux éléments pour le SRI
             partenaires.addItem(new SideNavItem("Nouveau", NouveauPartenairePanel.class));
             offres.addItem(new SideNavItem("Nouvelle", NouvelleOffrePanel.class));
 
