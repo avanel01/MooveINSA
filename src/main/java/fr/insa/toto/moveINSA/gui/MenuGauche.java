@@ -36,6 +36,7 @@ import fr.insa.toto.moveINSA.gui.vues.TestDriverPanel;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.server.VaadinSession;
+import fr.insa.toto.moveINSA.gui.vues.AttributionPanel;
 import fr.insa.toto.moveINSA.model.Etudiant;
 import fr.insa.toto.moveINSA.model.SRI;
 
@@ -82,12 +83,15 @@ public class MenuGauche extends SideNav {
             this.addItem(debug);
         }
         
+        SideNavItem attribution = new SideNavItem("Attribution", AttributionPanel.class);
+        styleItem(attribution);
+        
         // création de l'élément deconnexion
         SideNavItem deconnexion = new SideNavItem("Deconnexion", DeconnexionPanel.class);
         styleItem(deconnexion); // Appliquer le style cohérent au bouton Déconnexion
         
         // Ajouter les éléments au menu
-        this.addItem(main, connexion, partenaires, offres, deconnexion);
+        this.addItem(main, connexion, partenaires, offres, attribution, deconnexion);
     }
 
     // Méthode pour appliquer les styles directement à un SideNavItem
