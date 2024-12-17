@@ -68,7 +68,7 @@ public class ConnexionPanel extends VerticalLayout {
              .set("font-size", "1.5em");
 
         // Champs texte pour l'INE et le mot de passe
-        this.tfINE = new TextField("Votre INE :");
+        this.tfINE = new TextField("Votre identifiant (INE pour les etudiants) :");
         this.tfINE.getStyle()
                   .set("width", "100%")
                   .set("color", "black"); // Texte en noir
