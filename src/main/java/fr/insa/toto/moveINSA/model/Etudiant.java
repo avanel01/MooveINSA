@@ -82,7 +82,9 @@ public static Optional<Etudiant> getEtudiantByINE(Connection con, String INE) th
                     rs.getInt("classement"),
                     rs.getString("mdp")
                 );
+                System.out.println("Etudiant trouvé : " + etudiant);
                 return Optional.of(etudiant);
+                
             } else {
                 return Optional.empty(); // Aucun étudiant trouvé pour cet INE
             }

@@ -121,6 +121,8 @@ public class ConnexionPanel extends VerticalLayout {
                 if (etudiant.getMdp().equals(mdpSaisi)) {
                     // Stocker l'étudiant dans la session
                     VaadinSession.getCurrent().setAttribute("user", etudiant);
+                    System.out.println("Utilisateur stocké en session : " + VaadinSession.getCurrent().getAttribute("user"));
+
                     VaadinSession.getCurrent().setAttribute("role", "etudiant");
                     Notification.show("Bienvenue, " + etudiant.getNomEtudiant() + " " + etudiant.getPrenom() + " !");
                     
