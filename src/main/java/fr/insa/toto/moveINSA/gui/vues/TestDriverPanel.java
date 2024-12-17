@@ -18,7 +18,9 @@ along with CoursBeuvron.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.insa.toto.moveINSA.gui.vues;
 
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
@@ -40,7 +42,39 @@ import java.sql.SQLException;
 public class TestDriverPanel extends VerticalLayout {
 
     public TestDriverPanel() {
-        // Applique un style centré au VerticalLayout
+        
+    // Styliser le conteneur principal avec une image de fond
+        this.getStyle()
+            .set("background-image", "url('https://www.insa-strasbourg.fr/wp-content/uploads/28070823_1895678403840285_8548131256382231960_o.jpg')")
+            .set("background-size", "cover")
+            .set("background-position", "center")
+            .set("height", "100vh")
+            .set("display", "flex")                // Rend le conteneur flexible
+            .set("flex-direction", "column")       // Organise en colonne
+            .set("justify-content", "center")      // Centre verticalement
+            .set("align-items", "center")          // Centre horizontalement
+            .set("text-align", "center");          // Centre le texte à l'intérieur
+
+        // Ajouter le logo en haut à gauche
+        Image logo = new Image("https://apps.insa-strasbourg.fr/WebObjects/logos/logo_insa_strasbourg_234px.png", "Logo INSA Strasbourg");
+        logo.getStyle()
+            .set("position", "absolute")
+            .set("top", "20px")
+            .set("left", "20px")
+            .set("width", "150px")
+            .set("height", "auto");
+        
+        // Conteneur transparent centré 
+        Div container = new Div();
+        container.getStyle()
+            .set("background", "rgba(255, 255, 255, 0.9)") // Fond blanc semi-transparent
+            .set("border-radius", "10px")
+            .set("padding", "30px")
+            .set("box-shadow", "0px 4px 8px rgba(0, 0, 0, 0.2)") // Ombre légère
+            .set("text-align", "center")
+            .set("max-width", "600px");
+        
+    // Applique un style centré au VerticalLayout
     this.getStyle()
         .set("display", "flex")
         .set("align-items", "center")    // Centre horizontalement
@@ -64,6 +98,9 @@ public class TestDriverPanel extends VerticalLayout {
             ex.printStackTrace(out);
             this.add(new Paragraph(mess.toString()));
         }
+    
+        // Ajouter les composants à la vue principale
+        this.add(logo, container);
 
     }
 
