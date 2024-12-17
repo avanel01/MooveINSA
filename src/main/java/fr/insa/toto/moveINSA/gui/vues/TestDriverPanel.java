@@ -49,12 +49,12 @@ public class TestDriverPanel extends VerticalLayout {
             .set("background-size", "cover")
             .set("background-position", "center")
             .set("height", "100vh")
-            .set("display", "flex")                // Rend le conteneur flexible
-            .set("flex-direction", "column")       // Organise en colonne
-            .set("justify-content", "center")      // Centre verticalement
-            .set("align-items", "center")          // Centre horizontalement
-            .set("text-align", "center");          // Centre le texte à l'intérieur
-
+            .set("display", "flex")                
+            .set("flex-direction", "column")       
+            .set("justify-content", "center")      
+            .set("align-items", "center");          
+            
+               
         // Ajouter le logo en haut à gauche
         Image logo = new Image("https://apps.insa-strasbourg.fr/WebObjects/logos/logo_insa_strasbourg_234px.png", "Logo INSA Strasbourg");
         logo.getStyle()
@@ -73,30 +73,24 @@ public class TestDriverPanel extends VerticalLayout {
             .set("box-shadow", "0px 4px 8px rgba(0, 0, 0, 0.2)") // Ombre légère
             .set("text-align", "center")
             .set("max-width", "600px");
+       
         
-    // Applique un style centré au VerticalLayout
-    this.getStyle()
-        .set("display", "flex")
-        .set("align-items", "center")    // Centre horizontalement
-        .set("justify-content", "center") // Centre verticalement
-        .set("height", "100vh")          // Prend toute la hauteur de la page
-        .set("text-align", "center");    // Centre le texte lui-même
-        
-    this.add(new H3("Test du driver"));
+    // Ajouter le titre dans le conteneur
+    container.add(new H3("Test du driver"));
     
     try (Connection con = ConnectionPool.getConnection()){
             Class<Driver> mysqlDriver = (Class<Driver>) Class.forName("com.mysql.cj.jdbc.Driver");
-            this.add(new Paragraph("com.mysql.cj.jdbc.Driver OK"));
+            container.add(new Paragraph("com.mysql.cj.jdbc.Driver OK"));
             DatabaseMetaData meta = con.getMetaData();
-            this.add(new Paragraph("jdbc driver de la connection : " + meta.getDriverName() + " ; " + meta.getDriverVersion()));
+            container.add(new Paragraph("JDBC driver de la connection : " + meta.getDriverName() + " ; " + meta.getDriverVersion()));
         } catch (ClassNotFoundException ex) {
-            this.add(new Paragraph("com.mysql.cj.jdbc.Driver not found"));
+            container.add(new Paragraph("com.mysql.cj.jdbc.Driver not found"));
         } catch (SQLException ex) {
-            this.add(new H3("problème sql : "));
+            container.add(new H3("Problème sql : "));
             StringWriter mess = new StringWriter();
             PrintWriter out = new PrintWriter(mess);
             ex.printStackTrace(out);
-            this.add(new Paragraph(mess.toString()));
+            container.add(new Paragraph(mess.toString()));
         }
     
         // Ajouter les composants à la vue principale
