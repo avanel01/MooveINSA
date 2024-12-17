@@ -1,12 +1,12 @@
 package fr.insa.toto.moveINSA.gui;
 
-import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.server.VaadinSession;
 import fr.insa.toto.moveINSA.model.Etudiant;
 import fr.insa.toto.moveINSA.model.SRI;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.Text;
 
 public class EnteteInitiale extends HorizontalLayout {
 
