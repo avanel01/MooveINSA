@@ -18,6 +18,7 @@ import fr.insa.beuvron.vaadin.utils.dataGrid.GridDescription;
 import fr.insa.beuvron.vaadin.utils.dataGrid.ResultSetGrid;
 import fr.insa.toto.moveINSA.gui.MainLayout;
 import fr.insa.toto.moveINSA.model.Etudiant;
+import fr.insa.toto.moveINSA.model.SRI;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -52,7 +53,18 @@ public class OffresPanel extends VerticalLayout {
 
     public OffresPanel() {
         // Récupérer l'utilisateur connecté depuis la session
-        this.etudiantConnecte = (Etudiant) VaadinSession.getCurrent().getAttribute("user");
+        Object user = VaadinSession.getCurrent().getAttribute("user");
+        
+        if (user instanceof Etudiant) {
+            Etudiant etudiant = (Etudiant) user;
+            this.etudiantConnecte = (Etudiant) VaadinSession.getCurrent().getAttribute("user");
+        } else if (user instanceof SRI) {
+            SRI sri = (SRI) user;
+            this.etudiantConnecte = null;
+        } else {
+            this.etudiantConnecte = null;
+        }
+        
         System.out.println("etudiant connecté dans offrespanel : " + this.etudiantConnecte);
                             System.out.println("session courante : " + VaadinSession.getCurrent());
  
