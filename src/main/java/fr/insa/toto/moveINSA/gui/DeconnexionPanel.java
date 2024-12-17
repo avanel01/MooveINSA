@@ -69,7 +69,7 @@ public class DeconnexionPanel extends VerticalLayout {
             .set("align-items", "center");
         
         // Titre de connexion
-        H3 titre = new H3("Deconnexion à MoveINSA");
+        H3 titre = new H3("Déconnexion de MoveINSA");
         titre.getStyle()
              .set("margin", "0 0 20px 0")
              .set("font-weight", "bold")
