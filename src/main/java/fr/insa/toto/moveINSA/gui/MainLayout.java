@@ -34,6 +34,9 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         DrawerToggle toggle = new DrawerToggle();
         this.entete = new EnteteInitiale();
         this.addToNavbar(toggle, entete);
+        
+        // Sauvegarder l'instance de l'entête dans la session
+        VaadinSession.getCurrent().setAttribute("entete", this.entete);
     }
 
     /**
