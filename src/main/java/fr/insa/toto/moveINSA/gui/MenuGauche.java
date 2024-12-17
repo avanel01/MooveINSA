@@ -31,14 +31,13 @@ import fr.insa.toto.moveINSA.gui.vues.OffresPanel;
 import fr.insa.toto.moveINSA.gui.vues.PartenairesPanel;
 import fr.insa.toto.moveINSA.gui.vues.RAZBdDPanel;
 import fr.insa.toto.moveINSA.gui.vues.TestDriverPanel;
-
+import fr.insa.toto.moveINSA.model.Etudiant;
+import fr.insa.toto.moveINSA.model.SRI;
 
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.server.VaadinSession;
 import fr.insa.toto.moveINSA.gui.vues.AttributionPanel;
-import fr.insa.toto.moveINSA.model.Etudiant;
-import fr.insa.toto.moveINSA.model.SRI;
 
 public class MenuGauche extends SideNav {
 
@@ -56,40 +55,44 @@ public class MenuGauche extends SideNav {
         SideNavItem connexion = new SideNavItem("Connexion", ConnexionPanel.class);
         styleItem(connexion);
 
-        SideNavItem partenaires = new SideNavItem("partenaires");
+        // Partie partenaires
+        SideNavItem partenaires = new SideNavItem("Partenaires");
         styleItem(partenaires);
-        partenaires.addItem(new SideNavItem("liste", PartenairesPanel.class));
-        
-        SideNavItem offres = new SideNavItem("offres");
-            styleItem(offres);
-            offres.addItem(new SideNavItem("liste", OffresPanel.class));
+        partenaires.addItem(new SideNavItem("Liste", PartenairesPanel.class));
+
+        // Partie offres
+        SideNavItem offres = new SideNavItem("Offres");
+        styleItem(offres);
+        offres.addItem(new SideNavItem("Liste", OffresPanel.class));
 
         // Vérifier si un utilisateur est connecté et de quel type
         boolean isEtudiantConnected = VaadinSession.getCurrent().getAttribute(Etudiant.class) != null;
         boolean isSRIConnected = VaadinSession.getCurrent().getAttribute(SRI.class) != null;
 
-        // Si un membre du SRI est connecté, afficher toutes les pages
+        // Si un membre du SRI est connecté, afficher toutes les pages supplémentaires
         if (isSRIConnected) {
-            partenaires.addItem(new SideNavItem("nouveau", NouveauPartenairePanel.class));
-            offres.addItem(new SideNavItem("nouvelle", NouvelleOffrePanel.class));
+            partenaires.addItem(new SideNavItem("Nouveau", NouveauPartenairePanel.class));
+            offres.addItem(new SideNavItem("Nouvelle", NouvelleOffrePanel.class));
 
-            SideNavItem debug = new SideNavItem("debug");
+            // Ajouter un menu de debug avec plusieurs options
+            SideNavItem debug = new SideNavItem("Debug");
             styleItem(debug);
-            debug.addItem(new SideNavItem("test driver", TestDriverPanel.class));
-            debug.addItem(new SideNavItem("raz BdD", RAZBdDPanel.class));
-            debug.addItem(new SideNavItem("test ResultSetGrid", TestResultSetGrid.class));
-            debug.addItem(new SideNavItem("test DataGrid", TestDataGrid.class));
-            debug.addItem(new SideNavItem("test Grid direct", TestGridDirect.class));
+            debug.addItem(new SideNavItem("Test Driver", TestDriverPanel.class));
+            debug.addItem(new SideNavItem("RAZ BDD", RAZBdDPanel.class));
+            debug.addItem(new SideNavItem("Test ResultSetGrid", TestResultSetGrid.class));
+            debug.addItem(new SideNavItem("Test DataGrid", TestDataGrid.class));
+            debug.addItem(new SideNavItem("Test Grid Direct", TestGridDirect.class));
             this.addItem(debug);
         }
-        
+
+        // Partie attribution
         SideNavItem attribution = new SideNavItem("Attribution", AttributionPanel.class);
         styleItem(attribution);
-        
-        // création de l'élément deconnexion
-        SideNavItem deconnexion = new SideNavItem("Deconnexion", DeconnexionPanel.class);
+
+        // Création de l'élément de déconnexion
+        SideNavItem deconnexion = new SideNavItem("Déconnexion", DeconnexionPanel.class);
         styleItem(deconnexion); // Appliquer le style cohérent au bouton Déconnexion
-        
+
         // Ajouter les éléments au menu
         this.addItem(main, connexion, partenaires, offres, attribution, deconnexion);
     }
