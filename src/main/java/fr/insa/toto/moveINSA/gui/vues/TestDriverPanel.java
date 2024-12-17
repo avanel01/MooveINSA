@@ -40,8 +40,17 @@ import java.sql.SQLException;
 public class TestDriverPanel extends VerticalLayout {
 
     public TestDriverPanel() {
-        this.add(new H3("test du driver"));
-        try (Connection con = ConnectionPool.getConnection()){
+        // Applique un style centré au VerticalLayout
+    this.getStyle()
+        .set("display", "flex")
+        .set("align-items", "center")    // Centre horizontalement
+        .set("justify-content", "center") // Centre verticalement
+        .set("height", "100vh")          // Prend toute la hauteur de la page
+        .set("text-align", "center");    // Centre le texte lui-même
+        
+    this.add(new H3("Test du driver"));
+    
+    try (Connection con = ConnectionPool.getConnection()){
             Class<Driver> mysqlDriver = (Class<Driver>) Class.forName("com.mysql.cj.jdbc.Driver");
             this.add(new Paragraph("com.mysql.cj.jdbc.Driver OK"));
             DatabaseMetaData meta = con.getMetaData();
