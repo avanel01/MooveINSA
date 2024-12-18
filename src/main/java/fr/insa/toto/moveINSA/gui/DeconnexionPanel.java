@@ -1,45 +1,26 @@
-/*
-Copyright 2000- Francois de Bertrand de Beuvron
-
-This file is part of CoursBeuvron.
-
-CoursBeuvron is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-CoursBeuvron is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with CoursBeuvron.  If not, see <http://www.gnu.org/licenses/>.
- */
 package fr.insa.toto.moveINSA.gui;
 
 /**
- *
- * @author rouxh
+ * Panel de déconnexion pour l'application MoveINSA.
+ * Permet à l'utilisateur de se déconnecter et redirige vers la page de connexion.
  */
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
-import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
+import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 import fr.insa.toto.moveINSA.model.Etudiant;
- 
 
 @Route(value = "deconnexion", layout = MainLayout.class)
-@PageTitle("Deconnexion")
+@PageTitle("Déconnexion")
 public class DeconnexionPanel extends VerticalLayout {
 
     public DeconnexionPanel() {
@@ -111,32 +92,51 @@ public class DeconnexionPanel extends VerticalLayout {
         this.add(logo, layout);
     }
 
-    // Gérer la déconnexion
+
+    /**
+     * Gère la déconnexion de l'utilisateur.
+     * Supprime les données utilisateur de la session, actualise l'interface,
+     * et redirige vers la page de connexion.
+     */
     private void handleDeconnexion() {
-    // Récupérer l'utilisateur actuellement connecté à partir de la session
+    // Récupérer l'utilisateur connecté
     Object utilisateur = VaadinSession.getCurrent().getAttribute("user");
-    
+
     if (utilisateur != null) {
-        // Afficher une notification pour indiquer que l'utilisateur est bien déconnecté
+        // Déconnexion réussie
         Notification.show("Déconnexion réussie.");
-        
+
         // Supprimer l'utilisateur et son rôle de la session
         VaadinSession.getCurrent().setAttribute("user", null);
         VaadinSession.getCurrent().setAttribute("role", null);
-        
-          // Mettre à jour l'entête pour refléter l'état déconnecté
-         EnteteInitiale entete = (EnteteInitiale) VaadinSession.getCurrent().getAttribute("entete");
-         if (entete != null) {
-            entete.updateUserInfo();  // Actualiser l'affichage de l'entête
-            }
-            
-        // Rediriger vers la page de connexion
-        UI.getCurrent().navigate(ConnexionPanel.class);
+
+        // Actualiser l'entête
+        EnteteInitiale entete = (EnteteInitiale) VaadinSession.getCurrent().getAttribute("entete");
+        if (entete != null) {
+            entete.updateUserInfo();
+        }
+
+        // Mettre à jour le layout principal
+        MainLayout mainLayout = VaadinSession.getCurrent().getAttribute(MainLayout.class);
+        if (mainLayout != null) {
+            mainLayout.updateMainLayout(null);
+        }
+
+        // Mettre à jour le menu gauche
+        MenuGauche menuGauche = VaadinSession.getCurrent().getAttribute(MenuGauche.class);
+        if (menuGauche != null) {
+            menuGauche.refreshMenu();
+        }
+
+        // Invalider la session
+        VaadinSession.getCurrent().getSession().invalidate();
+
+        // Forcer le rechargement de la page
+        UI.getCurrent().getPage().reload();
     } else {
+        // Aucun utilisateur connecté
         Notification.show("Aucun utilisateur connecté.");
     }
-        
-        
 }
 
 }
