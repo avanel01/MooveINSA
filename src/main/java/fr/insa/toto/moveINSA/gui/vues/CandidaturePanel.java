@@ -60,7 +60,7 @@ public class CandidaturePanel extends VerticalLayout implements BeforeEnterObser
 
         // ComboBox pour le semestre (en tant qu'Integer)
         this.semestreField = new ComboBox<>("Semestre");
-        this.ordreField.setItems(5, 6, 7, 8, 9);
+        this.semestreField.setItems(5, 6, 7, 8, 9);  // Valeurs possibles pour le semestre
         this.semestreField.setPlaceholder("Choisissez un semestre");
 
         // Bouton pour sauvegarder la candidature
