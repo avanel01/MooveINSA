@@ -116,6 +116,7 @@ public class OffresPanel extends VerticalLayout {
                 "       Partenaire.idPartenaire AS idPartenaire, " +
                 "       OffreMobilite.nomOffre AS nomOffre, " +
                 "       OffreMobilite.specialiteAssocie AS spe " +
+                "       OffreMobilite.semestre AS semestre " +
                 "FROM OffreMobilite " +
                 "JOIN Partenaire ON OffreMobilite.proposepar = Partenaire.idPartenaire"
             );
@@ -128,7 +129,7 @@ public class OffresPanel extends VerticalLayout {
                     new IntAsIcon((Integer) nbrPlaces) // Composant pour afficher le nombre de places
                 ).headerString("Places disponibles"),
                 new ColumnDescription().colData(5).headerString("Spécialité"),// specialiteAssocie
-                new ColumnDescription().colData(4).headerString("Semestre")
+                new ColumnDescription().colData(6).headerString("Semestre")
             )));
 
             this.gOffres.getStyle()
