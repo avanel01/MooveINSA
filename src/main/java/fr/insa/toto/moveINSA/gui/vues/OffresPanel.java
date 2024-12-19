@@ -1,5 +1,6 @@
 package fr.insa.toto.moveINSA.gui.vues;
 
+import com.mysql.cj.jdbc.result.ResultSetMetaData;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H2;
@@ -108,44 +109,47 @@ public class OffresPanel extends VerticalLayout {
      * Configure et ajoute la grille des offres.
      */
     private void configureGrid() {
-        try (Connection con = ConnectionPool.getConnection()) {
-            PreparedStatement offresAvecPart = con.prepareStatement(
-                "SELECT OffreMobilite.idOffre AS idOffre, " +
-                "       Partenaire.refPartenaire AS refPartenaire, " +
-                "       OffreMobilite.nbrPlaces AS nbrPlaces, " +
-                "       Partenaire.idPartenaire AS idPartenaire, " +
-                "       OffreMobilite.nomOffre AS nomOffre, " +
-                "       OffreMobilite.specialiteAssocie AS spe " +
-                "       OffreMobilite.semestre AS semestre " +
-                "FROM OffreMobilite " +
-                "JOIN Partenaire ON OffreMobilite.proposepar = Partenaire.idPartenaire"
-            );
+    try (Connection con = ConnectionPool.getConnection()) {
+        PreparedStatement offresAvecPart = con.prepareStatement(
+            "SELECT OffreMobilite.idOffre AS idOffre, " +
+            "       Partenaire.refPartenaire AS refPartenaire, " +
+            "       OffreMobilite.nbrPlaces AS nbrPlaces, " +
+            "       Partenaire.idPartenaire AS idPartenaire, " +
+            "       OffreMobilite.nomOffre AS nomOffre, " +
+            "       OffreMobilite.specialiteAssocie AS spe, " +
+            "       OffreMobilite.semestre AS semestre " +
+            "FROM OffreMobilite " +
+            "JOIN Partenaire ON OffreMobilite.proposepar = Partenaire.idPartenaire"
+        );
 
-            this.gOffres = new ResultSetGrid(offresAvecPart, new GridDescription(List.of(
-                new ColumnDescription().colData(0).visible(false), // ID de l'offre (non affichée)
-                new ColumnDescription().colData(1).headerString("Partenaire"), // refPartenaire
-                new ColumnDescription().colData(4).headerString("Intitulé de l'offre"), // nomOffre
-                new ColumnDescription().colDataCompo(2, (nbrPlaces) -> 
-                    new IntAsIcon((Integer) nbrPlaces) // Composant pour afficher le nombre de places
-                ).headerString("Places disponibles"),
-                new ColumnDescription().colData(5).headerString("Spécialité"),// specialiteAssocie
-                new ColumnDescription().colData(6).headerString("Semestre")
-            )));
+        
 
-            this.gOffres.getStyle()
-                .set("width", "80%")
-                .set("margin", "20px auto")
-                .set("border", "1px solid #ccc")
-                .set("border-radius", "5px")
-                .set("box-shadow", "0px 4px 10px rgba(0, 0, 0, 0.1)")
-                .set("background-color", "white");
+        this.gOffres = new ResultSetGrid(offresAvecPart, new GridDescription(List.of(
+            new ColumnDescription().colData(0).visible(false), // ID de l'offre (non affichée)
+            new ColumnDescription().colData(1).headerString("Partenaire"), // refPartenaire
+            new ColumnDescription().colData(4).headerString("Intitulé de l'offre"), // nomOffre
+            new ColumnDescription().colDataCompo(2, (nbrPlaces) -> 
+                new IntAsIcon((Integer) nbrPlaces) // Composant pour afficher le nombre de places
+            ).headerString("Places disponibles"),
+            new ColumnDescription().colData(5).headerString("Spécialité"), // specialiteAssocie
+            new ColumnDescription().colData(6).headerString("Semestre") // Semestre
+        )));
 
-            this.add(new H3("Offres de mobilité avec mise en forme"));
-            this.add(this.gOffres);
-        } catch (SQLException ex) {
-            logAndNotifyError(ex, "Erreur lors du chargement des données");
-        }
+        this.gOffres.getStyle()
+            .set("width", "80%")
+            .set("margin", "20px auto")
+            .set("border", "1px solid #ccc")
+            .set("border-radius", "5px")
+            .set("box-shadow", "0px 4px 10px rgba(0, 0, 0, 0.1)")
+            .set("background-color", "white");
+
+        this.add(new H3("Offres de mobilité avec mise en forme"));
+        this.add(this.gOffres);
+    } catch (SQLException ex) {
+        logAndNotifyError(ex, "Erreur lors du chargement des données");
     }
+}
+
 
     /**
      * Configure et ajoute le bouton "Postuler".
