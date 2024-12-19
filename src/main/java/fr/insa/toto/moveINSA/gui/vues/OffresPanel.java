@@ -127,7 +127,8 @@ public class OffresPanel extends VerticalLayout {
                 new ColumnDescription().colDataCompo(2, (nbrPlaces) -> 
                     new IntAsIcon((Integer) nbrPlaces) // Composant pour afficher le nombre de places
                 ).headerString("Places disponibles"),
-                new ColumnDescription().colData(5).headerString("Spécialité") // specialiteAssocie
+                new ColumnDescription().colData(5).headerString("Spécialité"),// specialiteAssocie
+                new ColumnDescription().colData(4).headerString("Semestre")
             )));
 
             this.gOffres.getStyle()
