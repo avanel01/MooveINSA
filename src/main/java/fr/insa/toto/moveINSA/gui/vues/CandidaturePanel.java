@@ -38,7 +38,14 @@ public class CandidaturePanel extends VerticalLayout implements BeforeEnterObser
     private OffreMobilite offre;
 
     public CandidaturePanel() {
-        add(new H2("Formulaire de Candidature"));
+        // Centrer le contenu de la page
+        this.setDefaultHorizontalComponentAlignment(Alignment.CENTER);
+        this.setSizeFull(); // Utilise tout l'espace disponible
+        
+        // Titre centré
+        H2 title = new H2("Formulaire de Candidature");
+        title.getStyle().set("text-align", "center");
+        add(title);
 
         // Récupérer l'étudiant connecté depuis la session
         etudiantConnecte = (Etudiant) VaadinSession.getCurrent().getAttribute("user");
@@ -66,6 +73,13 @@ public class CandidaturePanel extends VerticalLayout implements BeforeEnterObser
 
         // Bouton pour sauvegarder la candidature
         this.bSave = new Button("Sauvegarder", event -> handleSave());
+        this.bSave.getStyle().set("background-color", "red"); // Bouton en rouge
+        this.bSave.getStyle().set("color", "white");          // Texte en blanc pour contraste
+        this.bSave.getStyle().set("font-size", "16px");       // Ajuster taille police
+        this.bSave.getStyle().set("font-weight", "bold");     // Mettre en gras
+        this.bSave.getStyle().set("cursor", "pointer");       // Mettre le curseur en une main pointée lorsque l'utilisateur survole le bouton, indiquant qu'il est cliquable.
+        this.bSave.getStyle().set("border-radius", "5px");    // Coins arrondis pour esthétique
+        this.bSave.getStyle().set("padding", "10px 20px");    // Espacement interne pour meilleur rendu
 
         // Ajout des champs et du bouton au panneau
         this.add(idOField, idEField, ordreField, semestreField, bSave);
