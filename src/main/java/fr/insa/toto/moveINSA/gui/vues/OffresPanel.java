@@ -79,43 +79,55 @@ public class OffresPanel extends VerticalLayout {
     }
 
     private void configureGrid() {
-        try (Connection con = ConnectionPool.getConnection()) {
-            PreparedStatement offresAvecPart = con.prepareStatement(
-                "SELECT o.idOffre AS idOffre, " +
-                "       p.refPartenaire AS refPartenaire, " +
-                "       o.nbrPlaces AS nbrPlaces, " +
-                "       p.idPartenaire AS idPartenaire, " +
-                "       o.nomOffre AS nomOffre, " +
-                "       o.specialiteAssocie AS spe, " +
-                "       o.semestre AS semestres " + // Semestres directement dans la table OffreMobilite
-                "FROM OffreMobilite o " +
-                "JOIN Partenaire p ON o.proposepar = p.idPartenaire");
+    try (Connection con = ConnectionPool.getConnection()) {
+        // Modifié pour récupérer directement les semestres dans la table OffreMobilite
+        PreparedStatement offresAvecPart = con.prepareStatement(
+            "SELECT o.idOffre AS idOffre, " +
+            "       p.refPartenaire AS refPartenaire, " +
+            "       o.nbrPlaces AS nbrPlaces, " +
+            "       p.idPartenaire AS idPartenaire, " +
+            "       o.nomOffre AS nomOffre, " +
+            "       o.specialiteAssocie AS spe, " +
+            "       o.semestre AS semestres " + // Semestres directement dans la table OffreMobilite
+            "FROM OffreMobilite o " +
+            "JOIN Partenaire p ON o.proposepar = p.idPartenaire");
 
-            this.gOffres = new ResultSetGrid(offresAvecPart, new GridDescription(List.of(
-                new ColumnDescription().colData(0).visible(false), // ID de l'offre (non affichée)
-                new ColumnDescription().colData(1).headerString("Partenaire"), // refPartenaire
-                new ColumnDescription().colData(4).headerString("Intitulé de l'offre"), // nomOffre
-                new ColumnDescription().colDataCompo(2, (nbrPlaces) ->
-                    new IntAsIcon((Integer) nbrPlaces) // Composant pour afficher le nombre de places
-                ).headerString("Places disponibles"),
-                new ColumnDescription().colData(5).headerString("Spécialité"), // specialiteAssocie
-                new ColumnDescription().colData(6).headerString("Semestres") // Liste des semestres
-            )));
+        this.gOffres = new ResultSetGrid(offresAvecPart, new GridDescription(List.of(
+            new ColumnDescription().colData(0).visible(false), // ID de l'offre (non affichée)
+            new ColumnDescription().colData(1).headerString("Partenaire"), // refPartenaire
+            new ColumnDescription().colData(4).headerString("Intitulé de l'offre"), // nomOffre
+            new ColumnDescription().colDataCompo(2, (nbrPlaces) ->
+                new IntAsIcon((Integer) nbrPlaces) // Composant pour afficher le nombre de places
+            ).headerString("Places disponibles"),
+            new ColumnDescription().colData(5).headerString("Spécialité"), // specialiteAssocie
+            new ColumnDescription().colDataCompo(6, (semestres) -> {
+                String semestreStr = (String) semestres;
+                String[] semestresArray = semestreStr.split(","); // Si les semestres sont séparés par des virgules
+                HorizontalLayout layout = new HorizontalLayout();
+                for (String semestre : semestresArray) {
+                    layout.add(new Icon(VaadinIcon.CALENDAR)); // Vous pouvez ajouter un icône pour chaque semestre
+                    layout.add(new H3(semestre.trim())); // Ajouter le semestre en texte
+                }
+            return layout;
+            }).headerString("Semestres")
 
-            this.gOffres.getStyle()
-                .set("width", "80%")
-                .set("margin", "20px auto")
-                .set("border", "1px solid #ccc")
-                .set("border-radius", "5px")
-                .set("box-shadow", "0px 4px 10px rgba(0, 0, 0, 0.1)")
-                .set("background-color", "white");
+        )));
 
-            this.add(new H3("Offres de mobilité avec mise en forme"));
-            this.add(this.gOffres);
-        } catch (SQLException ex) {
-            logAndNotifyError(ex, "Erreur lors du chargement des données");
-        }
+        this.gOffres.getStyle()
+            .set("width", "80%")
+            .set("margin", "20px auto")
+            .set("border", "1px solid #ccc")
+            .set("border-radius", "5px")
+            .set("box-shadow", "0px 4px 10px rgba(0, 0, 0, 0.1)")
+            .set("background-color", "white");
+
+        this.add(new H3("Offres de mobilité avec mise en forme"));
+        this.add(this.gOffres);
+    } catch (SQLException ex) {
+        logAndNotifyError(ex, "Erreur lors du chargement des données");
     }
+}
+
 
     private void configurePostulerButton() {
         bPostule = new Button("Postuler", e -> handlePostulerClick());
