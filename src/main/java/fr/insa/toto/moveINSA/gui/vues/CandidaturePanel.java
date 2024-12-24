@@ -27,27 +27,21 @@ import java.util.Optional;
 @Route("candidature/:idOffre")
 public class CandidaturePanel extends VerticalLayout implements BeforeEnterObserver {
 
-    private Candidature nouveau;
-    private Paragraph idOField;
-    private Paragraph idEField;
+    private Candidature candidature;
+    private Paragraph idOffreField;
+    private Paragraph idEtudiantField;
     private ComboBox<Integer> ordreField;
     private ComboBox<Integer> semestreField;
-    private Button bSave;
+    private Button saveButton;
 
     private Etudiant etudiantConnecte;
     private OffreMobilite offre;
 
     public CandidaturePanel() {
-        // Centrer le contenu de la page
-        this.setDefaultHorizontalComponentAlignment(Alignment.CENTER);
-        this.setSizeFull(); // Utilise tout l'espace disponible
-        
-        // Titre centré
-        H2 title = new H2("Formulaire de Candidature");
-        title.getStyle().set("text-align", "center");
-        add(title);
+        configureLayout();
+        addTitle();
 
-        // Récupérer l'étudiant connecté depuis la session
+        // Récupérer l'étudiant connecté
         etudiantConnecte = (Etudiant) VaadinSession.getCurrent().getAttribute("user");
         if (etudiantConnecte == null) {
             Notification.show("Erreur : Aucun étudiant connecté. Veuillez vous connecter.");
@@ -55,34 +49,52 @@ public class CandidaturePanel extends VerticalLayout implements BeforeEnterObser
         }
 
         // Initialiser une nouvelle candidature
-        this.nouveau = new Candidature(-1, -1, null, -1, -1, -1);
+        this.candidature = new Candidature(-1, -1, null, -1, -1, -1);
 
+        createFormFields();
+        createSaveButton();
+    }
+
+    private void configureLayout() {
+        this.setDefaultHorizontalComponentAlignment(Alignment.CENTER);
+        this.setSizeFull();
+        this.getStyle().set("padding", "20px").set("background-color", "#f9f9f9");
+    }
+
+    private void addTitle() {
+        H2 title = new H2("Formulaire de Candidature");
+        title.getStyle().set("text-align", "center").set("color", "#333").set("margin-bottom", "20px");
+        add(title);
+    }
+
+    private void createFormFields() {
         // Champs pour le formulaire
-        this.idOField = new Paragraph("Référence de l'offre : (non chargée)");
-        this.idEField = new Paragraph("INE : " + etudiantConnecte.getINE());
+        this.idOffreField = new Paragraph("Référence de l'offre : (non chargée)");
+        this.idEtudiantField = new Paragraph("INE : " + etudiantConnecte.getINE());
 
         // ComboBox pour l'ordre de demande
-        this.ordreField = new ComboBox<>("Ordre de demande");
+        this.ordreField = new ComboBox<>("Ordre de la demande");
         this.ordreField.setItems(1, 2, 3, 4, 5);
         this.ordreField.setPlaceholder("Choisissez un ordre");
 
         // ComboBox pour le semestre
-        this.semestreField = new ComboBox<>("Semestre");
-        this.semestreField.setItems(5, 6, 7, 8, 9);
+        this.semestreField = new ComboBox<>("Semestre de sejour");
         this.semestreField.setPlaceholder("Choisissez un semestre");
 
-        // Bouton pour sauvegarder la candidature
-        this.bSave = new Button("Sauvegarder", event -> handleSave());
-        this.bSave.getStyle().set("background-color", "red"); // Bouton en rouge
-        this.bSave.getStyle().set("color", "white");          // Texte en blanc pour contraste
-        this.bSave.getStyle().set("font-size", "16px");       // Ajuster taille police
-        this.bSave.getStyle().set("font-weight", "bold");     // Mettre en gras
-        this.bSave.getStyle().set("cursor", "pointer");       // Mettre le curseur en une main pointée lorsque l'utilisateur survole le bouton, indiquant qu'il est cliquable.
-        this.bSave.getStyle().set("border-radius", "5px");    // Coins arrondis pour esthétique
-        this.bSave.getStyle().set("padding", "10px 20px");    // Espacement interne pour meilleur rendu
+        this.add(idOffreField, idEtudiantField, ordreField, semestreField);
+    }
 
-        // Ajout des champs et du bouton au panneau
-        this.add(idOField, idEField, ordreField, semestreField, bSave);
+    private void createSaveButton() {
+        this.saveButton = new Button("Sauvegarder", event -> handleSave());
+        this.saveButton.getStyle()
+            .set("background-color", "red")
+            .set("color", "white")
+            .set("font-size", "16px")
+            .set("font-weight", "bold")
+            .set("cursor", "pointer")
+            .set("border-radius", "5px")
+            .set("padding", "10px 20px");
+        this.add(saveButton);
     }
 
     @Override
@@ -92,36 +104,33 @@ public class CandidaturePanel extends VerticalLayout implements BeforeEnterObser
 
         if (idOffreOpt.isPresent()) {
             int idOffre = idOffreOpt.get();
-            this.nouveau.setIdOffre(idOffre);
+            this.candidature.setIdOffre(idOffre);
 
             try (Connection con = ConnectionPool.getConnection()) {
                 Optional<OffreMobilite> offreOpt = OffreMobilite.getOffreById(con, idOffre);
 
                 if (offreOpt.isPresent()) {
                     this.offre = offreOpt.get();
-
-                    // Afficher le nom de l'offre
-                    String nomOffre = offre.getNomOffre();
-                    this.idOField.setText("Référence de l'offre : " + nomOffre);
+                    this.idOffreField.setText("Référence de l'offre : " + offre.getNomOffre());
 
                     // Charger les semestres disponibles
-                    List<Integer> semestres = offre.getSemestres();
-                    if (semestres.isEmpty()) {
+                    List<Integer> semestresDisponibles = offre.getSemestres();
+                    if (semestresDisponibles.isEmpty()) {
                         Notification.show("Aucun semestre disponible pour cette offre.");
                     } else {
-                        this.semestreField.setItems(semestres);
+                        this.semestreField.setItems(semestresDisponibles);
                     }
                 } else {
                     Notification.show("Erreur : Offre introuvable.");
-                    this.idOField.setText("Référence de l'offre : Offre introuvable");
+                    this.idOffreField.setText("Référence de l'offre : Offre introuvable");
                 }
             } catch (SQLException ex) {
                 Notification.show("Erreur lors de la récupération de l'offre : " + ex.getLocalizedMessage());
-                this.idOField.setText("Référence de l'offre : Erreur de chargement");
+                this.idOffreField.setText("Référence de l'offre : Erreur de chargement");
             }
         } else {
             Notification.show("Erreur : ID de l'offre invalide ou manquant.");
-            this.idOField.setText("Référence de l'offre : (invalide)");
+            this.idOffreField.setText("Référence de l'offre : (invalide)");
         }
     }
 
@@ -144,31 +153,27 @@ public class CandidaturePanel extends VerticalLayout implements BeforeEnterObser
         }
 
         try (Connection con = ConnectionPool.getConnection()) {
-            // Valider et remplir les informations de la candidature
-            this.nouveau.setIdEtudiant(etudiantConnecte.getINE());
+            this.candidature.setIdEtudiant(etudiantConnecte.getINE());
 
             Integer ordre = this.ordreField.getValue();
             if (ordre == null) {
                 Notification.show("Erreur : Veuillez sélectionner un ordre de demande.");
                 return;
             }
-            this.nouveau.setOrdre(ordre);
+            this.candidature.setOrdre(ordre);
 
             Integer semestre = this.semestreField.getValue();
             if (semestre == null || !offre.getSemestres().contains(semestre)) {
                 Notification.show("Erreur : Veuillez sélectionner un semestre valide.");
                 return;
             }
-            this.nouveau.setDate(semestre);
+            this.candidature.setDate(semestre);
 
-            // Sauvegarde
-            this.nouveau.saveInDB(con);
+            this.candidature.saveInDB(con);
             Notification.show("Candidature sauvegardée avec succès !");
-
-            // Rediriger vers la vue principale (route "/")
             UI.getCurrent().navigate("");
         } catch (SQLException ex) {
-            Notification.show("Erreur : " + ex.getLocalizedMessage());
+            Notification.show("Erreur lors de la sauvegarde : " + ex.getLocalizedMessage());
         }
     }
 }

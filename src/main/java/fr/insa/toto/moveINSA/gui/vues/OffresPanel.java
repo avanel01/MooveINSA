@@ -18,11 +18,11 @@ import fr.insa.beuvron.vaadin.utils.dataGrid.GridDescription;
 import fr.insa.beuvron.vaadin.utils.dataGrid.ResultSetGrid;
 import fr.insa.toto.moveINSA.gui.MainLayout;
 import fr.insa.toto.moveINSA.model.Etudiant;
-import fr.insa.toto.moveINSA.model.SRI;
+import fr.insa.toto.moveINSA.model.OffreMobilite;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSetMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
@@ -81,23 +81,18 @@ public class OffresPanel extends VerticalLayout {
     private void configureGrid() {
         try (Connection con = ConnectionPool.getConnection()) {
             PreparedStatement offresAvecPart = con.prepareStatement(
-                "SELECT OffreMobilite.idOffre AS idOffre, " +
-                "       Partenaire.refPartenaire AS refPartenaire, " +
-                "       OffreMobilite.nbrPlaces AS nbrPlaces, " +
-                "       Partenaire.idPartenaire AS idPartenaire, " +
-                "       OffreMobilite.nomOffre AS nomOffre, " +
-                "       OffreMobilite.specialiteAssocie AS spe, " +
-                "       COALESCE(OffreMobilite.semestre, 'N/A') AS semestre " +
-                "FROM OffreMobilite " +
-                "JOIN Partenaire ON OffreMobilite.proposepar = Partenaire.idPartenaire"
+                "SELECT o.idOffre AS idOffre, " +
+                "       p.refPartenaire AS refPartenaire, " +
+                "       o.nbrPlaces AS nbrPlaces, " +
+                "       p.idPartenaire AS idPartenaire, " +
+                "       o.nomOffre AS nomOffre, " +
+                "       o.specialiteAssocie AS spe, " +
+                "       GROUP_CONCAT(DISTINCT so.semestre ORDER BY so.semestre) AS semestres " +
+                "FROM OffreMobilite o " +
+                "JOIN Partenaire p ON o.proposepar = p.idPartenaire " +
+                "LEFT JOIN SemestresOffre so ON o.idOffre = so.idOffre " +
+                "GROUP BY o.idOffre, p.refPartenaire, o.nbrPlaces, p.idPartenaire, o.nomOffre, o.specialiteAssocie"
             );
-
-            // Débogage des métadonnées pour vérifier les colonnes récupérées
-            ResultSetMetaData metaData = offresAvecPart.getMetaData();
-            int columnCount = metaData.getColumnCount();
-            for (int i = 1; i <= columnCount; i++) {
-                System.out.println("Column " + i + ": " + metaData.getColumnName(i));
-            }
 
             this.gOffres = new ResultSetGrid(offresAvecPart, new GridDescription(List.of(
                 new ColumnDescription().colData(0).visible(false), // ID de l'offre (non affichée)
@@ -107,7 +102,7 @@ public class OffresPanel extends VerticalLayout {
                     new IntAsIcon((Integer) nbrPlaces) // Composant pour afficher le nombre de places
                 ).headerString("Places disponibles"),
                 new ColumnDescription().colData(5).headerString("Spécialité"), // specialiteAssocie
-                new ColumnDescription().colData(6).headerString("Semestre") // Semestre
+                new ColumnDescription().colData(6).headerString("Semestres") // Liste des semestres
             )));
 
             this.gOffres.getStyle()
