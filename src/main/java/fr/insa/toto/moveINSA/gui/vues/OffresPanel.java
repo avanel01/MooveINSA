@@ -87,12 +87,9 @@ public class OffresPanel extends VerticalLayout {
                 "       p.idPartenaire AS idPartenaire, " +
                 "       o.nomOffre AS nomOffre, " +
                 "       o.specialiteAssocie AS spe, " +
-                "       GROUP_CONCAT(DISTINCT so.semestre ORDER BY so.semestre) AS semestres " +
+                "       o.semestre AS semestres " + // Semestres directement dans la table OffreMobilite
                 "FROM OffreMobilite o " +
-                "JOIN Partenaire p ON o.proposepar = p.idPartenaire " +
-                "LEFT JOIN SemestresOffre so ON o.idOffre = so.idOffre " +
-                "GROUP BY o.idOffre, p.refPartenaire, o.nbrPlaces, p.idPartenaire, o.nomOffre, o.specialiteAssocie"
-            );
+                "JOIN Partenaire p ON o.proposepar = p.idPartenaire");
 
             this.gOffres = new ResultSetGrid(offresAvecPart, new GridDescription(List.of(
                 new ColumnDescription().colData(0).visible(false), // ID de l'offre (non affichée)
