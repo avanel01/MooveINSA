@@ -104,13 +104,13 @@ public class MenuGauche extends SideNav {
     SideNavItem main = new SideNavItem("Accueil", VuePrincipale.class);
     SideNavItem connexion = new SideNavItem("Connexion", ConnexionPanel.class);
 
-    SideNavItem partenaires = new SideNavItem("Partenaires");
+    SideNavItem partenaires = new SideNavItem(" Universités Partenaires");
     partenaires.addItem(new SideNavItem("Liste", PartenairesPanel.class));
     if (isSRIConnecte) {
         partenaires.addItem(new SideNavItem("Nouveau", NouveauPartenairePanel.class));
     }
 
-    SideNavItem offres = new SideNavItem("Offres");
+    SideNavItem offres = new SideNavItem("Offres de Mobilité");
     offres.addItem(new SideNavItem("Liste", OffresPanel.class));
     if (isSRIConnecte) {
         offres.addItem(new SideNavItem("Nouvelle", NouvelleOffrePanel.class));
