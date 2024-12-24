@@ -1,5 +1,7 @@
 package fr.insa.toto.moveINSA.gui;
 
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -7,103 +9,218 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 import fr.insa.beuvron.vaadin.utils.ConnectionPool;
-import fr.insa.beuvron.vaadin.utils.dataGrid.ColumnDescription;
-import fr.insa.beuvron.vaadin.utils.dataGrid.GridDescription;
-import fr.insa.beuvron.vaadin.utils.dataGrid.ResultSetGrid;
 import fr.insa.toto.moveINSA.model.Etudiant;
+import fr.insa.toto.moveINSA.model.SRI;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
-/*
-Copyright 2000- Francois de Bertrand de Beuvron
-
-This file is part of CoursBeuvron.
-
-CoursBeuvron is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-CoursBeuvron is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with CoursBeuvron.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 /**
- *
- * @author alixvanel
+ * AttributionPanel : gestion de l'affichage des attributions pour les étudiants et le SRI.
  */
-@Route(value = "attribution", layout = MainLayout.class) // La route reste la page d'accueil
-@PageTitle("Atribution")
+@Route(value = "attribution", layout = MainLayout.class)
+@PageTitle("Attribution")
 public class AttributionPanel extends VerticalLayout {
 
-    private ResultSetGrid gAttribution;
-    private Etudiant etudiant;
+    private Grid<AttributionData> gAttribution;
 
-    private void configureGrid() {
+    /**
+     * Configuration initiale de la page selon le type d'utilisateur.
+     */
+    private void configPage() {
+        Object user = VaadinSession.getCurrent().getAttribute("user");
+
+        if (user instanceof Etudiant) {
+            Etudiant etudiant = (Etudiant) user;
+            configureGridEtu(etudiant);
+        } else if (user instanceof SRI) {
+            SRI sri = (SRI) user;
+            configureGridSRI(sri);
+        } else {
+            Notification.show("Erreur : Veuillez vous connecter.");
+            UI.getCurrent().navigate("connexion");
+        }
+    }
+
+    /**
+     * Configuration de la grille pour un étudiant.
+     * 
+     * @param etudiant L'étudiant connecté.
+     */
+    private void configureGridEtu(Etudiant etudiant) {
         try (Connection con = ConnectionPool.getConnection()) {
-            
-            etudiant = (Etudiant) VaadinSession.getCurrent().getAttribute("user");
-            if (etudiant == null) {
-                Notification.show("Erreur : Aucun étudiant connecté. Veuillez vous connecter.");
-                return;
-            }
             String ine = etudiant.getINE();
-            // Requête SQL avec jointure pour récupérer le nom de l'offre
+
+            // Requête SQL corrigée
             PreparedStatement offresAvecPart = con.prepareStatement(
                 "SELECT Attribution.idAttribution, " +
                 "       Attribution.idOffre, " +
-                "       OffreMobilite.nomOffre, " + // Récupération du nom de l'offre
+                "       OffreMobilite.nomOffre, " +
+                "       Partenaire.refPartenaire, " +
                 "       Attribution.date " +
                 "FROM Attribution " +
                 "JOIN OffreMobilite ON Attribution.idOffre = OffreMobilite.idOffre " +
-                "WHERE Attribution.idEtudiant = " + ine
+                "JOIN Partenaire ON OffreMobilite.idPartenaire = Partenaire.idPartenaire " +
+                "WHERE Attribution.idEtudiant = ?"
+            );
+            offresAvecPart.setString(1, ine);
+
+            // Exécuter la requête
+            try (ResultSet resultSet = offresAvecPart.executeQuery()) {
+                List<AttributionData> attributions = new ArrayList<>();
+                while (resultSet.next()) {
+                    attributions.add(new AttributionData(
+                        resultSet.getInt("idAttribution"),
+                        resultSet.getInt("idOffre"),
+                        resultSet.getString("nomOffre"),
+                        resultSet.getString("refPartenaire"),
+                        resultSet.getInt("date")
+                    ));
+                }
+
+                if (attributions.isEmpty()) {
+                    this.add(new H3("Aucune attribution trouvée."));
+                    return;
+                }
+
+                // Configuration de la grille
+                this.gAttribution = new Grid<>(AttributionData.class);
+                this.gAttribution.setItems(attributions);
+                this.gAttribution.setColumns("nomOffre", "refPartenaire", "date");
+
+                this.gAttribution.getColumnByKey("nomOffre").setHeader("Intitulé de l'offre");
+                this.gAttribution.getColumnByKey("refPartenaire").setHeader("Partenaire");
+                this.gAttribution.getColumnByKey("date").setHeader("Date d'attribution");
+
+                // Styles de la grille
+                styleGrid();
+
+                // Ajout des composants à la vue
+                this.add(new H3("Voici votre attribution :"));
+                this.add(this.gAttribution);
+            }
+        } catch (SQLException ex) {
+            logAndNotifyError(ex, "Erreur lors du chargement des données.");
+        }
+    }
+
+    /**
+     * Configuration de la grille pour un utilisateur SRI.
+     * 
+     * @param sri L'utilisateur SRI connecté.
+     */
+    private void configureGridSRI(SRI sri) {
+        try (Connection con = ConnectionPool.getConnection()) {
+            // Requête SQL corrigée
+            PreparedStatement offresAvecPart = con.prepareStatement(
+                "SELECT Attribution.idAttribution, " +
+                "       Attribution.idEtudiant, " +
+                "       Attribution.idOffre, " +
+                "       Etudiant.nomEtudiant, " +
+                "       Etudiant.prenom, " +
+                "       OffreMobilite.nomOffre, " +
+                "       Partenaire.refPartenaire, " +
+                "       Attribution.date " +
+                "FROM Attribution " +
+                "JOIN OffreMobilite ON Attribution.idOffre = OffreMobilite.idOffre " +
+                "JOIN Partenaire ON OffreMobilite.idPartenaire = Partenaire.idPartenaire " +
+                "JOIN Etudiant ON Attribution.idEtudiant = Etudiant.INE"
             );
 
-            // Vous devez définir ici l'ID de l'étudiant pour filtrer les attributions
-            offresAvecPart.setInt(1, 1); // Remplacez 1 par l'ID dynamique de l'étudiant
+            try (ResultSet resultSet = offresAvecPart.executeQuery()) {
+                List<AttributionData> attributions = new ArrayList<>();
+                while (resultSet.next()) {
+                    attributions.add(new AttributionData(
+                        resultSet.getInt("idAttribution"),
+                        resultSet.getInt("idOffre"),
+                        resultSet.getString("nomOffre"),
+                        resultSet.getString("refPartenaire"),
+                        resultSet.getInt("date")
+                    ));
+                }
 
-            // Configuration de la grille avec les nouvelles colonnes
-            this.gAttribution = new ResultSetGrid(offresAvecPart, new GridDescription(List.of(
-                new ColumnDescription().colData(0).visible(false), // idAttribution (non affiché)
-                new ColumnDescription().colData(1).visible(false), // idOffre (non affiché)
-                new ColumnDescription().colData(2).headerString("Intitulé de l'offre"), // nomOffre
-                new ColumnDescription().colData(3).headerString("Date d'attribution") // date
-            )));
+                if (attributions.isEmpty()) {
+                    this.add(new H3("Aucune attribution trouvée pour le SRI."));
+                    return;
+                }
 
-            // Ajout de styles à la grille
-            this.gAttribution.getStyle()
-                .set("width", "80%")
-                .set("margin", "20px auto")
-                .set("border", "1px solid #ccc")
-                .set("border-radius", "5px")
-                .set("box-shadow", "0px 4px 10px rgba(0, 0, 0, 0.1)")
-                .set("background-color", "white");
+                // Configuration de la grille
+                this.gAttribution = new Grid<>(AttributionData.class);
+                this.gAttribution.setItems(attributions);
+                this.gAttribution.setColumns("nomOffre", "refPartenaire", "date");
 
-            // Ajout d'un titre et de la grille à la vue
-            this.add(new H3("Voici votre attribution :"));
-            this.add(this.gAttribution);
+                this.gAttribution.getColumnByKey("nomOffre").setHeader("Intitulé de l'offre");
+                this.gAttribution.getColumnByKey("refPartenaire").setHeader("Partenaire");
+                this.gAttribution.getColumnByKey("date").setHeader("Date d'attribution");
 
+                // Styles de la grille
+                styleGrid();
+
+                // Ajout des composants à la vue
+                this.add(new H3("Attribution des étudiants :"));
+                this.add(this.gAttribution);
+            }
         } catch (SQLException ex) {
-            logAndNotifyError(ex, "Erreur lors du chargement des données");
+            logAndNotifyError(ex, "Erreur lors du chargement des données.");
         }
+    }
+
+    /**
+     * Applique des styles à la grille.
+     */
+    private void styleGrid() {
+        this.gAttribution.getStyle()
+            .set("width", "80%")
+            .set("margin", "20px auto")
+            .set("border", "1px solid #ccc")
+            .set("border-radius", "5px")
+            .set("box-shadow", "0px 4px 10px rgba(0, 0, 0, 0.1)")
+            .set("background-color", "white");
     }
 
     /**
      * Méthode utilitaire pour gérer et notifier les erreurs.
      * 
-     * @param ex Exception SQL capturée
-     * @param message Message personnalisé à afficher
+     * @param ex Exception SQL capturée.
+     * @param message Message personnalisé à afficher.
      */
     private void logAndNotifyError(SQLException ex, String message) {
-        ex.printStackTrace(); // Log de l'erreur pour le développeur
-        System.err.println(message); // Affichage d'un message dans la console
+        ex.printStackTrace(); // Log pour le développeur
+        Notification.show(message); // Notification utilisateur
+    }
+
+    /**
+     * Classe représentant une attribution pour la grille.
+     */
+    public static class AttributionData {
+        private int idAttribution;
+        private int idOffre;
+        private String nomOffre;
+        private String refPartenaire;
+        private int date;
+
+        public AttributionData(int idAttribution, int idOffre, String nomOffre, String refPartenaire, int date) {
+            this.idAttribution = idAttribution;
+            this.idOffre = idOffre;
+            this.nomOffre = nomOffre;
+            this.refPartenaire = refPartenaire;
+            this.date = date;
+        }
+
+        public String getNomOffre() {
+            return nomOffre;
+        }
+
+        public String getRefPartenaire() {
+            return refPartenaire;
+        }
+
+        public int getDate() {
+            return date;
+        }
     }
 }
